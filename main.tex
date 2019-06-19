@@ -5,7 +5,6 @@
 \usepackage[hmargin=1in,vmargin=1in]{geometry}
 \usepackage{indentfirst}
 \usepackage{lipsum}
-\usepackage{scope}
 \usepackage{url}
 \usepackage[colorlinks,linkcolor=red!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
 \usepackage{amsmath}
@@ -259,11 +258,11 @@ Using these left adjoint functors, it becomes possible to construct a natural tr
         \draw[double equal sign distance, -implies] (+0.5,-0.5) to node[above right]{$\beta$} (-0.5,+0.5);
     \end{tikzpicture}.
 \]
-Although the natural transformation $\alpha$ is assumed to be a natural isomorphism, the natural transformation $\beta$ need not be; if $\beta$ happens to be a natural isomorphism, then we say that the original square satisfies the \textit{left} Beck-Chevalley condition\footnote{Are the left adjoints $F_L, H_L$ unique? If not, it might be better to say the original square satifies the left Beck-Chevalley condition with respect to $F_L, H_L$.}. The \textit{right} Beck-Chevalley condition is defined analogously with functors $F_R, H_R$ which are respectively right adjoints $F \dashv F_R$ and $H \dashv H_L$.
+Although the natural transformation $\alpha$ is assumed to be a natural isomorphism, the natural transformation $\beta$ need not be; if $\beta$ happens to be a natural isomorphism, then we say that the original square satisfies the \textit{left} Beck-Chevalley condition\footnote{Are the left adjoints $F_L, H_L$ unique? If not, it might be better to say the original square satifies the left Beck-Chevalley condition with respect to $F_L, H_L$.}. The \textit{right} Beck-Chevalley condition is defined analogously with functors $F_R, H_R$ which are respectively right adjoints $F \dashv F_R$ and $H \dashv H_R$.
 
-\subsection{Cartesian Morphism}
+\subsection{Cartesian Morphisms}
 
-A morhpism $\phi : e' \to e$ in $\catE$ is \textit{cartesian} with respect to a functor $P : \catE \to \catB$ if for every $\psi : e'' \to e$ in $\catE$ and for every $s : P(e'') \to P(e)$ such that $ P(\phi) \circ_{\catB} g = P(\psi)$ (i.e. such that the second diagram commutes), there exists a unique morphism $\sigma : e'' \to e'$ in $\catE$ such that $\phi \circ_{\catE} \sigma = \psi$ (i.e. such that the first diagram commutes):\footnote{The definition and treatment of Cartesian morphisms found in the \textit{Reformulations} section of \url{https://ncatlab.org/nlab/show/Cartesian+morphism\#CartInOrdCatReformulation} is probably better suited here.}
+A morphism $\phi : e' \to e$ in $\catE$ is \textit{cartesian} with respect to a functor $P : \catE \to \catB$ if for every $\psi : e'' \to e$ in $\catE$ and for every $g : P(e'') \to P(e')$ such that $ P(\phi) \circ_{\catB} g = P(\psi)$ (i.e. such that the second diagram commutes), there exists a unique morphism $\sigma : e'' \to e'$ in $\catE$ such that $\phi \circ_{\catE} \sigma = \psi$ (i.e. such that the first diagram commutes):\footnote{The definition and treatment of Cartesian morphisms found in the \textit{Reformulations} section of \url{https://ncatlab.org/nlab/show/Cartesian+morphism\#CartInOrdCatReformulation} is probably better suited here.}
 
 \[
     \begin{tikzpicture}
@@ -290,11 +289,11 @@ A morhpism $\phi : e' \to e$ in $\catE$ is \textit{cartesian} with respect to a 
 \]
 \subsection{Grothendieck Fibrations}
 
-A functor $P : \catE \to \catB$ is a \textit{Grothendieck fibration} if it satisfies the following ``lifting'' property that for every morphism $f : b \to P(e)$ of $\catB$ (i.e. if the codomain of $f$ is contained in the image of $P$), there exists a \textit{cartesian} morphism $\phi : e' \to e$ of $\catE$ in the fibered category $\catE_{P(e)}$ (i.e. $P(\phi) = f$).
+A functor $P : \catE \to \catB$ is a \textit{Grothendieck fibration} if it satisfies the following ``lifting'' property that for every morphism $f : b \to P(e)$ of $\catB$ (i.e. if the codomain of $f$ is contained in the image of $P$), there exists a \textit{cartesian} morphism $\phi : e' \to e$ of $\catE$ in the fibre category $\catE_{P(e)}$ (i.e. $P(\phi) = f$).
 
-\subsection{The Equivalence of Puesdofunctors and Fibrations}
+\subsection{The Equivalence of Pseudofunctors and Fibrations}
 
-Given a functor $P : \catE \to \catB$ which is also a Grothendieck fibration equipped with a clevage (i.e. a choice of cartesian morphism $\phi \in \Hom_{\catE}(e', e)$ for each $f \in \Hom_{\catB}(a,P(e))$ such that $P(\phi) = f$), it is possible to construct a pseudofunctor (read weak $2$-functor between weak $2$-categories) $\pi : \catB^{\opcat} \to \mathbf{Cat}$. In particular, for each object $b \in \catB_0$ is mapped to the \textit{sub-category} $\pi(b) = \catE_b$ of $\catE$ whose objects are those which map to $b$ under $P$ and whose morphism are those which map to $\id_{b}$ under $P$; $\catE_b$ is the fibre category over $b$ with respect to $P$. For each morphism $f \in \Hom_{\catB}(a,b)$ in $\catB$, the pseudofunctor $\pi$ maps $f^{\opcat} : b \to a$ onto a functor $\pi(f^{\opcat}) = f^{\ast} : \catE_{b} \to \catE_{a}$ which is defined accordingly:
+Given a functor $P : \catE \to \catB$ which is also a Grothendieck fibration equipped with a cleavage (i.e. a choice of cartesian morphism $\phi \in \Hom_{\catE}(e', e)$ for each $f \in \Hom_{\catB}(a,P(e))$ such that $P(\phi) = f$), it is possible to construct a pseudofunctor (read weak $2$-functor between weak $2$-categories) $\pi : \catB^{\opcat} \to \mathbf{Cat}$. In particular, each object $b \in \catB_0$ is mapped to the \textit{sub-category} $\pi(b) = \catE_b$ of $\catE$ whose objects are those which map to $b$ under $P$ and whose morphism are those which map to $\id_{b}$ under $P$; $\catE_b$ is the fibre category over $b$ with respect to $P$. For each morphism $f \in \Hom_{\catB}(a,b)$ in $\catB$, the pseudofunctor $\pi$ maps $f^{\opcat} : b \to a$ onto a functor $\pi(f^{\opcat}) = f^{\ast} : \catE_{b} \to \catE_{a}$ which is defined accordingly:
 \[
     \begin{tikzpicture}
         \begin{scope}[shift={(-4.5,0)}]
@@ -353,7 +352,7 @@ and because $\phi'$ is cartesian, there must exist a unique $\psi' \in \Hom_{\ca
 
 \subsection{Slice and Coslice Categories}
 
-Given a category $\catC$ and an object $c \in \catC_0$ of $\catC$ the \textit{slice category} (or \textit{over category}) $\catC/c$ is the ``stuff in $\catC$ that is on top of $c$''. Specifically, the objects of $\catC/c$ are all the morphisms $f \in \catC_1$ from $\catC$ whose codomain is $\cod(f) = c$ (alternatively you could write $(\catC/c)_0 = \Hom_{\catC}(-,c)$). A morphism of $\catC/c$ between objects $f : a \to c, g : b \to c \in (\catC/c)_0$ is a commuting triangle completed by a third morphism $h : a \to b \in \catC_1$:
+Given a category $\catC$ and an object $c \in \catC_0$ of $\catC$, the \textit{slice category} (or \textit{over category}) $\catC/c$ is the ``stuff in $\catC$ that is on top of $c$''. Specifically, the objects of $\catC/c$ are all the morphisms $f \in \catC_1$ from $\catC$ whose codomain is $\cod(f) = c$ (alternatively you could write $(\catC/c)_0 = \Hom_{\catC}(-,c)$). A morphism of $\catC/c$ between objects $f : a \to c, g : b \to c \in (\catC/c)_0$ is a commuting triangle completed by a third morphism $h : a \to b \in \catC_1$:
 
 \[
     \begin{tikzpicture}
