@@ -1,0 +1,56 @@
+\documentclass[preview]{standalone}
+
+\usepackage[showframe]{geometry}
+\geometry{
+paperwidth=16cm,
+paperheight=4cm,
+margin=0cm
+}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usetikzlibrary{
+    calc,
+    arrows,
+    shapes.geometric,
+    intersections,
+    pgfplots.fillbetween,
+    decorations.pathreplacing,
+    decorations.markings,
+    patterns
+}
+
+\begin{document}
+
+\newcommand{\projectionfigure}[2]{
+\begin{tikzpicture}
+    \begin{axis}[
+        ticks=none,
+        xlabel=$A$,
+        ylabel=$B$,
+        zlabel={$f(x,y)$},
+        title={},
+        view={#1}{#2}
+    ]
+        \addplot3+[surf,mesh/rows=31,mesh/cols=31,mesh/ordering=colwise,no marks,colormap/viridis] file {surf.csv};
+        \addplot3+[smooth,ultra thick,mark=none,BrickRed] table[x=x,y expr=-1,z=maxA] {opt.csv};
+        \addplot3+[smooth,ultra thick,mark=none,BrickRed] table[x=x,y expr=-1,z=minA] {opt.csv};
+        \addplot3+[smooth,ultra thick,mark=none,Peach] table[y=x,x expr=+1,z=maxB] {opt.csv};
+        \addplot3+[smooth,ultra thick,mark=none,Peach] table[y=x,x expr=+1,z=minB] {opt.csv};
+    \end{axis}
+\end{tikzpicture}
+}
+\begin{tabular}{cc}
+    
+    \projectionfigure{30}{30}
+    &
+    \projectionfigure{0}{0}
+    \\
+    \projectionfigure{60}{30}
+    &
+    \projectionfigure{90}{0}
+
+\end{tabular}
+
+
+\end{document}

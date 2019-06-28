@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+\documentclass[10pt]{article}
 \usepackage[utf8]{inputenc} % utf8 support
 
 % === Document Layout ===
@@ -42,7 +42,8 @@
     intersections,
     pgfplots.fillbetween,
     decorations.pathreplacing,
-    decorations.markings
+    decorations.markings,
+    patterns
 }
 \tikzset{every picture/.style={baseline={([yshift=-0.3em]current bounding box.center)}}}
 \tikzset{
@@ -96,7 +97,7 @@
 
 \begin{document}
 \begin{center}
-    \large{\textbf{Towards a General Theory of Elimination (and Optimization?)}} \\
+    \large{\textbf{On Convex Elimination and Optimization}} \\
     \normalsize{TC Fraser, Tobias Fritz} \\
     \normalsize{Perimeter Institute for Theoretical Physics} \\
     \normalsize{June 7th, 2019}
@@ -108,7 +109,66 @@
 \newcommand{\catD}{\mathscr{D}}
 \newcommand{\catE}{\mathscr{E}}
 
-\section{Preliminaries}
+\section{Elimination and Optimization}
+
+\begin{center}
+\begin{tikzpicture}[
+        extend line/.style={dashed, shorten >= -0.5cm,shorten <= -0.5cm},
+        set region/.style={pattern=north east lines, pattern color=red},
+        set label/.style={rounded corners=1mm, inner sep=1mm, fill=white, fill opacity=0.95}
+    ]
+    \coordinate (ori) at (-3,-3);
+    \coordinate (A) at ($(ori)+(+7,0)$);
+    \coordinate (B) at ($(ori)+(0,+6)$);
+    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (A) node[right]{$A$};
+    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (B) node[above]{$B$};
+
+    \coordinate (x1) at ( -90:2);
+    \coordinate (x2) at ( +10:2);
+    \coordinate (x3) at ( +70:2);
+    \coordinate (x4) at (+140:2);
+    \coordinate (x5) at (+190:2);
+    \foreach \p in {x1,x2,x3,x4,x5} {
+        \node at (\p)[circle,fill,inner sep=1pt]{}; 
+        \coordinate (\p A) at ($(ori)!(\p)!(A)$);
+        \coordinate (\p B) at ($(ori)!(\p)!(B)$);
+    }
+    \draw [thick, set region] (x1) -- (x2) -- (x3) -- (x4) -- (x5) -- cycle;
+    \foreach \p/\q in {x1/x2,x2/x3,x3/x4,x4/x5,x5/x1} {
+        \draw [extend line] (\p) -- (\q);
+    }
+    
+    \foreach \p in {x2,x5} {
+        \draw [dash dot] (\p) -- (\p A);
+        \draw [thick] ([yshift=-2mm]\p A) -- ([yshift=+2mm]\p A);
+    }
+    \path[set region] (x5A) rectangle ([yshift=-1mm]x2A);
+
+    \foreach \p in {x1,x3} {
+        \draw [dash dot] (\p) -- (\p B);
+        \draw [thick] ([xshift=-2mm]\p B) -- ([xshift=+2mm]\p B);
+    }
+    \path[set region] (x3B) rectangle ([xshift=-1mm]x1B);
+    \node[set label] at (0,0) {$S$};
+    \node[set label] at ([yshift=-6mm]$(ori)!(0,0)!(A)$) {$X$};
+    \node[set label] at ([xshift=-6mm]$(ori)!(0,0)!(B)$) {$Y$};
+
+    \draw[thick,decorate,decoration={brace,amplitude=2mm}] ([yshift=-1mm]x2A) -- ([yshift=-1mm]x5A);
+    \draw[thick,decorate,decoration={brace,amplitude=2mm}] ([xshift=-1mm]x1B) -- ([xshift=-1mm]x3B);
+\end{tikzpicture}
+\end{center}
+Consider a pair of sets $A$ and $B$ and a subset $S \subseteq A \times B$ of their cartesian product.  The projection morphisms associated with $A \times B$ are $p : A\times B \to A$ and $q : A \times B \to B$. The projection of the subset $S$ onto $A$ is then the subset $X \subseteq A$ defined by:
+\[ X = \{ a \in A \mid \exists s \in S, p (s) = a \} \]
+
+\begin{equation}
+    S \subseteq p^{\ast} ( X ) \Longleftrightarrow \exists_p ( S ) \subseteq X
+\end{equation}
+
+\begin{center}
+    \includegraphics[]{figures/min_max_multivariate_function/figure.pdf}
+\end{center}
+
+\section*{Categorical Definitions}
 
 \subsection{Hom-Functors}
 For a locally small category $\catC$, the hom-functor of $\catC$ is a functor $\Hom_{\catC} : \catC^{\opcat} \times \catC \to \mathbf{Set}$ constructed in the following manner. Given objects $a,b,c,\ldots \in \catC_0$ of $\catC$, the hom-functor $\Hom_{\catC}$ maps a pair of objects $(a,b) \in (\catC^\opcat \times \catC)_0 = \catC_0 \times \catC_0 = \catC_0^2$ into the set\footnote{The collection of morphisms of type $a \to b$ forms a set because $\catC$ is locally small.} of morphisms $\catC_1$ of $\catC$ with source $a$ and target $b$. Therefore, $\Hom_{\catC}(a,b)$ is the set of morphisms in $\catC$ of type $a \to b$. Given morphisms $g^{\opcat} \in \Hom_{\catC^{\opcat}}(a,c)$ and $h \in \Hom_{\catC}(b,d)$, the hom-functor $\Hom_{\catC}$ constructs a function
