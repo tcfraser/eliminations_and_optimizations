@@ -298,7 +298,7 @@ The following unordered list of categorical concepts are anticipated to be utili
     where $\catE / \beta \times_{\catB / P(\beta)} \catB / P(\phi)$ is the pullback of functors.
     \begin{equation}
         \begin{tikzcd}
-            \catE / \phi \ar[drr, bend left=20, "P/\phi"] \ar[ddr, bend right, "\mathrm{cod}"] \ar[dr, dashed, "\cong", leftrightarrow] & & \\ 
+            \catE / \phi \ar[drr, bend left=20, "P/\phi"] \ar[ddr, bend right=40, "\mathrm{cod}"] \ar[dr, dashed, "\cong", leftrightarrow] & & \\ 
             & \catE / \beta \times_{\catB / P(\beta)} \catB / P(\phi) \ar[r] \ar[d] \ar[dr, phantom, "\ulcorner", very near start, xshift=-2em] & \catB / P(\phi) \ar[d, "\mathrm{cod}"] \\ 
             & \catE / \beta \ar[r, "P/\beta"] & \catB / P(\beta) \\ 
         \end{tikzcd}
@@ -323,9 +323,11 @@ Evidently, if $\phi : \alpha \to \beta$ is cartesian, then there exists unique m
     \label{eq:cartesian_over_category}
 \end{equation}
 Intuitively, if $\phi$ is cartesian, then in order to determine the category $\catE/\phi$ over $\phi$, it is sufficient to specify $\catE / \beta \times_{\catB / P(\beta)} \catB / P(\phi)$.
-
+\begin{definition}
+    A \textit{fibered category over $\catB$} is a category $\catE$ associated to the domain of a functor, referred to as the \textit{fibration}, $P : \catE \to \catB$ with the property that for every morphism $f : a \to b$ of $\catB$ and object $\beta$ such that $P(\beta) = b$, there exists a cartesian arrow $\phi : \alpha \to \beta$ with $P(\phi) = f$.
+\end{definition}
 \begin{lemma}
-    A fibered category $P : \catE \to \catB$ is a faithful functor if and only if its fibers are thin.
+    A fibration $P : \catE \to \catB$ is a faithful functor if and only if its fibers are thin.
 \end{lemma}
 \begin{proof}
     Recall that if $P : \catE \to \catB$ is a faithful functor, then by definition every pair of parallel arrows $\phi, \psi : \alpha \to \beta$ in $\catE$ satisfies 
@@ -348,6 +350,18 @@ Intuitively, if $\phi$ is cartesian, then in order to determine the category $\c
     \end{equation}
     However, $P(\nu) = \id_{a} = P(\mu)$ and therefore $\mu$ and $\nu$ are parallel arrows in the fiber $\catE_{a}$ and therefore $\mu = \nu$ because $\catE_{a}$ is assumed thin. Therefore, $\psi = \zeta \circ \mu = \zeta \circ \nu = \phi$ and thus $P$ is a faithful functor.
 \end{proof}
+
+\begin{definition}
+    A \textit{cleavage} for a fibration $P : \catE \to \catB$ is an assignment to each morphism $f : a \to b$ of $\catB$ and object $\beta$ in $\catE_b$ (i.e. $P(\beta) = b$), a unique cartesian morphism $\phi$ such that $P(\phi) = f$.
+\end{definition}
+
+\begin{equation}
+    \begin{tikzcd}[column sep=large]
+        f^\ast \beta_1 \ar[r, "\kappa(f ; \beta_1)"] & \beta_1 & g^\ast \ar[l, "\kappa(g ; \beta_1)"'] \beta_1 \\
+        a \ar[r, "f"] \ar[u, mapsfrom] \ar[d, mapsfrom] & b \ar[u, mapsfrom] \ar[d, mapsfrom] & c \ar[l, "g"'] \ar[u, mapsfrom] \ar[d, mapsfrom] \\
+        f^\ast \beta_2 \ar[r, "\kappa(f ; \beta_2)"'] & \beta_2 & g^\ast \beta_2 \ar[l, "\kappa(g ; \beta_2)"]
+    \end{tikzcd}
+\end{equation}
 
 \section*{Categorical Definitions}
 
@@ -501,37 +515,6 @@ Using these left adjoint functors, it becomes possible to construct a natural tr
     \end{tikzpicture}.
 \]
 Although the natural transformation $\alpha$ is assumed to be a natural isomorphism, the natural transformation $\beta$ need not be; if $\beta$ happens to be a natural isomorphism, then we say that the original square satisfies the \textit{left} Beck-Chevalley condition\footnote{Are the left adjoints $F_L, H_L$ unique? If not, it might be better to say the original square satifies the left Beck-Chevalley condition with respect to $F_L, H_L$.}. The \textit{right} Beck-Chevalley condition is defined analogously with functors $F_R, H_R$ which are respectively right adjoints $F \dashv F_R$ and $H \dashv H_L$.
-
-\subsection{Cartesian Morphism}
-
-A morhpism $\phi : e' \to e$ in $\catE$ is \textit{cartesian} with respect to a functor $P : \catE \to \catB$ if for every $\psi : e'' \to e$ in $\catE$ and for every $s : P(e'') \to P(e)$ such that $ P(\phi) \circ_{\catB} g = P(\psi)$ (i.e. such that the second diagram commutes), there exists a unique morphism $\sigma : e'' \to e'$ in $\catE$ such that $\phi \circ_{\catE} \sigma = \psi$ (i.e. such that the first diagram commutes):\footnote{The definition and treatment of Cartesian morphisms found in the \textit{Reformulations} section of \url{https://ncatlab.org/nlab/show/Cartesian+morphism\#CartInOrdCatReformulation} is probably better suited here.}
-
-\[
-    \begin{tikzpicture}
-        \draw (-1,+1) node(tl){$e''$};
-        \draw (+1,+1) node(tr){$e'$};
-        \draw (+1,-1) node(br){$e$};
-
-        \draw[dashed, ->] (tl) to node[above]{$\exists!\sigma$} (tr);
-        \draw[->] (tl) to[out=-90, in=180] node[below left]{$\forall\psi$} (br);
-        \draw[->] (tr) to node[right]{$\phi$} (br);
-    \end{tikzpicture}
-    \qquad
-    \stackrel{P}{\mapsto}
-    \qquad
-    \begin{tikzpicture}
-        \draw (-1,+1) node(tl){$P(e'')$};
-        \draw (+1,+1) node(tr){$P(e')$};
-        \draw (+1,-1) node(br){$P(e)$};
-
-        \draw[->] (tl) to node[above]{$\forall g$} (tr);
-        \draw[->] (tl) to[out=-90, in=180] node[below left]{$P(\psi)$} (br);
-        \draw[->] (tr) to node[right]{$P(\phi)$} (br);
-    \end{tikzpicture}
-\]
-\subsection{Grothendieck Fibrations}
-
-A functor $P : \catE \to \catB$ is a \textit{Grothendieck fibration} if it satisfies the following ``lifting'' property that for every morphism $f : b \to P(e)$ of $\catB$ (i.e. if the codomain of $f$ is contained in the image of $P$), there exists a \textit{cartesian} morphism $\phi : e' \to e$ of $\catE$ in the fibered category $\catE_{P(e)}$ (i.e. $P(\phi) = f$).
 
 \subsection{The Equivalence of Puesdofunctors and Fibrations}
 
