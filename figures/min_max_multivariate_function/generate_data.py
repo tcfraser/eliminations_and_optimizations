@@ -2,7 +2,7 @@ import numpy as np
 
 def f(x,y):
     clamp = (1-x**2)*(1-y**2)
-    ang   = np.pi/8
+    ang   = np.pi/6
     xr,yr = np.cos(ang) * x - np.sin(ang) * y, np.sin(ang) * x + np.cos(ang) * y
     waves = np.sin(np.pi*xr)*np.sin(np.pi*yr)
     bump  = np.exp( - 0.2*( (xr-0.5)**2 + 2*(yr-0.5)**2 ) )
