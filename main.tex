@@ -106,60 +106,67 @@
 
 \author[1,2]{Thomas C. Fraser}
 \author[1]{Tobias Fritz}
-\affil[1]{Perimeter Institute for Theoretical Physics, Waterloo, Ontario, Canada, N2L 2Y5}
-\affil[2]{Dept. of Physics and Astronomy, University of Waterloo, Waterloo, Ontario, Canada, N2L 3G1}
+\affil[1]{\textit{Perimeter Institute for Theoretical Physics, Waterloo, Ontario, Canada, N2L 2Y5}}
+\affil[2]{\textit{Dept. of Physics and Astronomy, University of Waterloo, Waterloo, Ontario, Canada, N2L 3G1}}
 \date{\today}
-\title{On The Bifibrations Underlying Optimization and Elimination}
+\title{On the fibrations underlying optimization and elimination}
 \begin{document}
 
 \maketitle
+\begin{abstract}
+    \textit{As of July 25, 2019:} The theory of fibrations and fibered categories appears to be a natural place to discuss the theory of various optimization and elimination problems, including resolution in logic, linear and non-linear quantifier elimination, polytope projection, lattice optimization over various spaces, etc. These notes aim to investigate that claim and furthermore attempts to determine any and all structural similarities between the various cases.
+\end{abstract}
+\tableofcontents
 
-\section{Examples}
-A prototypical example wherein an adjoint triple 
-\[ f_{!}, \exists_{f} \dashv f^{\ast}, f^{-1} \dashv f^{!}, \forall_{f} \]
-arises is that of functions $f : X \to Y$ between sets $X$ and $Y$. The inverse image functor $f^{\ast} : \mathscr{P}Y \to \mathscr{P}X$ is defined on a subset $T \subseteq Y$
-\[ f^{\ast} ( T ) = \{ x \in X : f(x) \in T \}, \]
-and is functorial in the sense that if $T \subseteq T' \subseteq Y$ then $f^{\ast}(T) \subseteq f^{\ast}(T') \subseteq f^{\ast}(T)$. The adjoint functors $\exists_{f}, \forall_{f} : \mathscr{P}X \to \mathscr{P}Y$ are defined on $S \subseteq X$ as
-\begin{align*}
-    \exists_{f} (S) &= \{ y \in Y : \exists x \in f^{\ast}(y) : x \in S \} \\
-    \forall_{f} (S) &= \{ y \in Y : \forall x \in f^{\ast}(y) : x \in S \}
-\end{align*}
-form an adjoint triple in the sense that $\exists_{f} \dashv f^{\ast} \dashv \forall_{f}$:
-\begin{align*}
-    \exists_{f} \dashv f^{\ast} : \quad \exists_{f} (S) \subseteq T &\iff S \subseteq f^{\ast}(T) \\
-    f^{\ast} \dashv \forall_{f} : \quad f^{\ast}(T) \subseteq R &\iff T \subseteq \forall_{f}(R)
-\end{align*}
+\section{Potentially relevant examples}
+\subsection{The projections of convex polytopes}
 
+For our purposes, a \textit{polytope} is the intersection of a finite number of half-spaces of a vector space. Concretely a polytope $P$ is the solution to a system 
+\begin{equation}
+    P = \{ x \in V \mid A x \succeq b \}
+\end{equation}
+where $A x \succeq b$ is a finite system of $m$ linear inequalities constraining $x = (x_1, x_2, \ldots, x_n)$:
+\begin{align*}
+    a_{1,1} x_1 + a_{1,2} x_2 + \ldots + a_{1,n} x_n &\geq b_1 \\
+    a_{2,1} x_1 + a_{2,2} x_2 + \ldots + a_{2,n} x_n &\geq b_2 \\
+                                                     &\vdots   \\
+    a_{m,1} x_1 + a_{m,2} x_2 + \ldots + a_{m,n} x_n &\geq b_m \\
+\end{align*}
 \begin{center}
-    \begin{table}
-        \begin{tabular}{|c|c|c|c|c|c|c|}
-            \hline
-            Context & Fibration & Total $\catE$ & Base $\catE$ & Fibers & Covariant Functor & Contravariant Functor \\
-            \hline
-            \hline
-            Subset Projection & & & & & & \\
-            \hline
-            Linear Quantifier Elimination & & & & & & \\
-            \hline
-            Non-linear Quantifier Elimination & & & & & & \\
-            \hline
-            Real-valued Optimization & & & & & & \\
-            \hline
-            General Lattice Optimization & & & & & & \\
-            \hline
-            Convex Projection & & & & & & \\
-            \hline
-            Convex Optimization & & & & & & \\
-            \hline
-            Resolution & & & & & & \\
-            \hline
-            $\ldots$ and more & & & & & & \\
-            \hline
-        \end{tabular}
-    \end{table}
+\newcommand{\importpolyproj}[1]{
+\begin{tikzpicture}[
+        scale=0.6,
+        line join=round,
+        poly_vertex/.style = {circle,fill,blue,inner sep=0.75pt},
+        poly_edge/.style = {thick, blue},
+        poly_face/.style = {blue, opacity=0.15}
+    ]
+    \coordinate (O) at (0,0,0);
+    \coordinate (x1) at (5,0,0);
+    \coordinate (x2) at (0,5,0);
+    \coordinate (x3) at (0,0,5);
+    \draw[thick, ->] (O) -- (x1) node[right]{$x$};
+    \draw[thick, ->] (O) -- (x2) node[above]{$y$};
+    \draw[thick, ->] (O) -- (x3) node[left]{$z$};
+    #1
+\end{tikzpicture}
+}
+\importpolyproj{\input{figures/polytope_projection/dodecahedron_projection.tex}}
+\importpolyproj{\input{figures/polytope_projection/octahedron_projection.tex}}
+\importpolyproj{\input{figures/polytope_projection/tetrahedron_projection.tex}}
+% \importpolyproj{\input{figures/polytope_projection/metabidiminishedRhombicosidodecahedron_projection.tex}}
+% \importpolyproj{\input{figures/polytope_projection/rhombicTriacontahedron_projection.tex}}
 \end{center}
 
-\subsection{Subset Projection}
+\newcommand{\poly}{\mathbf{Poly}}
+\begin{equation}
+\begin{tikzcd}[column sep=0.5em]
+    & \poly_{Y} \ar[dd, "\pi_{1,!}", near end] & & \poly_{X\otimes Y} \ar[dd,"\pi_{X,!}"'] \ar[ll,"\pi_{Y,!}"] \\
+    \poly_{Y\otimes Z} \ar[dd,"\pi_{Z,!}"] \ar[ur,"\pi_{Y,!}"'{sloped,auto}] & & \poly_{X\otimes Y\otimes Z} \ar[ll,"\pi_{Y\otimes Z,!}"', crossing over, near start] \ar[ur,"\pi_{X\otimes Y,!}"{sloped,auto}] & \\
+    & \poly_{1} \ar[from=rr, "\pi_{1,!}"', near end] \ar[from=dl, "\pi_{1,!}"{sloped,auto}] & & \poly_{X} \\
+    \poly_{Z} & & \poly_{X\otimes Z} \ar[ll,"\pi_{Z,!}"'] \ar[ur,"\pi_{X,!}"{sloped,auto}] \ar[from=uu,"\pi_{X\otimes Z,!}", crossing over, near start] & \\
+\end{tikzcd}
+\end{equation}
 
 \begin{center}
 \begin{tikzpicture}[
@@ -207,6 +214,53 @@ form an adjoint triple in the sense that $\exists_{f} \dashv f^{\ast} \dashv \fo
     \draw[thick,decorate,decoration={brace,amplitude=2mm}] ([xshift=-1mm]x1B) -- ([xshift=-1mm]x3B);
 \end{tikzpicture}
 \end{center}
+
+\subsection{Subset Projection}
+A prototypical example wherein an adjoint triple 
+\[ f_{!}, \exists_{f} \dashv f^{\ast}, f^{-1} \dashv f^{!}, \forall_{f} \]
+arises is that of functions $f : X \to Y$ between sets $X$ and $Y$. The inverse image functor $f^{\ast} : \mathscr{P}Y \to \mathscr{P}X$ is defined on a subset $T \subseteq Y$
+\[ f^{\ast} ( T ) = \{ x \in X : f(x) \in T \}, \]
+and is functorial in the sense that if $T \subseteq T' \subseteq Y$ then $f^{\ast}(T) \subseteq f^{\ast}(T') \subseteq f^{\ast}(T)$. The adjoint functors $\exists_{f}, \forall_{f} : \mathscr{P}X \to \mathscr{P}Y$ are defined on $S \subseteq X$ as
+\begin{align*}
+    \exists_{f} (S) &= \{ y \in Y : \exists x \in f^{\ast}(y) : x \in S \} \\
+    \forall_{f} (S) &= \{ y \in Y : \forall x \in f^{\ast}(y) : x \in S \}
+\end{align*}
+form an adjoint triple in the sense that $\exists_{f} \dashv f^{\ast} \dashv \forall_{f}$:
+\begin{align*}
+    \exists_{f} \dashv f^{\ast} : \quad \exists_{f} (S) \subseteq T &\iff S \subseteq f^{\ast}(T) \\
+    f^{\ast} \dashv \forall_{f} : \quad f^{\ast}(T) \subseteq R &\iff T \subseteq \forall_{f}(R)
+\end{align*}
+
+\begin{center}
+    \begin{table}
+        \begin{tabular}{|c|c|c|c|c|c|c|}
+            \hline
+            Context & Fibration & Total $\catE$ & Base $\catE$ & Fibers & Covariant Functor & Contravariant Functor \\
+            \hline
+            \hline
+            Subset Projection & & & & & & \\
+            \hline
+            Linear Quantifier Elimination & & & & & & \\
+            \hline
+            Non-linear Quantifier Elimination & & & & & & \\
+            \hline
+            Real-valued Optimization & & & & & & \\
+            \hline
+            General Lattice Optimization & & & & & & \\
+            \hline
+            Convex Projection & & & & & & \\
+            \hline
+            Convex Optimization & & & & & & \\
+            \hline
+            Resolution & & & & & & \\
+            \hline
+            $\ldots$ and more & & & & & & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{center}
+
+\subsection{Subset Projection}
 
 \begin{center}
 \begin{tikzpicture}[
@@ -265,6 +319,7 @@ Consider a pair of sets $A$ and $B$ and a subset $S \subseteq A \times B$ of the
 \end{center}
 
 \clearpage
+
 \section{Categorical Notions}
 
 The following unordered list of categorical concepts are anticipated to be utilized:
@@ -277,6 +332,7 @@ The following unordered list of categorical concepts are anticipated to be utili
     \item Frobenius reciprocity (and functors of monoidal categories)
 \end{itemize}
 
+\subsection{Cartesian Arrows}
 \begin{definition}
     Let $P : \catE \to \catB$ be a functor between categories $\catE$ and $\catB$. An arrow $\phi : \alpha \to \beta$ of $\catE$ is \textit{cartesian} with respect to $P$ if for every arrow $\psi : \gamma \to \beta$ sharing a codomain with $\phi$, and for every arrow $g : P(\gamma) \to P(\alpha)$ in $\catB$ satisfying $g \circ P(\phi) = P(\psi)$, there exists a unique arrow $\theta : \gamma \to \alpha$ in $\catE$ satisfying $\phi \circ \theta = \psi$ and $P(\theta) = g$.
     \begin{equation}
@@ -322,6 +378,8 @@ Evidently, if $\phi : \alpha \to \beta$ is cartesian, then there exists unique m
     \label{eq:cartesian_over_category}
 \end{equation}
 Intuitively, if $\phi$ is cartesian, then in order to determine the category $\catE/\phi$ over $\phi$, it is sufficient to specify $\catE / \beta \times_{\catB / P(\beta)} \catB / P(\phi)$.
+
+\subsection{Fibrations, Fibered Categories, and Cleavages}
 \begin{definition}
     A \textit{fibered category over $\catB$} is a category $\catE$ associated to the domain of a functor, referred to as the \textit{fibration}, $P : \catE \to \catB$ with the property that for every morphism $f : a \to b$ of $\catB$ and object $\beta$ such that $P(\beta) = b$, there exists a cartesian arrow $\phi : \alpha \to \beta$ with $P(\phi) = f$.
 \end{definition}
@@ -353,7 +411,6 @@ Intuitively, if $\phi$ is cartesian, then in order to determine the category $\c
 \begin{definition}
     A \textit{cleavage} for a fibration $P : \catE \to \catB$ is an assignment to each morphism $f : a \to b$ of $\catB$ and object $\beta$ in $\catE_b$ (i.e. $P(\beta) = b$), a unique cartesian morphism $\phi$ such that $P(\phi) = f$.
 \end{definition}
-
 \begin{equation}
     \begin{tikzcd}[column sep=large]
         f^\ast \beta_1 \ar[r, "\kappa(f ; \beta_1)"] & \beta_1 & g^\ast \ar[l, "\kappa(g ; \beta_1)"'] \beta_1 \\
@@ -361,6 +418,25 @@ Intuitively, if $\phi$ is cartesian, then in order to determine the category $\c
         f^\ast \beta_2 \ar[r, "\kappa(f ; \beta_2)"'] & \beta_2 & g^\ast \beta_2 \ar[l, "\kappa(g ; \beta_2)"]
     \end{tikzcd}
 \end{equation}
+\begin{equation}
+    \begin{tikzcd}[
+            execute at end picture={
+                \fill[blue, opacity=0.1] (-7, -0.75) rectangle (+7, -1.5) node[above left, blue!50!black, opacity=1]{$\catB$};
+                \fill[red, opacity=0.1] (-8.5, +3.25) rectangle (+8.5, -0.25) node[above left, red!50!black, opacity=1]{$\catE$};
+                \fill[green, opacity=0.1] (-1.75, +2.25) rectangle (+1.75, +0.25) node[above left, green!50!black, opacity=1]{$\catE_b$};
+                \fill[green, opacity=0.1] (-7.75, +2.25) rectangle (-3.25, +0.25) node[above left, green!50!black, opacity=1]{$\catE_a$};
+                \fill[green, opacity=0.1] (+3.25, +2.25) rectangle (+7.75, +0.25) node[above left, green!50!black, opacity=1]{$\catE_c$};
+            }
+        ]
+        f^\ast\alpha \ar[rddd, mapsto] \ar[rr, "f^\ast\phi", dashed] \ar[rd, "f^\ast\psi", dashed] & & f^\ast\beta \ar[lddd, mapsto] \ar[rrrr, "\kappa_f(\beta)", bend left] & &
+        \alpha \ar[rddd, mapsto] \ar[rr, "\phi"] \ar[rd, "\psi"] \ar[from=llll, "\kappa_f(\beta)", bend left, crossing over] \ar[from=rrrr, "\kappa_g(\beta)"', bend right, crossing over] & & \beta \ar[lddd, mapsto] \ar[from=rrrr, "\kappa_g(\beta)"', bend right, crossing over] & &
+        g^\ast\alpha \ar[rddd, mapsto] \ar[rr, "g^\ast\phi", dashed] \ar[rd, "g^\ast\psi", dashed] & & g^\ast\beta \ar[lddd, mapsto] \\
+        & f^\ast\gamma \ar[dd, mapsto] \ar[ru, "f^\ast\chi", dashed] \ar[rrrr, "\kappa_f(\gamma)", bend right=10, crossing over] & & & & \gamma \ar[ru, "\chi"] \ar[dd, mapsto] & & & & g^\ast\gamma \ar[dd, mapsto] \ar[ru, "g^\ast\chi", dashed] \ar[llll, "\kappa_g(\gamma)"', bend left=10, crossing over] & \\
+        & & & & & & & & & & \\
+        & a \ar[rrrr,"f"] & & & & b & & & & c \ar[llll, "g"'] & \\
+    \end{tikzcd}
+\end{equation}
+
 
 \section*{Categorical Definitions}
 
@@ -759,6 +835,7 @@ This section is temporary and reserved for recording comments toward various ref
     \item \citeauthor{koudenburg2018categorical}~\cite{koudenburg2018categorical}
     \item \citeauthor{brown2009algebraic}~\cite{brown2009algebraic}
     \item \citeauthor{lurie2009higher}~\cite{lurie2009higher}
+    \item \citeauthor{shulman2008framed}~\cite{shulman2008framed}
 \end{itemize}
 
 \printbibliography
