@@ -88,6 +88,7 @@
 \DeclareMathOperator{\Hom}{Hom}
 \DeclareMathOperator{\cod}{cod}
 \DeclareMathOperator{\dom}{dom}
+\newcommand{\poly}{\mathbf{Poly}} % category of polyhedra
 
 \newcommand{\catA}{\mathcal{A}}
 \newcommand{\catB}{\mathcal{B}}
@@ -118,20 +119,26 @@
 \end{abstract}
 \tableofcontents
 
+\clearpage
 \section{Potentially relevant examples}
-\subsection{The projections of convex polytopes}
+\subsection{The category of convex polyhedra and affine maps}
 
-For our purposes, a \textit{polytope} is the intersection of a finite number of half-spaces of a vector space. Concretely a polytope $P$ is the solution to a system 
+One of the primary motiviating examples for this project is the theory of \textit{convex polyhedra} and associated maps which implement their projections. Following \citeauthor{boyd2004convex}~\cite{boyd2004convex}, a \textit{polyhedron}\footnote{The term polytope will be reserved for the context of \textit{bounded polyhedron}. Note that the opposite convention is sometimes used by other authors as pointed out by \cite{boyd2004convex}.}\footnote{Alternative and sometimes inequivalent definitions for ``polyhedra'' do exist; oftentimes, these alternative definitions accomodate more general notions of polyhedra, such as non-convex polyhedra. Understanding the relationship between these various definitions, and the proposal of new ones, is a mathematical endeavour which dates back to antiquity and continues today  \cite{grunbaum2003your, lakatos2015proofs}.} $P$ is the intersection of a finite number of halfspaces of some ambient vector space $V$. Equivalently, taking $n = \dim V$, $P$ can be regarded as the solution space of a finite system of $m$ linear inequalities constraining $n$ variables $x = (x_1, x_2, \ldots, x_n)$:
+\begin{align*}
+    a_{1,1} x_1 + a_{1,2} x_2 + \ldots + a_{1,n} x_n &\geq b_1, \\
+    a_{2,1} x_1 + a_{2,2} x_2 + \ldots + a_{2,n} x_n &\geq b_2, \\
+                                                     &\vdots  , \\
+    a_{m,1} x_1 + a_{m,2} x_2 + \ldots + a_{m,n} x_n &\geq b_m.
+\end{align*}
+Written compactly,
 \begin{equation}
     P = \{ x \in V \mid A x \succeq b \}
-\end{equation}
-where $A x \succeq b$ is a finite system of $m$ linear inequalities constraining $x = (x_1, x_2, \ldots, x_n)$:
-\begin{align*}
-    a_{1,1} x_1 + a_{1,2} x_2 + \ldots + a_{1,n} x_n &\geq b_1 \\
-    a_{2,1} x_1 + a_{2,2} x_2 + \ldots + a_{2,n} x_n &\geq b_2 \\
-                                                     &\vdots   \\
-    a_{m,1} x_1 + a_{m,2} x_2 + \ldots + a_{m,n} x_n &\geq b_m \\
-\end{align*}
+\end{equation} 
+where the coefficients $a_{i,j}$ form a $m \times n$ matrix $A$ and the constants $b_{i}$ form a vector $b$.
+
+\begin{definition}
+    The category $\poly$ consists of polyhedra as objects and affine maps between them.
+\end{definition}
 \begin{center}
 \newcommand{\importpolyproj}[1]{
 \begin{tikzpicture}[
@@ -158,7 +165,6 @@ where $A x \succeq b$ is a finite system of $m$ linear inequalities constraining
 % \importpolyproj{\input{figures/polytope_projection/rhombicTriacontahedron_projection.tex}}
 \end{center}
 
-\newcommand{\poly}{\mathbf{Poly}}
 \begin{equation}
 \begin{tikzcd}[column sep=0.5em]
     & \poly_{Y} \ar[dd, "\pi_{1,!}", near end] & & \poly_{X\otimes Y} \ar[dd,"\pi_{X,!}"'] \ar[ll,"\pi_{Y,!}"] \\
@@ -420,20 +426,69 @@ Intuitively, if $\phi$ is cartesian, then in order to determine the category $\c
 \end{equation}
 \begin{equation}
     \begin{tikzcd}[
+            column sep=2em,
             execute at end picture={
                 \fill[blue, opacity=0.1] (-7, -0.75) rectangle (+7, -1.5) node[above left, blue!50!black, opacity=1]{$\catB$};
-                \fill[red, opacity=0.1] (-8.5, +3.25) rectangle (+8.5, -0.25) node[above left, red!50!black, opacity=1]{$\catE$};
-                \fill[green, opacity=0.1] (-1.75, +2.25) rectangle (+1.75, +0.25) node[above left, green!50!black, opacity=1]{$\catE_b$};
-                \fill[green, opacity=0.1] (-7.75, +2.25) rectangle (-3.25, +0.25) node[above left, green!50!black, opacity=1]{$\catE_a$};
-                \fill[green, opacity=0.1] (+3.25, +2.25) rectangle (+7.75, +0.25) node[above left, green!50!black, opacity=1]{$\catE_c$};
+                \fill[red, opacity=0.1] (-7, +3.25) rectangle (+7, -0.25) node[above left, red!50!black, opacity=1]{$\catE$};
+                \fill[green, opacity=0.1] (-1.9, +2.25) rectangle (+1.9, +0.25) node[above left, green!50!black, opacity=1]{$\catE_b$};
+                \fill[green, opacity=0.1] (-6.9, +2.25) rectangle (-2.75, +0.25) node[above left, green!50!black, opacity=1]{$\catE_a$};
+                \fill[green, opacity=0.1] (+2.75, +2.25) rectangle (+6.9, +0.25) node[above left, green!50!black, opacity=1]{$\catE_c$};
             }
         ]
-        f^\ast\alpha \ar[rddd, mapsto] \ar[rr, "f^\ast\phi", dashed] \ar[rd, "f^\ast\psi", dashed] & & f^\ast\beta \ar[lddd, mapsto] \ar[rrrr, "\kappa_f(\beta)", bend left] & &
-        \alpha \ar[rddd, mapsto] \ar[rr, "\phi"] \ar[rd, "\psi"] \ar[from=llll, "\kappa_f(\beta)", bend left, crossing over] \ar[from=rrrr, "\kappa_g(\beta)"', bend right, crossing over] & & \beta \ar[lddd, mapsto] \ar[from=rrrr, "\kappa_g(\beta)"', bend right, crossing over] & &
-        g^\ast\alpha \ar[rddd, mapsto] \ar[rr, "g^\ast\phi", dashed] \ar[rd, "g^\ast\psi", dashed] & & g^\ast\beta \ar[lddd, mapsto] \\
-        & f^\ast\gamma \ar[dd, mapsto] \ar[ru, "f^\ast\chi", dashed] \ar[rrrr, "\kappa_f(\gamma)", bend right=10, crossing over] & & & & \gamma \ar[ru, "\chi"] \ar[dd, mapsto] & & & & g^\ast\gamma \ar[dd, mapsto] \ar[ru, "g^\ast\chi", dashed] \ar[llll, "\kappa_g(\gamma)"', bend left=10, crossing over] & \\
-        & & & & & & & & & & \\
-        & a \ar[rrrr,"f"] & & & & b & & & & c \ar[llll, "g"'] & \\
+        f^\ast\alpha 
+        \ar[rddd, mapsto, bend right] 
+        \ar[rr, "f^\ast(\phi\circ\psi)"', "(f^\ast\phi) \circ (f^\ast\psi)", dashed] 
+        \ar[rd, "f^\ast\psi"', dashed] 
+        & & 
+        f^\ast\beta 
+        \ar[lddd, mapsto, bend left] 
+        \ar[rrrr, "\kappa_f(\beta)", bend left]
+        & &
+        \alpha
+        \ar[rddd, mapsto, bend right]
+        \ar[rr, "\phi\circ \psi"]
+        \ar[rd, "\psi"']
+        \ar[from=llll, "\kappa_f(\beta)", bend left, crossing over]
+        \ar[from=rrrr, "\kappa_g(\beta)"', bend right, crossing over]
+        & & 
+        \beta 
+        \ar[lddd, mapsto, bend left] 
+        \ar[from=rrrr, "\kappa_g(\beta)"', bend right, crossing over]
+        & &
+        g^\ast\alpha 
+        \ar[rddd, mapsto, bend right] 
+        \ar[rr, "g^\ast(\phi\circ\psi)"', "(g^\ast\phi) \circ (g^\ast\psi)", dashed] 
+        \ar[rd, "g^\ast\psi"', dashed] 
+        & & 
+        g^\ast\beta 
+        \ar[lddd, mapsto, bend left]
+        \\
+        & 
+        f^\ast\gamma 
+        \ar[dd, mapsto] 
+        \ar[ru, "f^\ast\phi"', dashed] 
+        \ar[rrrr, "\kappa_f(\gamma)", bend right=10, crossing over] 
+        & & & & 
+        \gamma 
+        \ar[ru, "\phi"'] 
+        \ar[dd, mapsto] 
+        & & & & 
+        g^\ast\gamma 
+        \ar[dd, mapsto] 
+        \ar[ru, "g^\ast\phi"', dashed] 
+        \ar[llll, "\kappa_g(\gamma)"', bend left=10, crossing over] 
+        & 
+        \\
+        & & & & & & & & & & 
+        \\
+        & 
+        a 
+        \ar[rrrr,"f"] 
+        & & & & b & & & & 
+        c 
+        \ar[llll, "g"'] 
+        & 
+        \\
     \end{tikzcd}
 \end{equation}
 
@@ -836,6 +891,9 @@ This section is temporary and reserved for recording comments toward various ref
     \item \citeauthor{brown2009algebraic}~\cite{brown2009algebraic}
     \item \citeauthor{lurie2009higher}~\cite{lurie2009higher}
     \item \citeauthor{shulman2008framed}~\cite{shulman2008framed}
+    \item \citeauthor{boyd2004convex}~\cite{boyd2004convex}
+    \item \citeauthor{bogart2013hom}~\cite{bogart2013hom}
+    \item \citeauthor{gubeladze2016affine}~\cite{gubeladze2016affine}
 \end{itemize}
 
 \printbibliography
