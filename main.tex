@@ -22,6 +22,16 @@
 \usepackage{tabularx}
 \usepackage{authblk} % For affiliations
 
+% Multiple footnotes https://tex.stackexchange.com/questions/40072/incompatibility-between-footmisc-option-multiple-and-hyperref/62091#62091
+\let\oldFootnote\footnote
+\newcommand\nextToken\relax
+
+\renewcommand\footnote[1]{%
+    \oldFootnote{#1}\futurelet\nextToken\isFootnote}
+
+\newcommand\isFootnote{%
+    \ifx\footnote\nextToken\textsuperscript{,}\fi}
+
 % amsthm
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{corollary}{Corollary}[theorem]
@@ -88,7 +98,11 @@
 \DeclareMathOperator{\Hom}{Hom}
 \DeclareMathOperator{\cod}{cod}
 \DeclareMathOperator{\dom}{dom}
-\newcommand{\poly}{\mathbf{Poly}} % category of polyhedra
+\newcommand{\poly}{\mathsf{Poly}} % category of polyhedra and maps between them
+\newcommand{\set}{\mathsf{Set}} % category of sets and functions between them
+\newcommand{\cat}{\mathsf{Cat}} % 2-category of categories and functors between them and natural transformations between the functors
+\newcommand{\sub}{\mathsf{Sub}} % the poset of subobjects and inclusions between them 
+\newcommand{\pow}{\mathsf{P}} % the powerset poset
 
 \newcommand{\catA}{\mathcal{A}}
 \newcommand{\catB}{\mathcal{B}}
@@ -110,7 +124,7 @@
 \affil[1]{\textit{Perimeter Institute for Theoretical Physics, Waterloo, Ontario, Canada, N2L 2Y5}}
 \affil[2]{\textit{Dept. of Physics and Astronomy, University of Waterloo, Waterloo, Ontario, Canada, N2L 3G1}}
 \date{\today}
-\title{On the fibrations underlying optimization and elimination}
+\title{On the Fibrations Underlying Optimization and Elimination}
 \begin{document}
 
 \maketitle
@@ -120,7 +134,75 @@
 \tableofcontents
 
 \clearpage
-\section{Potentially relevant examples}
+\section{Potentially Relevant Examples}
+
+\subsection{The Subobject Fibration}
+
+Given any category $\catB$, and an object $X$ of $\catB$, a \textit{subobject} of $X$ is an isomorphism class of monomorphisms $f : Y \hookrightarrow X$; two monomorphisms $f : Y \hookrightarrow X, g : Z \hookrightarrow
+X$ with shared codomain $X$ are isomorphic if there exists an isomorphism $h : Y \xrightarrow{\sim} Z$ such that $f = g \circ h$. The individual monomorphisms of a subobject class can be equipped with a preorder relation $( f : Y \hookrightarrow Z ) \leq ( g : Z \hookrightarrow X )$ if there exists $k : Y \rightarrow Z$ such that $f = g \circ k$:
+\begin{equation}
+    \begin{tikzcd}[column sep=small]
+        Y \ar[rd, hook, "f"'] \ar[rr, "k"] &   & Z \ar[ld, hook', "g"]\\
+          & X & 
+    \end{tikzcd}
+\end{equation}
+Note that if such a $k : Y \to Z$ exists, then it is unique because it $g$ is a monomorpism; if $k' : Y \rightarrow Z$ satisfied $f = g \circ k'$ as well, then $g \circ k = g \circ k'$ which implies $k = k'$. Moreover, this preorder relation on the individual monomorphisms extends to a poset $\sub_{\catB}(X)$ between the subobjects. For example, if $\catB$ is the category $\set$, the subobjects of $X$ are subsets of $X$ and thus $\sub_{\set}(X) \cong \pow(X)$. Even more concretely, if $X$ is the set $\mathbb{R}^2$, an exemplary diagram of $\sub_{\set}(\mathbb{R}^2)$ is
+\begin{center}
+    \begin{tikzcd}[column sep=small]
+        & A & \\
+        B \ar[ur, hook', "\subseteq"] & & C \ar[ul, hook, "\subseteq"'] \\
+        & D \ar[ul, hook', "\subseteq"] \ar[ur, hook, "\subseteq"'] \ar[uu, hook, "\subseteq"] & \\
+    \end{tikzcd}
+    \hspace{3em}
+    \begin{tikzpicture}[
+            set border/.style={draw=#1!80!black},
+            set region/.style={set border=#1, fill=#1!50!white, fill opacity=0.2},
+            set label/.style={draw=#1!80!black}
+        ]
+        \draw[thick, set region=blue, rounded corners] (-2,-1.4) rectangle (+2, +1.4) {};
+
+        \begin{scope}[shift={(-0.5,0)}] 
+            \coordinate (y1) at (  +0:1.3);
+            \coordinate (y2) at ( +45:1.1);
+            \coordinate (y3) at ( +90:0.6);
+            \coordinate (y4) at (+135:1.1);
+            \coordinate (y5) at (+180:1.3);
+            \coordinate (y6) at (+270:1.1);
+            \draw [thick, set region=red] plot [smooth cycle, tension=0.8] coordinates {(y1) (y2) (y3) (y4) (y5) (y6)};
+        \end{scope}
+        \begin{scope}[shift={(+0.5,0)}] 
+            \coordinate (z1) at ( +45:1.3);
+            \coordinate (z2) at (+135:1.3);
+            \coordinate (z3) at (+225:1.3);
+            \coordinate (z4) at (+270:1.1);
+            \coordinate (z5) at (+315:0.7);
+            \coordinate (z6) at (+360:1.3);
+            \draw [thick, set region=green] plot [smooth cycle, tension=0.9] coordinates {(z1) (z2) (z3) (z4) (z5) (z6)};
+        \end{scope}
+        \draw [thick, set border=red] plot [smooth cycle, tension=0.8] coordinates {(y1) (y2) (y3) (y4) (y5) (y6)};
+        \coordinate (w1) at (  +0:0.5);
+        \coordinate (w2) at ( +90:0.5);
+        \coordinate (w3) at (+180:0.5);
+        \coordinate (w4) at (+270:0.5);
+        \draw [thick, set region=yellow] plot [smooth cycle, tension=0.6] coordinates {(w1) (w2) (w3) (w4)};
+
+        \node at (+0,+0) {\color{yellow!50!black}$D$};
+        \node at (+1.3,+0.5) {\color{green!60!black}$C$};
+        \node at (-1.3,+0) {\color{red!60!black}$B$};
+        \node at (+1.5,-0.9) {\color{blue!30!black}$A$};
+    \end{tikzpicture}
+\end{center}
+If the category $\catB$ has pullbacks, the posetal categories $\sub_{\catB}(X)$ for varying objects $X$ of $\catB$ can be ``stitched together'' to form an enveloping category denoted $\sub(\catB)$. The objects of $\sub(\catB)$ are the objects of $\sub_{\catB}(X)$ for various $X$. The morphisms of $\sub(\catB)$ are defined using the morphisms of $\catB$. Given a equivalence class of monomorphisms $B = \{b_i : Z_i \hookrightarrow X \}_{i \in \mathcal I} \in \sub_{\catB}(X)$ with with shared codomain $X$, and morphism $f : Y \to X$ (not necessarily a monomorphism) with codmain $X$, the pullbacks $f^\ast b_i$ of $b_i$ along $f$ for each $i \in \mathcal I$ constitute an equivalence class of monomorphisms $f^{\ast}B \coloneqq \{f^{\ast} b_i : Y \times_{X} Z_i \hookrightarrow Y \}_{i \in \mathcal I} \in \sub_{\catB}(Y)$:\footnote{Evidently, this relies on the fact that pullbacks perserve monomorphisms; i.e. $b : Z \hookrightarrow X$ is a monomorphism, then the pullback $f^\ast b : Y \times_{X} Z \hookrightarrow Y$ is also.}\footnote{The isomoprhisms connecting the monomorphisms of $f^\ast B$ are also given by pullback of the isomorphisms connecting the monomorphisms of $B$.}
+\begin{equation}
+    \begin{tikzcd}
+        Y \times_{X} Z_i \ar[dr, phantom, "\lrcorner", very near start, xshift=-2mm] \ar[r, "b_i^\ast f"] \ar[d, hook, "f^\ast b_i"'] & Z_i \ar[d, hook, "b_i"] \\
+        Y \ar[r, "f"] & X
+    \end{tikzcd}
+\end{equation}
+To every morphism $f : Y \to X$ of $\catB$, and object $B \in \sub_{\catB}(X)$, denote $\kappa_{f}(B) : f^\ast B \to B$ where $f^\ast B \in \sub_{\catB}(Y)$. Finally, a morphism of $\sub(\catB)$ between $A \in \sub_\catB(Y)$ and $B \in \sub_\catB(X)$ is the formal sequence \begin{tikzcd}[cramped] A \ar[r, "\leq"] &  f^{\ast}(B) \ar[r, "\kappa_f(B)"] & B \end{tikzcd}. The projection functor $P_{\catB} : \sub(\catB) \to \catB$ defines the \textit{subobject fibration}\footnote{Note that while the fibres $\sub_{\catB}(X)$ are thin, the total category $\sub(\catB)$ is not necessarily thin.}.
+
+\textcolor{red!50!black}{[TODO: figure out the relationship between a subobject fibration and the codomain fibration via the notion of \href{https://math.stackexchange.com/questions/2171645/how-can-the-subobject-fibration-be-obtained-from-the-codomain-fibration/2173108}{subterminal objects}.]}
+
 \subsection{The category of convex polyhedra and affine maps}
 
 One of the primary motiviating examples for this project is the theory of \textit{convex polyhedra} and associated maps which implement their projections. Following \citeauthor{boyd2004convex}~\cite{boyd2004convex}, a \textit{polyhedron}\footnote{The term polytope will be reserved for the context of \textit{bounded polyhedron}. Note that the opposite convention is sometimes used by other authors as pointed out by \cite{boyd2004convex}.}\footnote{Alternative and sometimes inequivalent definitions for ``polyhedra'' do exist; oftentimes, these alternative definitions accomodate more general notions of polyhedra, such as non-convex polyhedra. Understanding the relationship between these various definitions, and the proposal of new ones, is a mathematical endeavour which dates back to antiquity and continues today  \cite{grunbaum2003your, lakatos2015proofs}.} $P$ is the intersection of a finite number of halfspaces of some ambient vector space $V$. Equivalently, taking $n = \dim V$, $P$ can be regarded as the solution space of a finite system of $m$ linear inequalities constraining $n$ variables $x = (x_1, x_2, \ldots, x_n)$:
@@ -237,36 +319,35 @@ form an adjoint triple in the sense that $\exists_{f} \dashv f^{\ast} \dashv \fo
     f^{\ast} \dashv \forall_{f} : \quad f^{\ast}(T) \subseteq R &\iff T \subseteq \forall_{f}(R)
 \end{align*}
 
-\begin{center}
-    \begin{table}
-        \begin{tabular}{|c|c|c|c|c|c|c|}
-            \hline
-            Context & Fibration & Total $\catE$ & Base $\catE$ & Fibers & Covariant Functor & Contravariant Functor \\
-            \hline
-            \hline
-            Subset Projection & & & & & & \\
-            \hline
-            Linear Quantifier Elimination & & & & & & \\
-            \hline
-            Non-linear Quantifier Elimination & & & & & & \\
-            \hline
-            Real-valued Optimization & & & & & & \\
-            \hline
-            General Lattice Optimization & & & & & & \\
-            \hline
-            Convex Projection & & & & & & \\
-            \hline
-            Convex Optimization & & & & & & \\
-            \hline
-            Resolution & & & & & & \\
-            \hline
-            $\ldots$ and more & & & & & & \\
-            \hline
-        \end{tabular}
-    \end{table}
-\end{center}
 
-\subsection{Subset Projection}
+% \begin{center}
+%     \begin{table}
+%         \begin{tabular}{|c|c|c|c|c|c|c|}
+%             \hline
+%             Context & Fibration & Total $\catE$ & Base $\catE$ & Fibers & Covariant Functor & Contravariant Functor \\
+%             \hline
+%             \hline
+%             Subset Projection & & & & & & \\
+%             \hline
+%             Linear Quantifier Elimination & & & & & & \\
+%             \hline
+%             Non-linear Quantifier Elimination & & & & & & \\
+%             \hline
+%             Real-valued Optimization & & & & & & \\
+%             \hline
+%             General Lattice Optimization & & & & & & \\
+%             \hline
+%             Convex Projection & & & & & & \\
+%             \hline
+%             Convex Optimization & & & & & & \\
+%             \hline
+%             Resolution & & & & & & \\
+%             \hline
+%             $\ldots$ and more & & & & & & \\
+%             \hline
+%         \end{tabular}
+%     \end{table}
+% \end{center}
 
 \begin{center}
 \begin{tikzpicture}[
@@ -320,6 +401,7 @@ Consider a pair of sets $A$ and $B$ and a subset $S \subseteq A \times B$ of the
     S \subseteq p^{\ast} ( X ) \Longleftrightarrow \exists_p ( S ) \subseteq X
 \end{equation}
 
+\subsection{Optimization of real-valued functions}
 \begin{center}
     \includegraphics[]{figures/min_max_multivariate_function/figure.pdf}
 \end{center}
@@ -340,7 +422,7 @@ The following unordered list of categorical concepts are anticipated to be utili
 
 \subsection{Cartesian Arrows}
 \begin{definition}
-    Let $P : \catE \to \catB$ be a functor between categories $\catE$ and $\catB$. An arrow $\phi : \alpha \to \beta$ of $\catE$ is \textit{cartesian} with respect to $P$ if for every arrow $\psi : \gamma \to \beta$ sharing a codomain with $\phi$, and for every arrow $g : P(\gamma) \to P(\alpha)$ in $\catB$ satisfying $g \circ P(\phi) = P(\psi)$, there exists a unique arrow $\theta : \gamma \to \alpha$ in $\catE$ satisfying $\phi \circ \theta = \psi$ and $P(\theta) = g$.
+    Let $P : \catE \to \catB$ be a functor between categories $\catE$ and $\catB$. An arrow $\phi : \alpha \to \beta$ of $\catE$ is \textit{cartesian} with respect to $P$ (sometimes \textit{$P$-cartesian}) if for every arrow $\psi : \gamma \to \beta$ sharing a codomain with $\phi$, and for every arrow $g : P(\gamma) \to P(\alpha)$ in $\catB$ satisfying $g \circ P(\phi) = P(\psi)$, there exists a unique arrow $\theta : \gamma \to \alpha$ in $\catE$ satisfying $\phi \circ \theta = \psi$ and $P(\theta) = g$.
     \begin{equation}
         \begin{tikzcd}[row sep=small]
             \gamma \arrow[rd, dashed, "\exists!\theta"'] \arrow[rrd, bend left, "\forall\psi"] \arrow[dd, mapsto] & & \\
@@ -360,7 +442,7 @@ The following unordered list of categorical concepts are anticipated to be utili
     \begin{equation}
         \begin{tikzcd}
             \catE / \phi \ar[drr, bend left=20, "P/\phi"] \ar[ddr, bend right=40, "\mathrm{cod}"] \ar[dr, dashed, "\cong", leftrightarrow] & & \\ 
-            & \catE / \beta \times_{\catB / P(\beta)} \catB / P(\phi) \ar[r] \ar[d] \ar[dr, phantom, "\ulcorner", very near start, xshift=-2em] & \catB / P(\phi) \ar[d, "\mathrm{cod}"] \\ 
+            & \catE / \beta \times_{\catB / P(\beta)} \catB / P(\phi) \ar[r] \ar[d] \ar[dr, phantom, "\lrcorner", very near start, xshift=-2em] & \catB / P(\phi) \ar[d, "\mathrm{cod}"] \\ 
             & \catE / \beta \ar[r, "P/\beta"] & \catB / P(\beta) \\ 
         \end{tikzcd}
     \end{equation}
@@ -415,15 +497,9 @@ Intuitively, if $\phi$ is cartesian, then in order to determine the category $\c
 \end{proof}
 
 \begin{definition}
-    A \textit{cleavage} for a fibration $P : \catE \to \catB$ is an assignment to each morphism $f : a \to b$ of $\catB$ and object $\beta$ in $\catE_b$ (i.e. $P(\beta) = b$), a unique cartesian morphism $\phi$ such that $P(\phi) = f$.
+    A \textit{cleavage} for a fibration $P : \catE \to \catB$ is an assignment to each morphism $f : a \to b$ of $\catB$ and object $\beta$ in $\catE_b$ (i.e. $P(\beta) = b$), a unique cartesian morphism $\kappa_{f}(B)$ of $\catE$ such that $P(\kappa_{f}(B)) = f$.
 \end{definition}
-\begin{equation}
-    \begin{tikzcd}[column sep=large]
-        f^\ast \beta_1 \ar[r, "\kappa(f ; \beta_1)"] & \beta_1 & g^\ast \ar[l, "\kappa(g ; \beta_1)"'] \beta_1 \\
-        a \ar[r, "f"] \ar[u, mapsfrom] \ar[d, mapsfrom] & b \ar[u, mapsfrom] \ar[d, mapsfrom] & c \ar[l, "g"'] \ar[u, mapsfrom] \ar[d, mapsfrom] \\
-        f^\ast \beta_2 \ar[r, "\kappa(f ; \beta_2)"'] & \beta_2 & g^\ast \beta_2 \ar[l, "\kappa(g ; \beta_2)"]
-    \end{tikzcd}
-\end{equation}
+Given a cleavage for a fibration, the cartesianness of morphisms within a cleavage permits one to establish functors between the fibers of the fibration. This concept is visualized in the following figure:
 \begin{equation}
     \begin{tikzcd}[
             column sep=2em,
@@ -448,8 +524,8 @@ Intuitively, if $\phi$ is cartesian, then in order to determine the category $\c
         \ar[rddd, mapsto, bend right]
         \ar[rr, "\phi\circ \psi"]
         \ar[rd, "\psi"']
-        \ar[from=llll, "\kappa_f(\beta)", bend left, crossing over]
-        \ar[from=rrrr, "\kappa_g(\beta)"', bend right, crossing over]
+        \ar[from=llll, "\kappa_f(\alpha)", bend left, crossing over]
+        \ar[from=rrrr, "\kappa_g(\alpha)"', bend right, crossing over]
         & & 
         \beta 
         \ar[lddd, mapsto, bend left] 
@@ -492,11 +568,18 @@ Intuitively, if $\phi$ is cartesian, then in order to determine the category $\c
     \end{tikzcd}
 \end{equation}
 
+\subsection{Pseudo-Functors, Splitting Cleavages}
+
+Pages 47-48 of \cite{vistoli2004notes} explicate the notions of pseudo-functors and their equivalence to fibrations with cleavages. Morover if the cleavage is splitting, the induced pseudo-functor is in fact a functor.
+
+\subsection{Nearby Fibrations: Opfibrations and $\ast$-fibrations}
+
+Given a functor $P : \catE \to \catB$, it can be considered as a fibration in many different ways. For example, if $P^{\opcat} : \catE^{\opcat} \to \catB^{\opcat}$ is a fibration, then $P$ is said to be an \textit{opfibration}.
 
 \section*{Categorical Definitions}
 
 \subsection{Hom-Functors}
-For a locally small category $\catC$, the hom-functor of $\catC$ is a functor $\Hom_{\catC} : \catC^{\opcat} \times \catC \to \mathbf{Set}$ constructed in the following manner. Given objects $a,b,c,\ldots \in \catC_0$ of $\catC$, the hom-functor $\Hom_{\catC}$ maps a pair of objects $(a,b) \in (\catC^\opcat \times \catC)_0 = \catC_0 \times \catC_0 = \catC_0^2$ into the set\footnote{The collection of morphisms of type $a \to b$ forms a set because $\catC$ is locally small.} of morphisms $\catC_1$ of $\catC$ with source $a$ and target $b$. Therefore, $\Hom_{\catC}(a,b)$ is the set of morphisms in $\catC$ of type $a \to b$. Given morphisms $g^{\opcat} \in \Hom_{\catC^{\opcat}}(a,c)$ and $h \in \Hom_{\catC}(b,d)$, the hom-functor $\Hom_{\catC}$ constructs a function
+For a locally small category $\catC$, the hom-functor of $\catC$ is a functor $\Hom_{\catC} : \catC^{\opcat} \times \catC \to \set$ constructed in the following manner. Given objects $a,b,c,\ldots \in \catC_0$ of $\catC$, the hom-functor $\Hom_{\catC}$ maps a pair of objects $(a,b) \in (\catC^\opcat \times \catC)_0 = \catC_0 \times \catC_0 = \catC_0^2$ into the set\footnote{The collection of morphisms of type $a \to b$ forms a set because $\catC$ is locally small.} of morphisms $\catC_1$ of $\catC$ with source $a$ and target $b$. Therefore, $\Hom_{\catC}(a,b)$ is the set of morphisms in $\catC$ of type $a \to b$. Given morphisms $g^{\opcat} \in \Hom_{\catC^{\opcat}}(a,c)$ and $h \in \Hom_{\catC}(b,d)$, the hom-functor $\Hom_{\catC}$ constructs a function
 \[ \Hom_{\catC}(g^{\opcat}, h) : \Hom_{\catC}(a,b) \to \Hom_{\catC}(c,d) \]
 which takes a morphism $f : a \to b \in \Hom_{\catC}(a,b)$ and produces the morphism $h \circ f \circ g : c \to d \in \Hom_{\catC}(c,d)$. Graphically,
 \[
@@ -531,16 +614,16 @@ Given two categories $\mathscr{C}$ and $\mathscr{D}$, a pair of functors $L : \m
         \draw (1,0) node[rotate=-90]{$\dashv$};
     \end{tikzpicture}
 \]
-if there exists a natural isomorphism $\alpha$ between the following pair of hom-functors of type $\mathscr C^{\opcat} \times \mathscr D \to \mathbf{Set}$:
+if there exists a natural isomorphism $\alpha$ between the following pair of hom-functors of type $\mathscr C^{\opcat} \times \mathscr D \to \set$:
 \[ \Hom_{\mathscr D}(L^{\opcat}(-), -) \stackrel{\alpha}{\simeq} \Hom_{\mathscr C}(-, R(-)) \]
-This relationship can be depicted graphically as $2$-cell (and its inverse) in $\mathbf{Cat}$,
+This relationship can be depicted graphically as $2$-cell (and its inverse) in $\cat$,
 \[
     \begin{tikzpicture}
         \draw (0,4) node(tl){$\catC^\opcat \times \catD$};
         \draw (4,4) node(tr){$\catC^\opcat \times \catC$};
 
         \draw (0,0) node(bl){$\catD^{\opcat} \times \catD$};
-        \draw (4,0) node(br){$\mathbf{Set}$};
+        \draw (4,0) node(br){$\set$};
         \draw[->] (tl) to node[midway, above]{$I_{\catC^{\opcat}} \times R$} (tr);
         \draw[->] (bl) to node[midway, above]{$\Hom_{\catD}$} (br);
         \draw[->] (tl) to node[midway, left]{$L^{\opcat} \times I_{\catD}$} (bl);
@@ -646,65 +729,6 @@ Using these left adjoint functors, it becomes possible to construct a natural tr
 \]
 Although the natural transformation $\alpha$ is assumed to be a natural isomorphism, the natural transformation $\beta$ need not be; if $\beta$ happens to be a natural isomorphism, then we say that the original square satisfies the \textit{left} Beck-Chevalley condition\footnote{Are the left adjoints $F_L, H_L$ unique? If not, it might be better to say the original square satifies the left Beck-Chevalley condition with respect to $F_L, H_L$.}. The \textit{right} Beck-Chevalley condition is defined analogously with functors $F_R, H_R$ which are respectively right adjoints $F \dashv F_R$ and $H \dashv H_R$.
 
-\subsection{The Equivalence of Puesdofunctors and Fibrations}
-
-Given a functor $P : \catE \to \catB$ which is also a Grothendieck fibration equipped with a cleavage (i.e. a choice of cartesian morphism $\phi \in \Hom_{\catE}(e', e)$ for each $f \in \Hom_{\catB}(a,P(e))$ such that $P(\phi) = f$), it is possible to construct a pseudofunctor (read weak $2$-functor between weak $2$-categories) $\pi : \catB^{\opcat} \to \mathbf{Cat}$. In particular, each object $b \in \catB_0$ is mapped to the \textit{sub-category} $\pi(b) = \catE_b$ of $\catE$ whose objects are those which map to $b$ under $P$ and whose morphism are those which map to $\id_{b}$ under $P$; $\catE_b$ is the fibre category over $b$ with respect to $P$. For each morphism $f \in \Hom_{\catB}(a,b)$ in $\catB$, the pseudofunctor $\pi$ maps $f^{\opcat} : b \to a$ onto a functor $\pi(f^{\opcat}) = f^{\ast} : \catE_{b} \to \catE_{a}$ which is defined accordingly:
-\[
-    \begin{tikzpicture}
-        \begin{scope}[shift={(-4.5,0)}]
-            \draw (-3,+3) rectangle (+3,-3) node[above left]{$\catE$};
-            \begin{scope}[shift={(-1,+2.5)}]
-                \draw (0,0) rectangle (+3.5,-2) node[above left](catEa){$\catE_a$};
-                \draw (+0.5, -0.8) node(e2){$e'$};
-                \draw (+2, -0.8) node(e4){$e'''$};
-                \draw[->] (e2) to node[above]{$\psi'$} (e4);
-            \end{scope}
-            \begin{scope}[shift={(-2,-0.5)}]
-                \draw (0,0) rectangle (+3.5,-2) node[above left](catEb){$\catE_b$};
-                \draw (+0.5, -1.2) node(e1){$e$};
-                \draw (+2, -1.2) node(e3){$e''$};
-                \draw[->] (e1) to node[below]{$\psi$} (e3);
-            \end{scope}
-            \draw[white, line width=2mm] (e2) to[out=-90,in=+90] (e1);
-            \draw[white, line width=2mm] (e4) to[out=-90,in=+90] (e3);
-            \draw[->] (e2) to[out=-90,in=+90] node[left ]{$\phi$} (e1);
-            \draw[->] (e4) to[out=-90,in=+90] node[right]{$\phi'$} (e3);
-            \draw[->] (catEb) to[out=0,in=-90] node[right]{$f^{\ast}$} (catEa);
-        \end{scope}
-        \begin{scope}[shift={(+1.5,+1)}]
-            \draw (0,0) rectangle (+2,-2) node[above left]{$\catB$};
-            \draw (+1.2, -0.3) node(a){$a$};
-            \draw (+0.8,-1.6) node(b){$b$};
-            \draw[->] (a) to[out=-90,in=+90] node[right]{$f$} (b);
-        \end{scope}
-        \draw[->] (-1,+0.5) to[bend left ] node[above]{$P$} (+1, 0.5);
-        \draw[<-] (-1,-0.5) to[bend right] node[below]{$P^{\leftarrow}$} (+1, -0.5);
-    \end{tikzpicture}
-\]
-Given an object $e \in (\catE_b)_0$, the functor $f^{\ast}$ finds the unique cartesian morphism $\phi \in \Hom_{\catE}(e',e)$ as specified by the cleavage and assigns $f^{\ast}(e) = e'$. Next, given a morphism $\psi \in \Hom_{\catE_{b}}(e, e'')$, the functor $f^{\ast}$ first finds the unique cartesian morphisms $\phi \in \Hom_{\catE}(e', e)$ and $\phi' \in \Hom_{\catE}(e''', e'')$. Then, because $g = \id_a$ completes the following diagram
-\[
-    \begin{tikzpicture}
-        \draw (-1,+1) node(tl){$P(e')$};
-        \draw (+1,+1) node(tr){$P(e''')$};
-        \draw (+1,-1) node(br){$P(e'')$};
-
-        \draw[->] (tl) to node[above]{$g$} (tr);
-        \draw[->] (tl) to[out=-90, in=180] node[below left]{$P(\psi\circ\phi)$} (br);
-        \draw[->] (tr) to node[right]{$P(\phi')$} (br);
-    \end{tikzpicture}
-    \quad=\quad
-    \begin{tikzpicture}
-        \draw (-1,+1) node(tl){$a$};
-        \draw (+1,+1) node(tr){$a$};
-        \draw (+1,-1) node(br){$b$};
-
-        \draw[->] (tl) to node[above]{$\id_{a}$} (tr);
-        \draw[->] (tl) to[out=-90, in=180] node[below left]{$\id_{b} \circ f$} (br);
-        \draw[->] (tr) to node[right]{$f$} (br);
-    \end{tikzpicture},
-\]
-and because $\phi'$ is cartesian, there must exist a unique $\psi' \in \Hom_{\catE_a}(e', e''')$ such that $\psi \circ \phi = \phi' \circ \psi'$. For each $\psi \in \Hom_{\catE_b}(e, e'')$, the functor $f^{\ast}$ selects this unique morphism $f^{\ast}(\psi) = \psi'$. In summary, the pseudofunctor $\pi : \catB^{\opcat} \to \mathbf{Cat}$ induced by $P : \catE \to \catB$ is defined on objects $b \in \catB_{0}$ as $\pi(b) = \catE_{b}$ and on morphisms $f \in \catB_{1}$ as $\pi(f) = f^{\ast}$ and forms a functor \textcolor{red!50!black}{[TODO: figure out the `pseudo' part of the pseudofunctorality.]}.
-
 \subsection{Slice and Coslice Categories}
 
 Given a category $\catC$ and an object $c \in \catC_0$ of $\catC$, the \textit{slice category} (or \textit{over category}) $\catC/c$ is the ``stuff in $\catC$ that is on top of $c$''. Specifically, the objects of $\catC/c$ are all the morphisms $f \in \catC_1$ from $\catC$ whose codomain is $\cod(f) = c$ (alternatively you could write $(\catC/c)_0 = \Hom_{\catC}(-,c)$). A morphism of $\catC/c$ between objects $f : a \to c, g : b \to c \in (\catC/c)_0$ is a commuting triangle completed by a third morphism $h : a \to b \in \catC_1$:
@@ -797,83 +821,6 @@ Given a category $\catC$ and an object $c \in \catC_0$ of $\catC$ the \textit{co
 \]
 Everything about coslice categories is defined as expected analogously to that of a slice categories.
 \textcolor{red!50!black}{[TODO: determine how the details of the Grothendieck construction transform the slice (pseudo-)functor $\catC / (-) : \catC \to \mathbf{Cat}$ into the codomain fibration.]}
-\subsection{The Pullback and Pushforward Functors}
-
-Given a category $\catC$ and a morphism $f : a \to b \in \catC_1$, the image of $f$ under the slice functor $\catC / (-)$ produces a functor $\catC / f : \catC / a \to \catC / b$ between slice categories of $\catC$ in the ``same direction'' as $f$ \textcolor{red!50!black}{TODO: confirm that $\catC / f$ is the pushforward functor $f_{!}$ of $f \in \catC_1$.}
-
-If the given category $\catC$ admits pullbacks, in becomes possible to define, for a morphism $f : a \to b$ a pullback functor $f^{*} : \catC / b \to \catC / a$. Given a morphism in $\catC/b$ (commuting triangle in $\catC$ with base at $b$),
-\[
-    \begin{tikzpicture}
-        \begin{scope}[shift={(+3,0)}]
-            \draw (150:1) node(ltl){$c$};
-            \draw ( 30:1) node(ltr){$d$};
-            \draw (270:1) node(lbm){$b$};
-
-            \draw[->] (ltl) to node[below,left ]{$g$}  (lbm);
-            \draw[->] (ltr) to node[below,right]{$h$} (lbm);
-            \draw[->] (ltl) to node[above]{$k$} (ltr);
-        \end{scope}
-    \end{tikzpicture}
-\]
-the pullback functor $f^{\ast} : \catC / b \to \catC / a$ associated with $f$ takes the objects $g : c \to b, h : d \to b$ of $\catC/b$ (morphisms in $\catC$) completes the pullback squares associated with $f$
-\[
-    \begin{tikzpicture}
-        \begin{scope}[shift={(0,0)}]
-            \draw ( 90:1.2) node(t){$c'$};
-            \draw (180:1) node(l){$a$};
-            \draw (  0:1) node(r){$c$};
-            \draw (270:1.2) node(b){$b$};
-
-            \draw[->] (l) to node[below,left ]{$f$} (b);
-            \draw[->] (r) to node[below,right]{$g$} (b);
-            \draw[->] (t) to node[above,left ]{$f^{\ast}g \vcentcolon= g_{f}$} (l);
-            \draw[->] (t) to node[above,right]{$f_{g}$} (r);
-        \end{scope}
-    \end{tikzpicture}
-    \qquad
-    \begin{tikzpicture}
-        \begin{scope}[shift={(0,0)}]
-            \draw ( 90:1.2) node(t){$d'$};
-            \draw (180:1) node(l){$d$};
-            \draw (  0:1) node(r){$a$};
-            \draw (270:1.2) node(b){$b$};
-
-            \draw[->] (l) to node[below,left ]{$h$} (b);
-            \draw[->] (r) to node[below,right]{$f$} (b);
-            \draw[->] (t) to node[above,left ]{$f_{h}$} (l);
-            \draw[->] (t) to node[above,right]{$f^{\ast}h \vcentcolon= h_{f}$} (r);
-        \end{scope}
-    \end{tikzpicture}
-\]
-where a subscript notation $g_{f}$ means ``the pullback of $g$ along $f$''. Defining the action of $f^{\ast} : \catC / b \to \catC / a$ on objects to be $f^{\ast}g = g_{f}$ and $f^{\ast}h = h_{f}$, the action on morphisms in $\catC / b$ is defined by composing the pullback squares with the commuting triangle morphism:
-\[
-    \begin{tikzpicture}
-        \begin{scope}[shift={(0,+2)}]
-            \draw (150:1) node(t1){$c$};
-            \draw ( 30:1) node(t2){$d$};
-            \draw (270:1) node(t3){$b$};
-
-            \draw[->] (t1) to node[below,left ]{$g$}  (t3);
-            \draw[->] (t2) to node[below,right]{$h$} (t3);
-            \draw[->] (t1) to node[above]{$k$} (t2);
-        \end{scope}
-
-        \begin{scope}[shift={(0,-2)}]
-            \draw (210:1) node(b1){$c'$};
-            \draw (330:1) node(b2){$d'$};
-            \draw ( 90:1) node(b3){$a$};
-
-            \draw[->] (b1) to node[below,left ]{$f^{\ast}g$} (b3);
-            \draw[->] (b2) to node[below,right]{$f^{\ast}h$} (b3);
-            \draw[dashed, ->] (b1) to node[below]{$\exists! f^{\ast}k$} (b2);
-        \end{scope}
-        \draw[->] (b1) to[out=+120, in=-120] node[left ]{$f_{g}$} (t1);
-        \draw[->] (b2) to[out=+ 60, in=- 60] node[right]{$f_{h}$} (t2);
-        \draw[->] (b3) to node[right]{$f$} (t3);
-    \end{tikzpicture}
-\]
-The commuting triangle in $\catC / a$ appearing at the bottom is completed by a unique morphism \textcolor{red!50!black}{[TODO: why does this morphism need to be unique and exist?]} denoted to be $f^{\ast}k$ ($\neq k_{f}$ obviously). The functoriality of $f^{\ast}$ has a simple proof found here \url{https://proofwiki.org/wiki/Pullback_Functor_is_Functor}.
-
 \subsection{Functors of Monoidal Categories}
 
 \textcolor{red!50!black}{[TODO]}
@@ -894,6 +841,9 @@ This section is temporary and reserved for recording comments toward various ref
     \item \citeauthor{boyd2004convex}~\cite{boyd2004convex}
     \item \citeauthor{bogart2013hom}~\cite{bogart2013hom}
     \item \citeauthor{gubeladze2016affine}~\cite{gubeladze2016affine}
+    \item \citeauthor{fausk2003isomorphisms}~\cite{fausk2003isomorphisms}
+    \item \citeauthor{hofstra2011dialectica}~\cite{hofstra2011dialectica}
+    \item \citeauthor{ponto2012duality}~\cite{ponto2012duality}
 \end{itemize}
 
 \printbibliography
