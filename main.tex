@@ -119,6 +119,11 @@
 ]{biblatex}
 \addbibresource{references.bib}
 
+%% Draft and writing tools
+\usepackage{showkeys}
+\usepackage{todonotes}
+\newcommand{\tob}[1]{\todo[color=blue!40,inline]{\textbf{T:} #1}}
+
 \author[1,2]{Thomas C. Fraser}
 \author[1]{Tobias Fritz}
 \affil[1]{\textit{Perimeter Institute for Theoretical Physics, Waterloo, Ontario, Canada, N2L 2Y5}}
@@ -415,10 +420,12 @@ The following unordered list of categorical concepts are anticipated to be utili
     \item adjunctions
     \item fibered categories
     \item cleavages
-    \item puesdo functors (and if cleavages are splitting, functors)
+    \item pseudo functors (and if cleavages are splitting, functors)
     \item Beck-Chevalley condition
     \item Frobenius reciprocity (and functors of monoidal categories)
 \end{itemize}
+
+\tob{Cleavages are not really important because for any two different choices of cleavage, the resulting pullback functors are naturally isomorphic. So cleavages are just a technical tool relevant for proving the equivalence between fibred cats and pseudofunctors, but not relevant in practice}
 
 \subsection{Cartesian Arrows}
 \begin{definition}
