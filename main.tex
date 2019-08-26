@@ -55,6 +55,13 @@
     patterns,
     cd % For commutative diagrams
 }
+\tikzset{% https://tex.stackexchange.com/questions/299149/adjunction-symbol-in-commutative-diagram
+    symbol/.style={%
+        draw=none,
+        every to/.append style={%
+            edge node={node [sloped, allow upside down, auto=false]{$#1$}}}
+    }
+}
 \tikzset{every picture/.style={baseline={([yshift=-0.3em]current bounding box.center)}}}
 \tikzset{
     % style to apply some styles to each segment of a path
@@ -103,6 +110,9 @@
 \newcommand{\sub}{\mathsf{Sub}} % the poset of subobjects and inclusions between them 
 \newcommand{\pow}{\mathsf{P}} % the powerset poset
 \newcommand{\cone}{\mathsf{Cone}} % the powerset poset
+\newcommand{\aff}{\mathsf{Aff}} % the category of affine spaces (?) and affine maps between them 
+\newcommand{\vect}{\mathsf{Vect}} % the category of vector spaces and linear maps between them
+\newcommand{\mono}{\mathsf{Mono}} % the preorder of monomorphisms with shared codomain given by an argument
 
 \newcommand{\catA}{\mathcal{A}}
 \newcommand{\catB}{\mathcal{B}}
@@ -122,8 +132,9 @@
 %% Draft and writing tools
 \usepackage{showkeys}
 \usepackage{todonotes}
-\newcommand{\tob}[1]{\todo[color=blue!20,inline]{\textbf{Tobias:} #1}}
-\newcommand{\tcf}[1]{\todo[color=red!20,inline]{\textbf{TC:} #1}}
+\newcommand{\tob}[1]{\todo[color=blue!20,inline]{\textbf{Tobias:} #1}} % for comments by tobias
+\newcommand{\tcf}[1]{\todo[color=green!20,inline]{\textbf{TC:} #1}} % for comments by tc
+\newcommand{\ctodo}[1]{\todo[color=red!20,inline]{\textbf{TODO:} #1}} % generic todo
 
 \author[1,2]{Thomas C. Fraser}
 \author[1]{Tobias Fritz}
@@ -143,365 +154,15 @@
 
 \section*{Notation Proposals}
 \begin{itemize}
-    \item $\poly$
+    \item $\aff$ the category of affine spaces (?) and affine maps between them
+    \item $\vect$ the category of vector spaces and the linear maps between them 
+    \item $\poly$ the category of polyhedra and the affine maps between them
+    \item $\cone$ the category of cones and the linear maps between them
 \end{itemize}
 
 \section{Introduction}
 
 \section{Category Theory Terminology}
-
-\section{Case Studies of Interest}
-
-\subsection{Polyhedra and Affine Maps}
-
-One of the primary motiviating examples for this project is the theory of \textit{(finite) convex polyhedra} and the affine maps between them. Following \citeauthor{boyd2004convex}~\cite{boyd2004convex}, a \textit{polyhedron}\footnote{The term polytope will be reserved for the context of \textit{bounded polyhedron}. Note that the opposite convention is sometimes used by other authors as pointed out by \cite{boyd2004convex}.}\footnote{Alternative and sometimes inequivalent definitions for ``polyhedra'' do exist; oftentimes, these alternative definitions accomodate more general notions of polyhedra, such as non-convex polyhedra. Understanding the relationship between these various definitions, and the proposal of new ones, is a mathematical endeavour which dates back to antiquity and continues today  \cite{grunbaum2003your, lakatos2015proofs}.} $P$ is the intersection of a finite number of \textit{halfspaces} of some ambient vector space $V \cong \mathbb{R}^n$. A \textit{halfspace} $H \subseteq \mathbb{R}^n$ is a subset of a vector space (of dimension $n$) which is the solution set of a linear inequality constraint over canonical coordinates $x = (x_1, x_2, \ldots, x_n) \in \mathbb{R}^n$:
-\begin{equation}
-    H = \{ x \in V \mid a^\intercal x = \sum_{i=1}^{n} a_i x_i \geq b \}
-\end{equation}
-
-\begin{center}
-    \begin{tikzpicture}[
-            set label/.style={rounded corners=1mm, inner sep=1mm, fill=white, fill opacity=0.75}
-        ]
-        \coordinate (O) at (0,0);
-        \coordinate (tl) at (-1,+2);
-        \coordinate (br) at (+3,-1);
-        \fill[blue, opacity=0.3] (tl) -- (br) -- (tl |- br) -- cycle;
-        \draw[thick, <->] (O) ++(-1,0) -- ++(+4,0) node[right]{$x_1$};
-        \draw[thick, <->] (O) ++(0,-1) -- ++(0,+3) node[above]{$x_2$};
-        \draw[thick, blue, <->] (tl) -- (br);
-        \node[blue!50!black, set label] at (-0.5, -0.5) {$H$};
-        % \draw (+2.5, +0.5) node[]{$\mathbb{R}^2$};
-    \end{tikzpicture}
-\end{center}
-As previously mentioned, a polyhedra is the intersection of finitely many halfspaces and therefore corresponds to
-\begin{equation}
-    P = \{ x \in V \mid \bigwedge_{j=1}^{k} (a_{j}^\intercal x \geq b_j) \}
-\end{equation}
-
-\begin{center}
-\begin{tikzpicture}[
-        extend line/.style={dashed, shorten >= -0.5cm,shorten <= -0.5cm},
-        set region/.style={fill=blue, fill opacity=0.3},
-        set label/.style={rounded corners=1mm, inner sep=1mm, fill=white, fill opacity=0.75}
-    ]
-    \coordinate (ori) at (-3,-3);
-    \coordinate (c1) at ($(ori)+(+7,0)$);
-    \coordinate (c2) at ($(ori)+(0,+6)$);
-    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (c1) node[right]{$x_1$};
-    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (c2) node[above]{$x_2$};
-
-    \coordinate (x1) at ( -90:2);
-    \coordinate (x2) at ( +10:2);
-    \coordinate (x3) at ( +70:2);
-    \coordinate (x4) at (+140:2);
-    \coordinate (x5) at (+190:2);
-    % \foreach \p in {x1,x2,x3,x4,x5} {
-    %     \node at (\p)[circle,fill,inner sep=1pt]{}; 
-    % }
-    \draw [blue, thick, set region] (x1) -- (x2) -- (x3) -- (x4) -- (x5) -- cycle;
-    \foreach \p/\q in {x1/x2,x2/x3,x3/x4,x4/x5,x5/x1} {
-        \draw [blue, extend line] (\p) -- (\q);
-    }
-    \node[blue!50!black, set label] at (0,0) {$S$};
-
-\end{tikzpicture}
-\end{center}
-
-\begin{equation}
-    \label{eq:pullback_of_positive_orthant}
-    \begin{tikzcd}
-        f^{\ast} ( \mathbb{R}^k_+ ) \ar[r, "f'"] \ar[d, hook, "j"] \ar[dr, phantom, "\lrcorner", very near start, xshift=-2mm]& \mathbb{R}^k_+ \ar[d, hook, "i"] \\
-        \mathbb{R}^n \ar[r, "f"] & \mathbb{R}^k \\
-    \end{tikzcd}
-\end{equation}
-In Equation~\ref{eq:pullback_of_positive_orthant}, the morphism $j$ is simply the inclusion of the polyhedra $f^\ast ( \mathbb{R}^k_+ )$ into its ambient vector space $\mathbb{R}^n$ and the morphism $f'$ is provided by the restriction of $f$ onto $f^\ast ( \mathbb{R}^k_+ )$.
-
-\subsubsection{The Beck-Chevalley Condition for the Polyhedral Fibration}
-
-Consider a commuting square of affine maps between vector spaces in the base category of affine maps 
-
-\begin{definition}
-    The category $\poly$ consists of polyhedra as objects and affine maps between them.
-\end{definition}
-\begin{center}
-\newcommand{\importpolyproj}[1]{
-\begin{tikzpicture}[
-        scale=0.6,
-        line join=round,
-        poly_vertex/.style = {circle,fill,blue,inner sep=0.75pt},
-        poly_edge/.style = {thick, blue},
-        poly_face/.style = {blue, opacity=0.15}
-    ]
-    \coordinate (O) at (0,0,0);
-    \coordinate (x1) at (5,0,0);
-    \coordinate (x2) at (0,5,0);
-    \coordinate (x3) at (0,0,5);
-    \draw[thick, ->] (O) -- (x1) node[right]{$x$};
-    \draw[thick, ->] (O) -- (x2) node[above]{$y$};
-    \draw[thick, ->] (O) -- (x3) node[left]{$z$};
-    #1
-\end{tikzpicture}
-}
-\importpolyproj{\input{figures/polytope_projection/dodecahedron_projection.tex}}
-\importpolyproj{\input{figures/polytope_projection/octahedron_projection.tex}}
-\importpolyproj{\input{figures/polytope_projection/tetrahedron_projection.tex}}
-% \importpolyproj{\input{figures/polytope_projection/metabidiminishedRhombicosidodecahedron_projection.tex}}
-% \importpolyproj{\input{figures/polytope_projection/rhombicTriacontahedron_projection.tex}}
-\end{center}
-
-\begin{equation}
-\begin{tikzcd}[column sep=0.5em]
-    & \poly_{Y} \ar[dd, "\pi_{1,!}", near end] & & \poly_{X\otimes Y} \ar[dd,"\pi_{X,!}"'] \ar[ll,"\pi_{Y,!}"] \\
-    \poly_{Y\otimes Z} \ar[dd,"\pi_{Z,!}"] \ar[ur,"\pi_{Y,!}"'{sloped,auto}] & & \poly_{X\otimes Y\otimes Z} \ar[ll,"\pi_{Y\otimes Z,!}"', crossing over, near start] \ar[ur,"\pi_{X\otimes Y,!}"{sloped,auto}] & \\
-    & \poly_{1} \ar[from=rr, "\pi_{1,!}"', near end] \ar[from=dl, "\pi_{1,!}"{sloped,auto}] & & \poly_{X} \\
-    \poly_{Z} & & \poly_{X\otimes Z} \ar[ll,"\pi_{Z,!}"'] \ar[ur,"\pi_{X,!}"{sloped,auto}] \ar[from=uu,"\pi_{X\otimes Z,!}", crossing over, near start] & \\
-\end{tikzcd}
-\end{equation}
-
-\begin{center}
-\begin{tikzpicture}[
-        extend line/.style={dashed, shorten >= -0.5cm,shorten <= -0.5cm},
-        set region/.style={pattern=north east lines, pattern color=red},
-        set label/.style={rounded corners=1mm, inner sep=1mm, fill=white, fill opacity=0.95}
-    ]
-    \coordinate (ori) at (-3,-3);
-    \coordinate (A) at ($(ori)+(+7,0)$);
-    \coordinate (B) at ($(ori)+(0,+6)$);
-    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (A) node[right]{$A$};
-    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (B) node[above]{$B$};
-
-    \coordinate (x1) at ( -90:2);
-    \coordinate (x2) at ( +10:2);
-    \coordinate (x3) at ( +70:2);
-    \coordinate (x4) at (+140:2);
-    \coordinate (x5) at (+190:2);
-    \foreach \p in {x1,x2,x3,x4,x5} {
-        \node at (\p)[circle,fill,inner sep=1pt]{}; 
-        \coordinate (\p A) at ($(ori)!(\p)!(A)$);
-        \coordinate (\p B) at ($(ori)!(\p)!(B)$);
-    }
-    \draw [thick, set region] (x1) -- (x2) -- (x3) -- (x4) -- (x5) -- cycle;
-    \foreach \p/\q in {x1/x2,x2/x3,x3/x4,x4/x5,x5/x1} {
-        \draw [extend line] (\p) -- (\q);
-    }
-    
-    \foreach \p in {x2,x5} {
-        \draw [dash dot] (\p) -- (\p A);
-        \draw [thick] ([yshift=-2mm]\p A) -- ([yshift=+2mm]\p A);
-    }
-    \path[set region] (x5A) rectangle ([yshift=-1mm]x2A);
-
-    \foreach \p in {x1,x3} {
-        \draw [dash dot] (\p) -- (\p B);
-        \draw [thick] ([xshift=-2mm]\p B) -- ([xshift=+2mm]\p B);
-    }
-    \path[set region] (x3B) rectangle ([xshift=-1mm]x1B);
-    \node[set label] at (0,0) {$S$};
-    \node[set label] at ([yshift=-6mm]$(ori)!(0,0)!(A)$) {$X$};
-    \node[set label] at ([xshift=-6mm]$(ori)!(0,0)!(B)$) {$Y$};
-
-    \draw[thick,decorate,decoration={brace,amplitude=2mm}] ([yshift=-1mm]x2A) -- ([yshift=-1mm]x5A);
-    \draw[thick,decorate,decoration={brace,amplitude=2mm}] ([xshift=-1mm]x1B) -- ([xshift=-1mm]x3B);
-\end{tikzpicture}
-\end{center}
-
-\subsection{The Subobject Fibration}
-
-Given any category $\catB$, and an object $X$ of $\catB$, a \textit{subobject} of $X$ is an isomorphism class of monomorphisms $f : Y \hookrightarrow X$; two monomorphisms $f : Y \hookrightarrow X, g : Z \hookrightarrow
-X$ with shared codomain $X$ are isomorphic if there exists an isomorphism $h : Y \xrightarrow{\sim} Z$ such that $f = g \circ h$. The individual monomorphisms of a subobject class can be equipped with a preorder relation $( f : Y \hookrightarrow Z ) \leq ( g : Z \hookrightarrow X )$ if there exists $k : Y \rightarrow Z$ such that $f = g \circ k$:
-\begin{equation}
-    \begin{tikzcd}[column sep=small]
-        Y \ar[rd, hook, "f"'] \ar[rr, "k"] &   & Z \ar[ld, hook', "g"]\\
-          & X & 
-    \end{tikzcd}
-\end{equation}
-Note that if such a $k : Y \to Z$ exists, then it is unique because it $g$ is a monomorpism; if $k' : Y \rightarrow Z$ satisfied $f = g \circ k'$ as well, then $g \circ k = g \circ k'$ which implies $k = k'$. Moreover, this preorder relation on the individual monomorphisms extends to a poset $\sub_{\catB}(X)$ between the subobjects. For example, if $\catB$ is the category $\set$, the subobjects of $X$ are subsets of $X$ and thus $\sub_{\set}(X) \cong \pow(X)$. Even more concretely, if $X$ is the set $\mathbb{R}^2$, an exemplary diagram of $\sub_{\set}(\mathbb{R}^2)$ is
-\begin{center}
-    \begin{tikzcd}[column sep=small]
-        & A & \\
-        B \ar[ur, hook', "\subseteq"] & & C \ar[ul, hook, "\subseteq"'] \\
-        & D \ar[ul, hook', "\subseteq"] \ar[ur, hook, "\subseteq"'] \ar[uu, hook, "\subseteq"] & \\
-    \end{tikzcd}
-    \hspace{3em}
-    \begin{tikzpicture}[
-            set border/.style={draw=#1!80!black},
-            set region/.style={set border=#1, fill=#1!50!white, fill opacity=0.2},
-            set label/.style={draw=#1!80!black}
-        ]
-        \draw[thick, set region=blue, rounded corners] (-2,-1.4) rectangle (+2, +1.4) {};
-
-        \begin{scope}[shift={(-0.5,0)}] 
-            \coordinate (y1) at (  +0:1.3);
-            \coordinate (y2) at ( +45:1.1);
-            \coordinate (y3) at ( +90:0.6);
-            \coordinate (y4) at (+135:1.1);
-            \coordinate (y5) at (+180:1.3);
-            \coordinate (y6) at (+270:1.1);
-            \draw [thick, set region=red] plot [smooth cycle, tension=0.8] coordinates {(y1) (y2) (y3) (y4) (y5) (y6)};
-        \end{scope}
-        \begin{scope}[shift={(+0.5,0)}] 
-            \coordinate (z1) at ( +45:1.3);
-            \coordinate (z2) at (+135:1.3);
-            \coordinate (z3) at (+225:1.3);
-            \coordinate (z4) at (+270:1.1);
-            \coordinate (z5) at (+315:0.7);
-            \coordinate (z6) at (+360:1.3);
-            \draw [thick, set region=green] plot [smooth cycle, tension=0.9] coordinates {(z1) (z2) (z3) (z4) (z5) (z6)};
-        \end{scope}
-        \draw [thick, set border=red] plot [smooth cycle, tension=0.8] coordinates {(y1) (y2) (y3) (y4) (y5) (y6)};
-        \coordinate (w1) at (  +0:0.5);
-        \coordinate (w2) at ( +90:0.5);
-        \coordinate (w3) at (+180:0.5);
-        \coordinate (w4) at (+270:0.5);
-        \draw [thick, set region=yellow] plot [smooth cycle, tension=0.6] coordinates {(w1) (w2) (w3) (w4)};
-
-        \node at (+0,+0) {\color{yellow!50!black}$D$};
-        \node at (+1.3,+0.5) {\color{green!60!black}$C$};
-        \node at (-1.3,+0) {\color{red!60!black}$B$};
-        \node at (+1.5,-0.9) {\color{blue!30!black}$A$};
-    \end{tikzpicture}
-\end{center}
-If the category $\catB$ has pullbacks, the posetal categories $\sub_{\catB}(X)$ for varying objects $X$ of $\catB$ can be ``stitched together'' to form an enveloping category denoted $\sub(\catB)$. The objects of $\sub(\catB)$ are the objects of $\sub_{\catB}(X)$ for various $X$. The morphisms of $\sub(\catB)$ are defined using the morphisms of $\catB$. Given a equivalence class of monomorphisms $B = \{b_i : Z_i \hookrightarrow X \}_{i \in \mathcal I} \in \sub_{\catB}(X)$ with with shared codomain $X$, and morphism $f : Y \to X$ (not necessarily a monomorphism) with codmain $X$, the pullbacks $f^\ast b_i$ of $b_i$ along $f$ for each $i \in \mathcal I$ constitute an equivalence class of monomorphisms $f^{\ast}B \coloneqq \{f^{\ast} b_i : Y \times_{X} Z_i \hookrightarrow Y \}_{i \in \mathcal I} \in \sub_{\catB}(Y)$:\footnote{Evidently, this relies on the fact that pullbacks perserve monomorphisms; i.e. $b : Z \hookrightarrow X$ is a monomorphism, then the pullback $f^\ast b : Y \times_{X} Z \hookrightarrow Y$ is also.}\footnote{The isomoprhisms connecting the monomorphisms of $f^\ast B$ are also given by pullback of the isomorphisms connecting the monomorphisms of $B$.}
-\begin{equation}
-    \begin{tikzcd}
-        Y \times_{X} Z_i \ar[dr, phantom, "\lrcorner", very near start, xshift=-2mm] \ar[r, "b_i^\ast f"] \ar[d, hook, "f^\ast b_i"'] & Z_i \ar[d, hook, "b_i"] \\
-        Y \ar[r, "f"] & X
-    \end{tikzcd}
-\end{equation}
-To every morphism $f : Y \to X$ of $\catB$, and object $B \in \sub_{\catB}(X)$, denote $\kappa_{f}(B) : f^\ast B \to B$ where $f^\ast B \in \sub_{\catB}(Y)$. Finally, a morphism of $\sub(\catB)$ between $A \in \sub_\catB(Y)$ and $B \in \sub_\catB(X)$ is the formal sequence \begin{tikzcd}[cramped] A \ar[r, "\leq"] &  f^{\ast}(B) \ar[r, "\kappa_f(B)"] & B \end{tikzcd}. The projection functor $P_{\catB} : \sub(\catB) \to \catB$ defines the \textit{subobject fibration}\footnote{Note that while the fibres $\sub_{\catB}(X)$ are thin, the total category $\sub(\catB)$ is not necessarily thin.}.
-
-\textcolor{red!50!black}{[TODO: figure out the relationship between a subobject fibration and the codomain fibration via the notion of \href{https://math.stackexchange.com/questions/2171645/how-can-the-subobject-fibration-be-obtained-from-the-codomain-fibration/2173108}{subterminal objects}.]}
-
-\clearpage
-\subsection{The Category of Convex Cones and Linear Maps}
-
-Given any $\mathbb{R}$-vector space $V$, a \textit{(closed) cone} $C \subseteq V$ is a subset of $V$ such that for any elements $c_1, c_2 \in C$ and for any positive coefficients $\gamma_1, \gamma_2 \geq 0$, $\gamma_1 c_1 + \gamma_2 c_2 \in C$. A finite cone $C \subseteq V$ admits a halfspace representation in terms a finite number of linear constraints:
-\begin{equation}
-    C = \{ x \in V \mid \bigwedge_{i=1}^{K} (a_i \cdot x \geq 0) \}
-\end{equation}
-Alternatively, a $\cone$ can be expressed in terms of the pullback of the positive orthant 
-\begin{equation}
-    \mathbb{R}_{+}^{n} \coloneqq \{v \in \mathbb{R}^n \mid \forall i \in [n]: v_i \geq 0 \}
-\end{equation}
-by a linear transformation $f : V \to \mathbb{R}^{n}$ into $\mathbb{R}^{n}$.
-\begin{equation}
-    \begin{tikzcd}
-        f^{*}(\mathbb{R}^n_+) \ar[dr, phantom, "\lrcorner", very near start, xshift=-2mm] \ar[r] \ar[d, hook] &  \mathbb{R}^n_+ \ar[d, hook, "i_+"] \\
-        V \ar[r, "f"] & \mathbb{R}^n
-    \end{tikzcd}
-\end{equation}
-\begin{equation}
-    f^{*}(\mathbb{R}^n_+) \cong \{ v \in V \mid f(v) \in \mathbb{R}^n_+ \}
-\end{equation}
-Given a cone $f^{*}(\mathbb{R}^n_+) \subseteq V$ associated with a finite set of $n$ linear expressions $f : V \to \mathbb{R}^n$, and a linear transformation $g : V \to W$,
-
-\subsection{Subset Projection}
-A prototypical example wherein an adjoint triple 
-\[ f_{!}, \exists_{f} \dashv f^{\ast}, f^{-1} \dashv f^{!}, \forall_{f} \]
-arises is that of functions $f : X \to Y$ between sets $X$ and $Y$. The inverse image functor $f^{\ast} : \mathscr{P}Y \to \mathscr{P}X$ is defined on a subset $T \subseteq Y$
-\[ f^{\ast} ( T ) = \{ x \in X : f(x) \in T \}, \]
-and is functorial in the sense that if $T \subseteq T' \subseteq Y$ then $f^{\ast}(T) \subseteq f^{\ast}(T') \subseteq f^{\ast}(T)$. The adjoint functors $\exists_{f}, \forall_{f} : \mathscr{P}X \to \mathscr{P}Y$ are defined on $S \subseteq X$ as
-\begin{align*}
-    \exists_{f} (S) &= \{ y \in Y : \exists x \in f^{\ast}(y) : x \in S \} \\
-    \forall_{f} (S) &= \{ y \in Y : \forall x \in f^{\ast}(y) : x \in S \}
-\end{align*}
-form an adjoint triple in the sense that $\exists_{f} \dashv f^{\ast} \dashv \forall_{f}$:
-\begin{align*}
-    \exists_{f} \dashv f^{\ast} : \quad \exists_{f} (S) \subseteq T &\iff S \subseteq f^{\ast}(T) \\
-    f^{\ast} \dashv \forall_{f} : \quad f^{\ast}(T) \subseteq R &\iff T \subseteq \forall_{f}(R)
-\end{align*}
-
-
-% \begin{center}
-%     \begin{table}
-%         \begin{tabular}{|c|c|c|c|c|c|c|}
-%             \hline
-%             Context & Fibration & Total $\catE$ & Base $\catE$ & Fibers & Covariant Functor & Contravariant Functor \\
-%             \hline
-%             \hline
-%             Subset Projection & & & & & & \\
-%             \hline
-%             Linear Quantifier Elimination & & & & & & \\
-%             \hline
-%             Non-linear Quantifier Elimination & & & & & & \\
-%             \hline
-%             Real-valued Optimization & & & & & & \\
-%             \hline
-%             General Lattice Optimization & & & & & & \\
-%             \hline
-%             Convex Projection & & & & & & \\
-%             \hline
-%             Convex Optimization & & & & & & \\
-%             \hline
-%             Resolution & & & & & & \\
-%             \hline
-%             $\ldots$ and more & & & & & & \\
-%             \hline
-%         \end{tabular}
-%     \end{table}
-% \end{center}
-
-\begin{center}
-\begin{tikzpicture}[
-        set region/.style={draw=blue!80, fill=blue!20},
-        set label/.style={rounded corners=1mm, inner sep=1mm, fill=white, fill opacity=0.95}
-    ]
-    \coordinate (ori) at (-3,-3);
-    \coordinate (A) at ($(ori)+(+7,0)$);
-    \coordinate (B) at ($(ori)+(0,+6)$);
-
-    \coordinate (x1) at ( -90:2);
-    \coordinate (x2) at ( +10:2);
-    \coordinate (x3) at ( +70:2);
-    \coordinate (x4) at (+140:2);
-    \coordinate (x5) at (+190:2);
-    \foreach \p in {x1,x2,x3,x4,x5} {
-        \coordinate (\p A) at ($(ori)!(\p)!(A)$);
-        \coordinate (\p B) at ($(ori)!(\p)!(B)$);
-    }
-    \draw [thick, set region] plot [smooth cycle] coordinates {(x1) (+1,-0.5) (x2) (x3) (x4) (x5)};
-    
-    \path[set region] (x5A) rectangle ([yshift=-1mm]x2A);
-    \path[set region] (x3B) rectangle ([xshift=-1mm]x1B);
-
-    \foreach \p in {x2,x5} {
-        \draw [dash dot] (\p) -- (\p A);
-        \draw [thick] ([yshift=-2mm]\p A) -- ([yshift=+2mm]\p A);
-    }
-
-    \foreach \p in {x1,x3} {
-        \draw [dash dot] (\p) -- (\p B);
-        \draw [thick] ([xshift=-2mm]\p B) -- ([xshift=+2mm]\p B);
-    }
-    \node[set label] at (-0.25,+0.25) {$S$};
-
-    \node[set label] at ([yshift=-6mm]$(ori)!(0,0)!(A)$) {$X$};
-    \node[set label] at ([xshift=-6mm]$(ori)!(0,0)!(B)$) {$Y$};
-
-    \draw[thick,decorate,decoration={brace,amplitude=2mm}] ([yshift=-1mm]x2A) -- ([yshift=-1mm]x5A);
-    \draw[thick,decorate,decoration={brace,amplitude=2mm}] ([xshift=-1mm]x1B) -- ([xshift=-1mm]x3B);
-
-    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (A) node[right]{$A$};
-    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (B) node[above]{$B$};
-\end{tikzpicture}
-\end{center}
-
-Consider a pair of sets $A$ and $B$ and a subset $S \subseteq A \times B$ of their cartesian product.  The projection morphisms associated with $A \times B$ are $p : A\times B \to A$ and $q : A \times B \to B$. The projection of the subset $S$ onto $A$ is then the subset $X \subseteq A$ defined by:
-\[ X = \{ a \in A \mid \exists s \in S, p (s) = a \} \]
-
-\begin{equation}
-    S \subseteq p^{\ast} ( X ) \Longleftrightarrow \exists_p ( S ) \subseteq X
-\end{equation}
-
-\subsection{Optimization of real-valued functions}
-\begin{center}
-    \includegraphics[]{figures/min_max_multivariate_function/figure.pdf}
-\end{center}
-
-\clearpage
-
-\section{Categorical Notions}
 
 The following unordered list of categorical concepts are anticipated to be utilized:
 \begin{itemize}
@@ -514,6 +175,7 @@ The following unordered list of categorical concepts are anticipated to be utili
 \end{itemize}
 
 \tob{Cleavages are not really important because for any two different choices of cleavage, the resulting pullback functors are naturally isomorphic. So cleavages are just a technical tool relevant for proving the equivalence between fibred cats and pseudofunctors, but not relevant in practice}
+\tcf{The above comment makes sense. Overall there are isomorphisms lurking behind every corner: first, there are natural isomorphisms present when considering the equivalence between pseudo-functors and "cleavaged" fibered categories, and second, whenever the cartesian arrows are indeed pullbacks, they are unique up to unique isomorphism and thus entire cleavages are unique up to unique isomorphisms. For a discussion see \cite{vistoli2004notes} at the end of Section 3.1.3. starting on page 50.}
 
 \subsection{Cartesian Arrows}
 \begin{definition}
@@ -671,8 +333,6 @@ Pages 47-48 of \cite{vistoli2004notes} explicate the notions of pseudo-functors 
 
 Given a functor $P : \catE \to \catB$, it can be considered as a fibration in many different ways. For example, if $P^{\opcat} : \catE^{\opcat} \to \catB^{\opcat}$ is a fibration, then $P$ is said to be an \textit{opfibration}.
 
-\section*{Categorical Definitions}
-
 \subsection{Hom-Functors}
 For a locally small category $\catC$, the hom-functor of $\catC$ is a functor $\Hom_{\catC} : \catC^{\opcat} \times \catC \to \set$ constructed in the following manner. Given objects $a,b,c,\ldots \in \catC_0$ of $\catC$, the hom-functor $\Hom_{\catC}$ maps a pair of objects $(a,b) \in (\catC^\opcat \times \catC)_0 = \catC_0 \times \catC_0 = \catC_0^2$ into the set\footnote{The collection of morphisms of type $a \to b$ forms a set because $\catC$ is locally small.} of morphisms $\catC_1$ of $\catC$ with source $a$ and target $b$. Therefore, $\Hom_{\catC}(a,b)$ is the set of morphisms in $\catC$ of type $a \to b$. Given morphisms $g^{\opcat} \in \Hom_{\catC^{\opcat}}(a,c)$ and $h \in \Hom_{\catC}(b,d)$, the hom-functor $\Hom_{\catC}$ constructs a function
 \[ \Hom_{\catC}(g^{\opcat}, h) : \Hom_{\catC}(a,b) \to \Hom_{\catC}(c,d) \]
@@ -743,6 +403,7 @@ Concretely, the naturality of $\alpha$ means that for every morphism $(f^{\opcat
         \draw[->] (tr) to node[midway, right]{$\alpha_{(a,d)}$} (br);
     \end{tikzpicture}
 \]
+
 
 \subsection{Beck-Chevalley Conditions}
 
@@ -915,7 +576,7 @@ Given a category $\catC$ and an object $c \in \catC_0$ of $\catC$ the \textit{co
     \end{tikzpicture}
 \]
 Everything about coslice categories is defined as expected analogously to that of a slice categories.
-\textcolor{red!50!black}{[TODO: determine how the details of the Grothendieck construction transform the slice (pseudo-)functor $\catC / (-) : \catC \to \mathbf{Cat}$ into the codomain fibration.]}
+\ctodo{determine how the details of the Grothendieck construction transform the slice (pseudo-)functor $\catC / (-) : \catC \to \mathbf{Cat}$ into the codomain fibration}
 \subsection{Functors of Monoidal Categories}
 
 \textcolor{red!50!black}{[TODO]}
@@ -923,6 +584,419 @@ Everything about coslice categories is defined as expected analogously to that o
 \subsection{Frobenius Reciprocity}
 
 \textcolor{red!50!black}{[TODO]}
+
+
+\section{Case Studies of Interest}
+
+\subsection{Polyhedra and Affine Maps}
+
+One of the primary motiviating examples for this project is the theory of \textit{(finite) convex polyhedra} and the affine maps between them. Following \citeauthor{boyd2004convex}~\cite{boyd2004convex}, a \textit{polyhedron}\footnote{The term polytope will be reserved for the context of \textit{bounded polyhedron}. Note that the opposite convention is sometimes used by other authors as pointed out by \cite{boyd2004convex}.}\footnote{Alternative and sometimes inequivalent definitions for ``polyhedra'' do exist; oftentimes, these alternative definitions accomodate more general notions of polyhedra, such as non-convex polyhedra. Understanding the relationship between these various definitions, and the proposal of new ones, is a mathematical endeavour which dates back to antiquity and continues today  \cite{grunbaum2003your, lakatos2015proofs}.} $P$ is the intersection of a finite number of \textit{halfspaces} of some ambient vector space $V \cong \mathbb{R}^n$. A \textit{halfspace} $H \subseteq \mathbb{R}^n$ is a subset of a vector space (of dimension $n$) which is the solution set of a linear inequality constraint over canonical coordinates $x = (x_1, x_2, \ldots, x_n) \in \mathbb{R}^n$:
+\begin{equation}
+    H = \{ x \in V \mid a^\intercal x = \sum_{i=1}^{n} a_i x_i \geq b \}
+\end{equation}
+
+\begin{center}
+    \begin{tikzpicture}[
+            set label/.style={rounded corners=1mm, inner sep=1mm, fill=white, fill opacity=0.75}
+        ]
+        \coordinate (O) at (0,0);
+        \coordinate (tl) at (-1,+2);
+        \coordinate (br) at (+3,-1);
+        \fill[blue, opacity=0.3] (tl) -- (br) -- (tl |- br) -- cycle;
+        \draw[thick, <->] (O) ++(-1,0) -- ++(+4,0) node[right]{$x_1$};
+        \draw[thick, <->] (O) ++(0,-1) -- ++(0,+3) node[above]{$x_2$};
+        \draw[thick, blue, <->] (tl) -- (br);
+        \node[blue!50!black, set label] at (-0.5, -0.5) {$H$};
+        % \draw (+2.5, +0.5) node[]{$\mathbb{R}^2$};
+    \end{tikzpicture}
+\end{center}
+As previously mentioned, a polyhedra is the intersection of finitely many halfspaces and therefore corresponds to
+\begin{equation}
+    P = \{ x \in V \mid \bigwedge_{j=1}^{k} (a_{j}^\intercal x \geq b_j) \}
+\end{equation}
+
+\begin{center}
+\begin{tikzpicture}[
+        extend line/.style={dashed, shorten >= -0.5cm,shorten <= -0.5cm},
+        set region/.style={fill=blue, fill opacity=0.3},
+        set label/.style={rounded corners=1mm, inner sep=1mm, fill=white, fill opacity=0.75}
+    ]
+    \coordinate (ori) at (-3,-3);
+    \coordinate (c1) at ($(ori)+(+7,0)$);
+    \coordinate (c2) at ($(ori)+(0,+6)$);
+    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (c1) node[right]{$x_1$};
+    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (c2) node[above]{$x_2$};
+
+    \coordinate (x1) at ( -90:2);
+    \coordinate (x2) at ( +10:2);
+    \coordinate (x3) at ( +70:2);
+    \coordinate (x4) at (+140:2);
+    \coordinate (x5) at (+190:2);
+    % \foreach \p in {x1,x2,x3,x4,x5} {
+    %     \node at (\p)[circle,fill,inner sep=1pt]{}; 
+    % }
+    \draw [blue, thick, set region] (x1) -- (x2) -- (x3) -- (x4) -- (x5) -- cycle;
+    \foreach \p/\q in {x1/x2,x2/x3,x3/x4,x4/x5,x5/x1} {
+        \draw [blue, extend line] (\p) -- (\q);
+    }
+    \node[blue!50!black, set label] at (0,0) {$S$};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{equation}
+    \label{eq:pullback_of_positive_orthant}
+    \begin{tikzcd}
+        f^{\ast} ( \mathbb{R}^k_+ ) \ar[r, "f'"] \ar[d, hook, "j"] \ar[dr, phantom, "\lrcorner", very near start, xshift=-2mm]& \mathbb{R}^k_+ \ar[d, hook, "i"] \\
+        \mathbb{R}^n \ar[r, "f"] & \mathbb{R}^k \\
+    \end{tikzcd}
+\end{equation}
+In Equation~\ref{eq:pullback_of_positive_orthant}, the morphism $j$ is simply the inclusion of the polyhedra $f^\ast ( \mathbb{R}^k_+ )$ into its ambient vector space $\mathbb{R}^n$ and the morphism $f'$ is provided by the restriction of $f$ onto $f^\ast ( \mathbb{R}^k_+ )$.
+
+\subsection{The Beck-Chevalley Condition for the Polyhedral Fibration}
+
+Consider a commuting square of affine maps between vector spaces in the base category of affine maps 
+
+\begin{definition}
+    The category $\poly$ consists of polyhedra as objects and affine maps between them.
+\end{definition}
+\begin{center}
+\newcommand{\importpolyproj}[1]{
+\begin{tikzpicture}[
+        scale=0.6,
+        line join=round,
+        poly_vertex/.style = {circle,fill,blue,inner sep=0.75pt},
+        poly_edge/.style = {thick, blue},
+        poly_face/.style = {blue, opacity=0.15}
+    ]
+    \coordinate (O) at (0,0,0);
+    \coordinate (x1) at (5,0,0);
+    \coordinate (x2) at (0,5,0);
+    \coordinate (x3) at (0,0,5);
+    \draw[thick, ->] (O) -- (x1) node[right]{$x$};
+    \draw[thick, ->] (O) -- (x2) node[above]{$y$};
+    \draw[thick, ->] (O) -- (x3) node[left]{$z$};
+    #1
+\end{tikzpicture}
+}
+\importpolyproj{\input{figures/polytope_projection/dodecahedron_projection.tex}}
+\importpolyproj{\input{figures/polytope_projection/octahedron_projection.tex}}
+\importpolyproj{\input{figures/polytope_projection/tetrahedron_projection.tex}}
+% \importpolyproj{\input{figures/polytope_projection/metabidiminishedRhombicosidodecahedron_projection.tex}}
+% \importpolyproj{\input{figures/polytope_projection/rhombicTriacontahedron_projection.tex}}
+\end{center}
+
+\begin{equation}
+\begin{tikzcd}[column sep=0.5em]
+    & \poly_{Y} \ar[dd, "\pi_{1,!}", near end] & & \poly_{X\otimes Y} \ar[dd,"\pi_{X,!}"'] \ar[ll,"\pi_{Y,!}"] \\
+    \poly_{Y\otimes Z} \ar[dd,"\pi_{Z,!}"] \ar[ur,"\pi_{Y,!}"'{sloped,auto}] & & \poly_{X\otimes Y\otimes Z} \ar[ll,"\pi_{Y\otimes Z,!}"', crossing over, near start] \ar[ur,"\pi_{X\otimes Y,!}"{sloped,auto}] & \\
+    & \poly_{1} \ar[from=rr, "\pi_{1,!}"', near end] \ar[from=dl, "\pi_{1,!}"{sloped,auto}] & & \poly_{X} \\
+    \poly_{Z} & & \poly_{X\otimes Z} \ar[ll,"\pi_{Z,!}"'] \ar[ur,"\pi_{X,!}"{sloped,auto}] \ar[from=uu,"\pi_{X\otimes Z,!}", crossing over, near start] & \\
+\end{tikzcd}
+\end{equation}
+
+\begin{center}
+\begin{tikzpicture}[
+        extend line/.style={dashed, shorten >= -0.5cm,shorten <= -0.5cm},
+        set region/.style={pattern=north east lines, pattern color=red},
+        set label/.style={rounded corners=1mm, inner sep=1mm, fill=white, fill opacity=0.95}
+    ]
+    \coordinate (ori) at (-3,-3);
+    \coordinate (A) at ($(ori)+(+7,0)$);
+    \coordinate (B) at ($(ori)+(0,+6)$);
+    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (A) node[right]{$A$};
+    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (B) node[above]{$B$};
+
+    \coordinate (x1) at ( -90:2);
+    \coordinate (x2) at ( +10:2);
+    \coordinate (x3) at ( +70:2);
+    \coordinate (x4) at (+140:2);
+    \coordinate (x5) at (+190:2);
+    \foreach \p in {x1,x2,x3,x4,x5} {
+        \node at (\p)[circle,fill,inner sep=1pt]{}; 
+        \coordinate (\p A) at ($(ori)!(\p)!(A)$);
+        \coordinate (\p B) at ($(ori)!(\p)!(B)$);
+    }
+    \draw [thick, set region] (x1) -- (x2) -- (x3) -- (x4) -- (x5) -- cycle;
+    \foreach \p/\q in {x1/x2,x2/x3,x3/x4,x4/x5,x5/x1} {
+        \draw [extend line] (\p) -- (\q);
+    }
+    
+    \foreach \p in {x2,x5} {
+        \draw [dash dot] (\p) -- (\p A);
+        \draw [thick] ([yshift=-2mm]\p A) -- ([yshift=+2mm]\p A);
+    }
+    \path[set region] (x5A) rectangle ([yshift=-1mm]x2A);
+
+    \foreach \p in {x1,x3} {
+        \draw [dash dot] (\p) -- (\p B);
+        \draw [thick] ([xshift=-2mm]\p B) -- ([xshift=+2mm]\p B);
+    }
+    \path[set region] (x3B) rectangle ([xshift=-1mm]x1B);
+    \node[set label] at (0,0) {$S$};
+    \node[set label] at ([yshift=-6mm]$(ori)!(0,0)!(A)$) {$X$};
+    \node[set label] at ([xshift=-6mm]$(ori)!(0,0)!(B)$) {$Y$};
+
+    \draw[thick,decorate,decoration={brace,amplitude=2mm}] ([yshift=-1mm]x2A) -- ([yshift=-1mm]x5A);
+    \draw[thick,decorate,decoration={brace,amplitude=2mm}] ([xshift=-1mm]x1B) -- ([xshift=-1mm]x3B);
+\end{tikzpicture}
+\end{center}
+
+\subsection{The Subobject Fibration}
+
+Given any category $\catB$, and an object $X$ of $\catB$, a \textit{subobject} of $X$ is an isomorphism class of monomorphisms $f : Y \hookrightarrow X$; two monomorphisms $f : Y \hookrightarrow X, g : Z \hookrightarrow
+X$ with shared codomain $X$ are isomorphic if there exists an isomorphism $h : Y \xrightarrow{\sim} Z$ such that $f = g \circ h$. The individual monomorphisms of a subobject class can be equipped with a preorder relation $( f : Y \hookrightarrow Z ) \leq ( g : Z \hookrightarrow X )$ if there exists $k : Y \rightarrow Z$ such that $f = g \circ k$:
+\begin{equation}
+    \begin{tikzcd}[column sep=small]
+        Y \ar[rd, hook, "f"'] \ar[rr, "k"] &   & Z \ar[ld, hook', "g"]\\
+          & X & 
+    \end{tikzcd}
+\end{equation}
+Note that if such a $k : Y \to Z$ exists, then it is unique because it $g$ is a monomorpism; if $k' : Y \rightarrow Z$ satisfied $f = g \circ k'$ as well, then $g \circ k = g \circ k'$ which implies $k = k'$. Moreover, this preorder relation on the individual monomorphisms extends to a poset $\sub_{\catB}(X)$ between the subobjects. For example, if $\catB$ is the category $\set$, the subobjects of $X$ are subsets of $X$ and thus $\sub_{\set}(X) \cong \pow(X)$. Even more concretely, if $X$ is the set $\mathbb{R}^2$, an exemplary diagram of $\sub_{\set}(\mathbb{R}^2)$ is
+\begin{center}
+    \begin{tikzcd}[column sep=small]
+        & A & \\
+        B \ar[ur, hook', "\subseteq"] & & C \ar[ul, hook, "\subseteq"'] \\
+        & D \ar[ul, hook', "\subseteq"] \ar[ur, hook, "\subseteq"'] \ar[uu, hook, "\subseteq"] & \\
+    \end{tikzcd}
+    \hspace{3em}
+    \begin{tikzpicture}[
+            set border/.style={draw=#1!80!black},
+            set region/.style={set border=#1, fill=#1!50!white, fill opacity=0.2},
+            set label/.style={draw=#1!80!black}
+        ]
+        \draw[thick, set region=blue, rounded corners] (-2,-1.4) rectangle (+2, +1.4) {};
+
+        \begin{scope}[shift={(-0.5,0)}] 
+            \coordinate (y1) at (  +0:1.3);
+            \coordinate (y2) at ( +45:1.1);
+            \coordinate (y3) at ( +90:0.6);
+            \coordinate (y4) at (+135:1.1);
+            \coordinate (y5) at (+180:1.3);
+            \coordinate (y6) at (+270:1.1);
+            \draw [thick, set region=red] plot [smooth cycle, tension=0.8] coordinates {(y1) (y2) (y3) (y4) (y5) (y6)};
+        \end{scope}
+        \begin{scope}[shift={(+0.5,0)}] 
+            \coordinate (z1) at ( +45:1.3);
+            \coordinate (z2) at (+135:1.3);
+            \coordinate (z3) at (+225:1.3);
+            \coordinate (z4) at (+270:1.1);
+            \coordinate (z5) at (+315:0.7);
+            \coordinate (z6) at (+360:1.3);
+            \draw [thick, set region=green] plot [smooth cycle, tension=0.9] coordinates {(z1) (z2) (z3) (z4) (z5) (z6)};
+        \end{scope}
+        \draw [thick, set border=red] plot [smooth cycle, tension=0.8] coordinates {(y1) (y2) (y3) (y4) (y5) (y6)};
+        \coordinate (w1) at (  +0:0.5);
+        \coordinate (w2) at ( +90:0.5);
+        \coordinate (w3) at (+180:0.5);
+        \coordinate (w4) at (+270:0.5);
+        \draw [thick, set region=yellow] plot [smooth cycle, tension=0.6] coordinates {(w1) (w2) (w3) (w4)};
+
+        \node at (+0,+0) {\color{yellow!50!black}$D$};
+        \node at (+1.3,+0.5) {\color{green!60!black}$C$};
+        \node at (-1.3,+0) {\color{red!60!black}$B$};
+        \node at (+1.5,-0.9) {\color{blue!30!black}$A$};
+    \end{tikzpicture}
+\end{center}
+If the category $\catB$ has pullbacks, the posetal categories $\sub_{\catB}(X)$ for varying objects $X$ of $\catB$ can be ``stitched together'' to form an enveloping category denoted $\sub(\catB)$. The objects of $\sub(\catB)$ are the objects of $\sub_{\catB}(X)$ for various $X$. The morphisms of $\sub(\catB)$ are defined using the morphisms of $\catB$. Given a equivalence class of monomorphisms $B = \{b_i : Z_i \hookrightarrow X \}_{i \in \mathcal I} \in \sub_{\catB}(X)$ with with shared codomain $X$, and morphism $f : Y \to X$ (not necessarily a monomorphism) with codmain $X$, the pullbacks $f^\ast b_i$ of $b_i$ along $f$ for each $i \in \mathcal I$ constitute an equivalence class of monomorphisms $f^{\ast}B \coloneqq \{f^{\ast} b_i : Y \times_{X} Z_i \hookrightarrow Y \}_{i \in \mathcal I} \in \sub_{\catB}(Y)$:\footnote{Evidently, this relies on the fact that pullbacks perserve monomorphisms; i.e. $b : Z \hookrightarrow X$ is a monomorphism, then the pullback $f^\ast b : Y \times_{X} Z \hookrightarrow Y$ is also.}\footnote{The isomoprhisms connecting the monomorphisms of $f^\ast B$ are also given by pullback of the isomorphisms connecting the monomorphisms of $B$.}
+\begin{equation}
+    \begin{tikzcd}
+        Y \times_{X} Z_i \ar[dr, phantom, "\lrcorner", very near start, xshift=-2mm] \ar[r, "b_i^\ast f"] \ar[d, hook, "f^\ast b_i"'] & Z_i \ar[d, hook, "b_i"] \\
+        Y \ar[r, "f"] & X
+    \end{tikzcd}
+\end{equation}
+To every morphism $f : Y \to X$ of $\catB$, and object $B \in \sub_{\catB}(X)$, denote $\kappa_{f}(B) : f^\ast B \to B$ where $f^\ast B \in \sub_{\catB}(Y)$. Finally, a morphism of $\sub(\catB)$ between $A \in \sub_\catB(Y)$ and $B \in \sub_\catB(X)$ is the formal sequence \begin{tikzcd}[cramped] A \ar[r, "\leq"] &  f^{\ast}(B) \ar[r, "\kappa_f(B)"] & B \end{tikzcd}. The projection functor $P_{\catB} : \sub(\catB) \to \catB$ defines the \textit{subobject fibration}\footnote{Note that while the fibres $\sub_{\catB}(X)$ are thin, the total category $\sub(\catB)$ is not necessarily thin.}.
+
+\ctodo{figure out the relationship between a subobject fibration and the codomain fibration via the notion of \href{https://math.stackexchange.com/questions/2171645/how-can-the-subobject-fibration-be-obtained-from-the-codomain-fibration/2173108}{subterminal objects}.}
+
+\subsection{The Beck-Chevalley Condition for Any Subobject Fibration}
+
+Given any category $\catB$ with all pullbacks, the functor $P_{\catB} : \sub_{\catB} \to \catB$ which sends subobjects $[\psi]$ to their shared codomains, constitutes a bifibration. In particular, given a morphism $f : a \to b$ of $\catB$, there is an induced adjoint pair of functors between the subobject fibers:
+\begin{equation}
+    \begin{tikzcd}
+        \sub_{\catB}(a) 
+        \arrow[r, bend left, "f_!", ""{name=L,inner sep=1pt,below}]
+        \arrow[from=r, bend left, "f^\ast", ""{name=R,inner sep=1pt}]
+        &
+        \sub_{\catB}(b)
+        \arrow[from=L, to=R, symbol=\dashv]
+    \end{tikzcd}
+\end{equation}
+Specfically, left adjoint functor $f_{!}$ acting on a subobject $[\psi] : \sub_{\catB}(a)$ (where $[\psi]$ is the equivalence class of monomorphisms into $a$ containing $\psi : a' \hookrightarrow a$) is given by post-composition $f_{!} ( [\psi] ) = [ f \psi ] \in \sub_{\catB}(b)$ in $\catB$. The right adjoint functor $f^\ast$ acting on a subobject $[\phi] \in \sub_{\catB}(b)$ is given by pullback of \begin{tikzcd}[cramped]a \ar[r, "f"]  & b & b' \ar[l, hook', "\phi"'] \end{tikzcd} in $\catB$:
+\begin{equation}
+    \begin{tikzcd}
+        f^{*}b' \ar[dr, phantom, "\lrcorner", very near start] \ar[r] \ar[d, hook, "f^\ast \phi"'] & b' \ar[d, hook, "\phi"] \\
+        a \ar[r, "f"'] & b 
+    \end{tikzcd}
+\end{equation}
+
+Generally speaking, it is important to determine how diagrams in the base category $\catB$ behave when lifted to the total category $\sub_{\catB}$ under the associated pseudo-functors. For example, given a pullback square in base category $\catB$,
+\begin{equation}
+    \begin{tikzcd}
+        a \ar[dr, phantom, "\lrcorner", very near start] \ar[r, "f"] \ar[d, "h"'] & b \ar[d, "g"] \\
+        c \ar[r, "k"'] & d 
+    \end{tikzcd}
+\end{equation}
+There exists a natural isomorphism $\alpha$ between the functors $f^\ast g^\ast$ and $h^\ast k^\ast$:
+\begin{equation}
+    \begin{tikzcd}
+        \sub_{\catB}(a) \ar[from=r, "f"'] \ar[from=d, "h"] & \sub_{\catB}(b) \ar[from=d, "g"'] \ar[dl, Rightarrow, "\alpha", "\sim"'] \\
+        \sub_{\catB}(c) \ar[from=r, "k"] & \sub_{\catB}(d)
+    \end{tikzcd}
+\end{equation}
+The existence of components $\alpha_{[\psi]}$ for each subobject class containing the monomorphism $\psi : p \hookrightarrow d$ can be determined by examining the following diagram:
+\begin{equation}
+    \begin{tikzcd}
+        & & & f^\ast g^\ast p \ar[d] \ar[lld, hook, out=180, in=90, "f^\ast g^\ast \psi"', near start] \ar[dl, phantom, "\llcorner", very near start] \\ 
+        & a \ar[r, "f"] \ar[d, "h"'] \ar[dr, phantom, "\lrcorner", very near start] & b \ar[d, "g"] & g^\ast p \ar[l, "g^\ast \psi"', hook] \ar[dd] \ar[dl, phantom, "\llcorner", very near start] \\ 
+        & c \ar[r, "k"'] & d & \\ 
+        h^\ast k^\ast p \ar[r] \ar[uur, hook, out=90, in=180, "h^\ast k^\ast \psi", near start] \ar[ur, phantom, "\urcorner", very near start] & k^\ast p \ar[u, hook, "k^\ast \psi"] \ar[rr] \ar[ur, phantom, "\urcorner", very near start] & & p \ar[ul, hook, "\psi"']
+    \end{tikzcd}
+\end{equation}
+Using the composition of pullback squares, it is clear that \textit{both} $f^\ast g^\ast p$ and $h^\ast k^\ast p$ are pullbacks of \begin{tikzcd}[cramped] a \ar[r, "gf = kh"] & d & p \ar[l, hook', "\psi"'] \end{tikzcd} and therefore, they are unique up to a unique isomorphism which will be denoted $\beta$. It is important to notice that this does not depend on $a$ being a pullback itself.
+\begin{equation}
+    \begin{tikzcd}[row sep=large]
+        h^\ast k^\ast p \ar[d, hook', "h^\ast k^\ast \psi"'] \ar[rrd, bend left] \ar[rr, bend left, dashed, "\beta^{-1}"'] \ar[dr, phantom, "\lrcorner", very near start] & & f^\ast g^\ast p \ar[d] \ar[lld, bend right, hook', "f^\ast g^\ast \psi", near end] \ar[ll, bend right=40, dashed, "\beta"'] \ar[dr, phantom, "\llcorner", very near start] \\
+        a \ar[r, "gf=kh"'] & d & p  \ar[l, hook', "\psi"]
+    \end{tikzcd}
+\end{equation}
+These isomorphisms actually establish that $h^\ast k^\ast \psi \simeq f^\ast g^\ast \psi$ and therefore they belong to the same equivalence class $[h^\ast k^\ast \psi] = [ f^\ast g^\ast \psi ]$ for each $\psi$. Therefore, it becomes clear that the natural isomorphism is indeed the identity natural transformation $\id_{f^\ast g^\ast} = \id_{h^\ast k^\ast} = \alpha : f^\ast g^\ast \to h^\ast k^\ast$.\footnote{Ultimately, the reason for $\alpha = \id$ is due to considering $\sub_{\catB}(a)$, the \textit{poset} of subobjects of $a$, instead of $\mono_{\catB}(a)$ the \textit{preorder} of monomorphisms into $a$.}
+
+Alternatively, one can consider whether or not there exists natural transformations (or natural isomorphisms) of the form $\alpha : h_! f^\ast \to k^\ast g_!$. Remembering that the left adjoints $f_{!}$ are specified by post-composition $f_{!} [\psi] \to [f \psi]$, this question can be answered by considering the following diagram:
+\begin{equation}
+    \begin{tikzcd}
+        k^\ast g p \ar[r, "k^\ast g \psi"] \ar[d] \ar[dr, phantom, "\lrcorner", very near start] & c \ar[d, "k"] & a \ar[l, "h"] \ar[d, "f"] \ar[dl, phantom, "\llcorner", very near start] & f^\ast p \ar[l, "f^\ast \psi", hook'] \ar[ll, bend right, "h f^\ast \psi"'] \ar[d] \ar[dl, phantom, "\llcorner", very near start]\\
+        p \ar[r, "g\psi"] \ar[rrr, bend right=15, equals] & d & b \ar[l, "g"'] & p \ar[l, hook', "\psi"']
+    \end{tikzcd}
+\end{equation}
+Similarly, $k^\ast g p$ and $f^\ast p$ are \textit{both} pullbacks of \begin{tikzcd}[cramped] p \ar[r, "g\psi"] & d & c \ar[l, hook', "k"'] \end{tikzcd} and therefore, we obtain an analogous statement: since $h f^\ast \psi \simeq k^\ast g \psi$, we have $[h f^\ast \psi] = [k^\ast g \psi]$ and therefore $h_! f^\ast = k^\ast g_!$. The key difference in this case is that this argument \textit{does} rely on $a$ being the pullback of a pullback square.
+
+In summary, the subobject fibration \textit{satisfies} the Beck-Chevalley condition. Moreover, since none of the above argument relies on the fact that the objects of total category are represented by \textit{monomorphisms} in the base, just that they correspond to \textit{morpisms} in the base, it is clear that any codomain bifibration also satisfies the Beck-Chevalley condition.
+
+\subsection{The Category of Convex Cones and Linear Maps}
+
+Given any $\mathbb{R}$-vector space $V$, a \textit{(closed) cone} $C \subseteq V$ is a subset of $V$ such that for any elements $c_1, c_2 \in C$ and for any positive coefficients $\gamma_1, \gamma_2 \geq 0$, $\gamma_1 c_1 + \gamma_2 c_2 \in C$. A finite cone $C \subseteq V$ admits a halfspace representation in terms a finite number of linear constraints:
+\begin{equation}
+    C = \{ x \in V \mid \bigwedge_{i=1}^{K} (a_i \cdot x \geq 0) \}
+\end{equation}
+Alternatively, a $\cone$ can be expressed in terms of the pullback of the positive orthant 
+\begin{equation}
+    \mathbb{R}_{+}^{n} \coloneqq \{v \in \mathbb{R}^n \mid \forall i \in [n]: v_i \geq 0 \}
+\end{equation}
+by a linear transformation $f : V \to \mathbb{R}^{n}$ into $\mathbb{R}^{n}$.
+\begin{equation}
+    \begin{tikzcd}
+        f^{*}(\mathbb{R}^n_+) \ar[dr, phantom, "\lrcorner", very near start, xshift=-2mm] \ar[r] \ar[d, hook] &  \mathbb{R}^n_+ \ar[d, hook, "i_+"] \\
+        V \ar[r, "f"] & \mathbb{R}^n
+    \end{tikzcd}
+\end{equation}
+\begin{equation}
+    f^{*}(\mathbb{R}^n_+) \cong \{ v \in V \mid f(v) \in \mathbb{R}^n_+ \}
+\end{equation}
+Given a cone $f^{*}(\mathbb{R}^n_+) \subseteq V$ associated with a finite set of $n$ linear expressions $f : V \to \mathbb{R}^n$, and a linear transformation $g : V \to W$,
+
+\subsection{Subset Projection}
+A prototypical example wherein an adjoint triple 
+\[ f_{!}, \exists_{f} \dashv f^{\ast}, f^{-1} \dashv f^{!}, \forall_{f} \]
+arises is that of functions $f : X \to Y$ between sets $X$ and $Y$. The inverse image functor $f^{\ast} : \mathscr{P}Y \to \mathscr{P}X$ is defined on a subset $T \subseteq Y$
+\[ f^{\ast} ( T ) = \{ x \in X : f(x) \in T \}, \]
+and is functorial in the sense that if $T \subseteq T' \subseteq Y$ then $f^{\ast}(T) \subseteq f^{\ast}(T') \subseteq f^{\ast}(T)$. The adjoint functors $\exists_{f}, \forall_{f} : \mathscr{P}X \to \mathscr{P}Y$ are defined on $S \subseteq X$ as
+\begin{align*}
+    \exists_{f} (S) &= \{ y \in Y : \exists x \in f^{\ast}(y) : x \in S \} \\
+    \forall_{f} (S) &= \{ y \in Y : \forall x \in f^{\ast}(y) : x \in S \}
+\end{align*}
+form an adjoint triple in the sense that $\exists_{f} \dashv f^{\ast} \dashv \forall_{f}$:
+\begin{align*}
+    \exists_{f} \dashv f^{\ast} : \quad \exists_{f} (S) \subseteq T &\iff S \subseteq f^{\ast}(T) \\
+    f^{\ast} \dashv \forall_{f} : \quad f^{\ast}(T) \subseteq R &\iff T \subseteq \forall_{f}(R)
+\end{align*}
+
+
+% \begin{center}
+%     \begin{table}
+%         \begin{tabular}{|c|c|c|c|c|c|c|}
+%             \hline
+%             Context & Fibration & Total $\catE$ & Base $\catE$ & Fibers & Covariant Functor & Contravariant Functor \\
+%             \hline
+%             \hline
+%             Subset Projection & & & & & & \\
+%             \hline
+%             Linear Quantifier Elimination & & & & & & \\
+%             \hline
+%             Non-linear Quantifier Elimination & & & & & & \\
+%             \hline
+%             Real-valued Optimization & & & & & & \\
+%             \hline
+%             General Lattice Optimization & & & & & & \\
+%             \hline
+%             Convex Projection & & & & & & \\
+%             \hline
+%             Convex Optimization & & & & & & \\
+%             \hline
+%             Resolution & & & & & & \\
+%             \hline
+%             $\ldots$ and more & & & & & & \\
+%             \hline
+%         \end{tabular}
+%     \end{table}
+% \end{center}
+
+\begin{center}
+\begin{tikzpicture}[
+        set region/.style={draw=blue!80, fill=blue!20},
+        set label/.style={rounded corners=1mm, inner sep=1mm, fill=white, fill opacity=0.95}
+    ]
+    \coordinate (ori) at (-3,-3);
+    \coordinate (A) at ($(ori)+(+7,0)$);
+    \coordinate (B) at ($(ori)+(0,+6)$);
+
+    \coordinate (x1) at ( -90:2);
+    \coordinate (x2) at ( +10:2);
+    \coordinate (x3) at ( +70:2);
+    \coordinate (x4) at (+140:2);
+    \coordinate (x5) at (+190:2);
+    \foreach \p in {x1,x2,x3,x4,x5} {
+        \coordinate (\p A) at ($(ori)!(\p)!(A)$);
+        \coordinate (\p B) at ($(ori)!(\p)!(B)$);
+    }
+    \draw [thick, set region] plot [smooth cycle] coordinates {(x1) (+1,-0.5) (x2) (x3) (x4) (x5)};
+    
+    \path[set region] (x5A) rectangle ([yshift=-1mm]x2A);
+    \path[set region] (x3B) rectangle ([xshift=-1mm]x1B);
+
+    \foreach \p in {x2,x5} {
+        \draw [dash dot] (\p) -- (\p A);
+        \draw [thick] ([yshift=-2mm]\p A) -- ([yshift=+2mm]\p A);
+    }
+
+    \foreach \p in {x1,x3} {
+        \draw [dash dot] (\p) -- (\p B);
+        \draw [thick] ([xshift=-2mm]\p B) -- ([xshift=+2mm]\p B);
+    }
+    \node[set label] at (-0.25,+0.25) {$S$};
+
+    \node[set label] at ([yshift=-6mm]$(ori)!(0,0)!(A)$) {$X$};
+    \node[set label] at ([xshift=-6mm]$(ori)!(0,0)!(B)$) {$Y$};
+
+    \draw[thick,decorate,decoration={brace,amplitude=2mm}] ([yshift=-1mm]x2A) -- ([yshift=-1mm]x5A);
+    \draw[thick,decorate,decoration={brace,amplitude=2mm}] ([xshift=-1mm]x1B) -- ([xshift=-1mm]x3B);
+
+    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (A) node[right]{$A$};
+    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (B) node[above]{$B$};
+\end{tikzpicture}
+\end{center}
+
+Consider a pair of sets $A$ and $B$ and a subset $S \subseteq A \times B$ of their cartesian product.  The projection morphisms associated with $A \times B$ are $p : A\times B \to A$ and $q : A \times B \to B$. The projection of the subset $S$ onto $A$ is then the subset $X \subseteq A$ defined by:
+\[ X = \{ a \in A \mid \exists s \in S, p (s) = a \} \]
+
+\begin{equation}
+    S \subseteq p^{\ast} ( X ) \Longleftrightarrow \exists_p ( S ) \subseteq X
+\end{equation}
+
+\subsection{Optimization of real-valued functions}
+\begin{center}
+    \includegraphics[]{figures/min_max_multivariate_function/figure.pdf}
+\end{center}
 
 \section*{Comments on selected references}
 This section is temporary and reserved for recording comments toward various references.
