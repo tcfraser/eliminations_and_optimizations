@@ -7,7 +7,7 @@
 \usepackage{lipsum}
 \usepackage{url}
 \usepackage[colorlinks,linkcolor=red!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
-\usepackage{amsmath}
+\usepackage{amsmath, amsfonts, amssymb}
 \usepackage{pdfpages}
 \usepackage{physics}
 \usepackage{xcolor}
@@ -18,7 +18,6 @@
 \usepackage{enumerate}
 \usepackage{mathrsfs} % For \mathscr font
 \usepackage{amsthm} % The AMS theorems package
-\usepackage{amsthm}
 \usepackage{tabularx}
 \usepackage{authblk} % For affiliations
 
@@ -98,11 +97,12 @@
 \DeclareMathOperator{\Hom}{Hom}
 \DeclareMathOperator{\cod}{cod}
 \DeclareMathOperator{\dom}{dom}
-\newcommand{\poly}{\mathsf{Poly}} % category of polyhedra and maps between them
+\newcommand{\poly}{\mathsf{Poly}} % category of polyhedra and affine maps between them
 \newcommand{\set}{\mathsf{Set}} % category of sets and functions between them
 \newcommand{\cat}{\mathsf{Cat}} % 2-category of categories and functors between them and natural transformations between the functors
 \newcommand{\sub}{\mathsf{Sub}} % the poset of subobjects and inclusions between them 
 \newcommand{\pow}{\mathsf{P}} % the powerset poset
+\newcommand{\cone}{\mathsf{Cone}} % the powerset poset
 
 \newcommand{\catA}{\mathcal{A}}
 \newcommand{\catB}{\mathcal{B}}
@@ -122,7 +122,8 @@
 %% Draft and writing tools
 \usepackage{showkeys}
 \usepackage{todonotes}
-\newcommand{\tob}[1]{\todo[color=blue!40,inline]{\textbf{T:} #1}}
+\newcommand{\tob}[1]{\todo[color=blue!20,inline]{\textbf{Tobias:} #1}}
+\newcommand{\tcf}[1]{\todo[color=red!20,inline]{\textbf{TC:} #1}}
 
 \author[1,2]{Thomas C. Fraser}
 \author[1]{Tobias Fritz}
@@ -139,89 +140,86 @@
 \tableofcontents
 
 \clearpage
-\section{Potentially Relevant Examples}
 
-\subsection{The Subobject Fibration}
+\section*{Notation Proposals}
+\begin{itemize}
+    \item $\poly$
+\end{itemize}
 
-Given any category $\catB$, and an object $X$ of $\catB$, a \textit{subobject} of $X$ is an isomorphism class of monomorphisms $f : Y \hookrightarrow X$; two monomorphisms $f : Y \hookrightarrow X, g : Z \hookrightarrow
-X$ with shared codomain $X$ are isomorphic if there exists an isomorphism $h : Y \xrightarrow{\sim} Z$ such that $f = g \circ h$. The individual monomorphisms of a subobject class can be equipped with a preorder relation $( f : Y \hookrightarrow Z ) \leq ( g : Z \hookrightarrow X )$ if there exists $k : Y \rightarrow Z$ such that $f = g \circ k$:
+\section{Introduction}
+
+\section{Category Theory Terminology}
+
+\section{Case Studies of Interest}
+
+\subsection{Polyhedra and Affine Maps}
+
+One of the primary motiviating examples for this project is the theory of \textit{(finite) convex polyhedra} and the affine maps between them. Following \citeauthor{boyd2004convex}~\cite{boyd2004convex}, a \textit{polyhedron}\footnote{The term polytope will be reserved for the context of \textit{bounded polyhedron}. Note that the opposite convention is sometimes used by other authors as pointed out by \cite{boyd2004convex}.}\footnote{Alternative and sometimes inequivalent definitions for ``polyhedra'' do exist; oftentimes, these alternative definitions accomodate more general notions of polyhedra, such as non-convex polyhedra. Understanding the relationship between these various definitions, and the proposal of new ones, is a mathematical endeavour which dates back to antiquity and continues today  \cite{grunbaum2003your, lakatos2015proofs}.} $P$ is the intersection of a finite number of \textit{halfspaces} of some ambient vector space $V \cong \mathbb{R}^n$. A \textit{halfspace} $H \subseteq \mathbb{R}^n$ is a subset of a vector space (of dimension $n$) which is the solution set of a linear inequality constraint over canonical coordinates $x = (x_1, x_2, \ldots, x_n) \in \mathbb{R}^n$:
 \begin{equation}
-    \begin{tikzcd}[column sep=small]
-        Y \ar[rd, hook, "f"'] \ar[rr, "k"] &   & Z \ar[ld, hook', "g"]\\
-          & X & 
-    \end{tikzcd}
+    H = \{ x \in V \mid a^\intercal x = \sum_{i=1}^{n} a_i x_i \geq b \}
 \end{equation}
-Note that if such a $k : Y \to Z$ exists, then it is unique because it $g$ is a monomorpism; if $k' : Y \rightarrow Z$ satisfied $f = g \circ k'$ as well, then $g \circ k = g \circ k'$ which implies $k = k'$. Moreover, this preorder relation on the individual monomorphisms extends to a poset $\sub_{\catB}(X)$ between the subobjects. For example, if $\catB$ is the category $\set$, the subobjects of $X$ are subsets of $X$ and thus $\sub_{\set}(X) \cong \pow(X)$. Even more concretely, if $X$ is the set $\mathbb{R}^2$, an exemplary diagram of $\sub_{\set}(\mathbb{R}^2)$ is
+
 \begin{center}
-    \begin{tikzcd}[column sep=small]
-        & A & \\
-        B \ar[ur, hook', "\subseteq"] & & C \ar[ul, hook, "\subseteq"'] \\
-        & D \ar[ul, hook', "\subseteq"] \ar[ur, hook, "\subseteq"'] \ar[uu, hook, "\subseteq"] & \\
-    \end{tikzcd}
-    \hspace{3em}
     \begin{tikzpicture}[
-            set border/.style={draw=#1!80!black},
-            set region/.style={set border=#1, fill=#1!50!white, fill opacity=0.2},
-            set label/.style={draw=#1!80!black}
+            set label/.style={rounded corners=1mm, inner sep=1mm, fill=white, fill opacity=0.75}
         ]
-        \draw[thick, set region=blue, rounded corners] (-2,-1.4) rectangle (+2, +1.4) {};
-
-        \begin{scope}[shift={(-0.5,0)}] 
-            \coordinate (y1) at (  +0:1.3);
-            \coordinate (y2) at ( +45:1.1);
-            \coordinate (y3) at ( +90:0.6);
-            \coordinate (y4) at (+135:1.1);
-            \coordinate (y5) at (+180:1.3);
-            \coordinate (y6) at (+270:1.1);
-            \draw [thick, set region=red] plot [smooth cycle, tension=0.8] coordinates {(y1) (y2) (y3) (y4) (y5) (y6)};
-        \end{scope}
-        \begin{scope}[shift={(+0.5,0)}] 
-            \coordinate (z1) at ( +45:1.3);
-            \coordinate (z2) at (+135:1.3);
-            \coordinate (z3) at (+225:1.3);
-            \coordinate (z4) at (+270:1.1);
-            \coordinate (z5) at (+315:0.7);
-            \coordinate (z6) at (+360:1.3);
-            \draw [thick, set region=green] plot [smooth cycle, tension=0.9] coordinates {(z1) (z2) (z3) (z4) (z5) (z6)};
-        \end{scope}
-        \draw [thick, set border=red] plot [smooth cycle, tension=0.8] coordinates {(y1) (y2) (y3) (y4) (y5) (y6)};
-        \coordinate (w1) at (  +0:0.5);
-        \coordinate (w2) at ( +90:0.5);
-        \coordinate (w3) at (+180:0.5);
-        \coordinate (w4) at (+270:0.5);
-        \draw [thick, set region=yellow] plot [smooth cycle, tension=0.6] coordinates {(w1) (w2) (w3) (w4)};
-
-        \node at (+0,+0) {\color{yellow!50!black}$D$};
-        \node at (+1.3,+0.5) {\color{green!60!black}$C$};
-        \node at (-1.3,+0) {\color{red!60!black}$B$};
-        \node at (+1.5,-0.9) {\color{blue!30!black}$A$};
+        \coordinate (O) at (0,0);
+        \coordinate (tl) at (-1,+2);
+        \coordinate (br) at (+3,-1);
+        \fill[blue, opacity=0.3] (tl) -- (br) -- (tl |- br) -- cycle;
+        \draw[thick, <->] (O) ++(-1,0) -- ++(+4,0) node[right]{$x_1$};
+        \draw[thick, <->] (O) ++(0,-1) -- ++(0,+3) node[above]{$x_2$};
+        \draw[thick, blue, <->] (tl) -- (br);
+        \node[blue!50!black, set label] at (-0.5, -0.5) {$H$};
+        % \draw (+2.5, +0.5) node[]{$\mathbb{R}^2$};
     \end{tikzpicture}
 \end{center}
-If the category $\catB$ has pullbacks, the posetal categories $\sub_{\catB}(X)$ for varying objects $X$ of $\catB$ can be ``stitched together'' to form an enveloping category denoted $\sub(\catB)$. The objects of $\sub(\catB)$ are the objects of $\sub_{\catB}(X)$ for various $X$. The morphisms of $\sub(\catB)$ are defined using the morphisms of $\catB$. Given a equivalence class of monomorphisms $B = \{b_i : Z_i \hookrightarrow X \}_{i \in \mathcal I} \in \sub_{\catB}(X)$ with with shared codomain $X$, and morphism $f : Y \to X$ (not necessarily a monomorphism) with codmain $X$, the pullbacks $f^\ast b_i$ of $b_i$ along $f$ for each $i \in \mathcal I$ constitute an equivalence class of monomorphisms $f^{\ast}B \coloneqq \{f^{\ast} b_i : Y \times_{X} Z_i \hookrightarrow Y \}_{i \in \mathcal I} \in \sub_{\catB}(Y)$:\footnote{Evidently, this relies on the fact that pullbacks perserve monomorphisms; i.e. $b : Z \hookrightarrow X$ is a monomorphism, then the pullback $f^\ast b : Y \times_{X} Z \hookrightarrow Y$ is also.}\footnote{The isomoprhisms connecting the monomorphisms of $f^\ast B$ are also given by pullback of the isomorphisms connecting the monomorphisms of $B$.}
+As previously mentioned, a polyhedra is the intersection of finitely many halfspaces and therefore corresponds to
 \begin{equation}
+    P = \{ x \in V \mid \bigwedge_{j=1}^{k} (a_{j}^\intercal x \geq b_j) \}
+\end{equation}
+
+\begin{center}
+\begin{tikzpicture}[
+        extend line/.style={dashed, shorten >= -0.5cm,shorten <= -0.5cm},
+        set region/.style={fill=blue, fill opacity=0.3},
+        set label/.style={rounded corners=1mm, inner sep=1mm, fill=white, fill opacity=0.75}
+    ]
+    \coordinate (ori) at (-3,-3);
+    \coordinate (c1) at ($(ori)+(+7,0)$);
+    \coordinate (c2) at ($(ori)+(0,+6)$);
+    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (c1) node[right]{$x_1$};
+    \draw[thick, ->, shorten <= -0.5cm] (ori) -- (c2) node[above]{$x_2$};
+
+    \coordinate (x1) at ( -90:2);
+    \coordinate (x2) at ( +10:2);
+    \coordinate (x3) at ( +70:2);
+    \coordinate (x4) at (+140:2);
+    \coordinate (x5) at (+190:2);
+    % \foreach \p in {x1,x2,x3,x4,x5} {
+    %     \node at (\p)[circle,fill,inner sep=1pt]{}; 
+    % }
+    \draw [blue, thick, set region] (x1) -- (x2) -- (x3) -- (x4) -- (x5) -- cycle;
+    \foreach \p/\q in {x1/x2,x2/x3,x3/x4,x4/x5,x5/x1} {
+        \draw [blue, extend line] (\p) -- (\q);
+    }
+    \node[blue!50!black, set label] at (0,0) {$S$};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{equation}
+    \label{eq:pullback_of_positive_orthant}
     \begin{tikzcd}
-        Y \times_{X} Z_i \ar[dr, phantom, "\lrcorner", very near start, xshift=-2mm] \ar[r, "b_i^\ast f"] \ar[d, hook, "f^\ast b_i"'] & Z_i \ar[d, hook, "b_i"] \\
-        Y \ar[r, "f"] & X
+        f^{\ast} ( \mathbb{R}^k_+ ) \ar[r, "f'"] \ar[d, hook, "j"] \ar[dr, phantom, "\lrcorner", very near start, xshift=-2mm]& \mathbb{R}^k_+ \ar[d, hook, "i"] \\
+        \mathbb{R}^n \ar[r, "f"] & \mathbb{R}^k \\
     \end{tikzcd}
 \end{equation}
-To every morphism $f : Y \to X$ of $\catB$, and object $B \in \sub_{\catB}(X)$, denote $\kappa_{f}(B) : f^\ast B \to B$ where $f^\ast B \in \sub_{\catB}(Y)$. Finally, a morphism of $\sub(\catB)$ between $A \in \sub_\catB(Y)$ and $B \in \sub_\catB(X)$ is the formal sequence \begin{tikzcd}[cramped] A \ar[r, "\leq"] &  f^{\ast}(B) \ar[r, "\kappa_f(B)"] & B \end{tikzcd}. The projection functor $P_{\catB} : \sub(\catB) \to \catB$ defines the \textit{subobject fibration}\footnote{Note that while the fibres $\sub_{\catB}(X)$ are thin, the total category $\sub(\catB)$ is not necessarily thin.}.
+In Equation~\ref{eq:pullback_of_positive_orthant}, the morphism $j$ is simply the inclusion of the polyhedra $f^\ast ( \mathbb{R}^k_+ )$ into its ambient vector space $\mathbb{R}^n$ and the morphism $f'$ is provided by the restriction of $f$ onto $f^\ast ( \mathbb{R}^k_+ )$.
 
-\textcolor{red!50!black}{[TODO: figure out the relationship between a subobject fibration and the codomain fibration via the notion of \href{https://math.stackexchange.com/questions/2171645/how-can-the-subobject-fibration-be-obtained-from-the-codomain-fibration/2173108}{subterminal objects}.]}
+\subsubsection{The Beck-Chevalley Condition for the Polyhedral Fibration}
 
-\subsection{The category of convex polyhedra and affine maps}
-
-One of the primary motiviating examples for this project is the theory of \textit{convex polyhedra} and associated maps which implement their projections. Following \citeauthor{boyd2004convex}~\cite{boyd2004convex}, a \textit{polyhedron}\footnote{The term polytope will be reserved for the context of \textit{bounded polyhedron}. Note that the opposite convention is sometimes used by other authors as pointed out by \cite{boyd2004convex}.}\footnote{Alternative and sometimes inequivalent definitions for ``polyhedra'' do exist; oftentimes, these alternative definitions accomodate more general notions of polyhedra, such as non-convex polyhedra. Understanding the relationship between these various definitions, and the proposal of new ones, is a mathematical endeavour which dates back to antiquity and continues today  \cite{grunbaum2003your, lakatos2015proofs}.} $P$ is the intersection of a finite number of halfspaces of some ambient vector space $V$. Equivalently, taking $n = \dim V$, $P$ can be regarded as the solution space of a finite system of $m$ linear inequalities constraining $n$ variables $x = (x_1, x_2, \ldots, x_n)$:
-\begin{align*}
-    a_{1,1} x_1 + a_{1,2} x_2 + \ldots + a_{1,n} x_n &\geq b_1, \\
-    a_{2,1} x_1 + a_{2,2} x_2 + \ldots + a_{2,n} x_n &\geq b_2, \\
-                                                     &\vdots  , \\
-    a_{m,1} x_1 + a_{m,2} x_2 + \ldots + a_{m,n} x_n &\geq b_m.
-\end{align*}
-Written compactly,
-\begin{equation}
-    P = \{ x \in V \mid A x \succeq b \}
-\end{equation} 
-where the coefficients $a_{i,j}$ form a $m \times n$ matrix $A$ and the constants $b_{i}$ form a vector $b$.
+Consider a commuting square of affine maps between vector spaces in the base category of affine maps 
 
 \begin{definition}
     The category $\poly$ consists of polyhedra as objects and affine maps between them.
@@ -307,6 +305,96 @@ where the coefficients $a_{i,j}$ form a $m \times n$ matrix $A$ and the constant
     \draw[thick,decorate,decoration={brace,amplitude=2mm}] ([xshift=-1mm]x1B) -- ([xshift=-1mm]x3B);
 \end{tikzpicture}
 \end{center}
+
+\subsection{The Subobject Fibration}
+
+Given any category $\catB$, and an object $X$ of $\catB$, a \textit{subobject} of $X$ is an isomorphism class of monomorphisms $f : Y \hookrightarrow X$; two monomorphisms $f : Y \hookrightarrow X, g : Z \hookrightarrow
+X$ with shared codomain $X$ are isomorphic if there exists an isomorphism $h : Y \xrightarrow{\sim} Z$ such that $f = g \circ h$. The individual monomorphisms of a subobject class can be equipped with a preorder relation $( f : Y \hookrightarrow Z ) \leq ( g : Z \hookrightarrow X )$ if there exists $k : Y \rightarrow Z$ such that $f = g \circ k$:
+\begin{equation}
+    \begin{tikzcd}[column sep=small]
+        Y \ar[rd, hook, "f"'] \ar[rr, "k"] &   & Z \ar[ld, hook', "g"]\\
+          & X & 
+    \end{tikzcd}
+\end{equation}
+Note that if such a $k : Y \to Z$ exists, then it is unique because it $g$ is a monomorpism; if $k' : Y \rightarrow Z$ satisfied $f = g \circ k'$ as well, then $g \circ k = g \circ k'$ which implies $k = k'$. Moreover, this preorder relation on the individual monomorphisms extends to a poset $\sub_{\catB}(X)$ between the subobjects. For example, if $\catB$ is the category $\set$, the subobjects of $X$ are subsets of $X$ and thus $\sub_{\set}(X) \cong \pow(X)$. Even more concretely, if $X$ is the set $\mathbb{R}^2$, an exemplary diagram of $\sub_{\set}(\mathbb{R}^2)$ is
+\begin{center}
+    \begin{tikzcd}[column sep=small]
+        & A & \\
+        B \ar[ur, hook', "\subseteq"] & & C \ar[ul, hook, "\subseteq"'] \\
+        & D \ar[ul, hook', "\subseteq"] \ar[ur, hook, "\subseteq"'] \ar[uu, hook, "\subseteq"] & \\
+    \end{tikzcd}
+    \hspace{3em}
+    \begin{tikzpicture}[
+            set border/.style={draw=#1!80!black},
+            set region/.style={set border=#1, fill=#1!50!white, fill opacity=0.2},
+            set label/.style={draw=#1!80!black}
+        ]
+        \draw[thick, set region=blue, rounded corners] (-2,-1.4) rectangle (+2, +1.4) {};
+
+        \begin{scope}[shift={(-0.5,0)}] 
+            \coordinate (y1) at (  +0:1.3);
+            \coordinate (y2) at ( +45:1.1);
+            \coordinate (y3) at ( +90:0.6);
+            \coordinate (y4) at (+135:1.1);
+            \coordinate (y5) at (+180:1.3);
+            \coordinate (y6) at (+270:1.1);
+            \draw [thick, set region=red] plot [smooth cycle, tension=0.8] coordinates {(y1) (y2) (y3) (y4) (y5) (y6)};
+        \end{scope}
+        \begin{scope}[shift={(+0.5,0)}] 
+            \coordinate (z1) at ( +45:1.3);
+            \coordinate (z2) at (+135:1.3);
+            \coordinate (z3) at (+225:1.3);
+            \coordinate (z4) at (+270:1.1);
+            \coordinate (z5) at (+315:0.7);
+            \coordinate (z6) at (+360:1.3);
+            \draw [thick, set region=green] plot [smooth cycle, tension=0.9] coordinates {(z1) (z2) (z3) (z4) (z5) (z6)};
+        \end{scope}
+        \draw [thick, set border=red] plot [smooth cycle, tension=0.8] coordinates {(y1) (y2) (y3) (y4) (y5) (y6)};
+        \coordinate (w1) at (  +0:0.5);
+        \coordinate (w2) at ( +90:0.5);
+        \coordinate (w3) at (+180:0.5);
+        \coordinate (w4) at (+270:0.5);
+        \draw [thick, set region=yellow] plot [smooth cycle, tension=0.6] coordinates {(w1) (w2) (w3) (w4)};
+
+        \node at (+0,+0) {\color{yellow!50!black}$D$};
+        \node at (+1.3,+0.5) {\color{green!60!black}$C$};
+        \node at (-1.3,+0) {\color{red!60!black}$B$};
+        \node at (+1.5,-0.9) {\color{blue!30!black}$A$};
+    \end{tikzpicture}
+\end{center}
+If the category $\catB$ has pullbacks, the posetal categories $\sub_{\catB}(X)$ for varying objects $X$ of $\catB$ can be ``stitched together'' to form an enveloping category denoted $\sub(\catB)$. The objects of $\sub(\catB)$ are the objects of $\sub_{\catB}(X)$ for various $X$. The morphisms of $\sub(\catB)$ are defined using the morphisms of $\catB$. Given a equivalence class of monomorphisms $B = \{b_i : Z_i \hookrightarrow X \}_{i \in \mathcal I} \in \sub_{\catB}(X)$ with with shared codomain $X$, and morphism $f : Y \to X$ (not necessarily a monomorphism) with codmain $X$, the pullbacks $f^\ast b_i$ of $b_i$ along $f$ for each $i \in \mathcal I$ constitute an equivalence class of monomorphisms $f^{\ast}B \coloneqq \{f^{\ast} b_i : Y \times_{X} Z_i \hookrightarrow Y \}_{i \in \mathcal I} \in \sub_{\catB}(Y)$:\footnote{Evidently, this relies on the fact that pullbacks perserve monomorphisms; i.e. $b : Z \hookrightarrow X$ is a monomorphism, then the pullback $f^\ast b : Y \times_{X} Z \hookrightarrow Y$ is also.}\footnote{The isomoprhisms connecting the monomorphisms of $f^\ast B$ are also given by pullback of the isomorphisms connecting the monomorphisms of $B$.}
+\begin{equation}
+    \begin{tikzcd}
+        Y \times_{X} Z_i \ar[dr, phantom, "\lrcorner", very near start, xshift=-2mm] \ar[r, "b_i^\ast f"] \ar[d, hook, "f^\ast b_i"'] & Z_i \ar[d, hook, "b_i"] \\
+        Y \ar[r, "f"] & X
+    \end{tikzcd}
+\end{equation}
+To every morphism $f : Y \to X$ of $\catB$, and object $B \in \sub_{\catB}(X)$, denote $\kappa_{f}(B) : f^\ast B \to B$ where $f^\ast B \in \sub_{\catB}(Y)$. Finally, a morphism of $\sub(\catB)$ between $A \in \sub_\catB(Y)$ and $B \in \sub_\catB(X)$ is the formal sequence \begin{tikzcd}[cramped] A \ar[r, "\leq"] &  f^{\ast}(B) \ar[r, "\kappa_f(B)"] & B \end{tikzcd}. The projection functor $P_{\catB} : \sub(\catB) \to \catB$ defines the \textit{subobject fibration}\footnote{Note that while the fibres $\sub_{\catB}(X)$ are thin, the total category $\sub(\catB)$ is not necessarily thin.}.
+
+\textcolor{red!50!black}{[TODO: figure out the relationship between a subobject fibration and the codomain fibration via the notion of \href{https://math.stackexchange.com/questions/2171645/how-can-the-subobject-fibration-be-obtained-from-the-codomain-fibration/2173108}{subterminal objects}.]}
+
+\clearpage
+\subsection{The Category of Convex Cones and Linear Maps}
+
+Given any $\mathbb{R}$-vector space $V$, a \textit{(closed) cone} $C \subseteq V$ is a subset of $V$ such that for any elements $c_1, c_2 \in C$ and for any positive coefficients $\gamma_1, \gamma_2 \geq 0$, $\gamma_1 c_1 + \gamma_2 c_2 \in C$. A finite cone $C \subseteq V$ admits a halfspace representation in terms a finite number of linear constraints:
+\begin{equation}
+    C = \{ x \in V \mid \bigwedge_{i=1}^{K} (a_i \cdot x \geq 0) \}
+\end{equation}
+Alternatively, a $\cone$ can be expressed in terms of the pullback of the positive orthant 
+\begin{equation}
+    \mathbb{R}_{+}^{n} \coloneqq \{v \in \mathbb{R}^n \mid \forall i \in [n]: v_i \geq 0 \}
+\end{equation}
+by a linear transformation $f : V \to \mathbb{R}^{n}$ into $\mathbb{R}^{n}$.
+\begin{equation}
+    \begin{tikzcd}
+        f^{*}(\mathbb{R}^n_+) \ar[dr, phantom, "\lrcorner", very near start, xshift=-2mm] \ar[r] \ar[d, hook] &  \mathbb{R}^n_+ \ar[d, hook, "i_+"] \\
+        V \ar[r, "f"] & \mathbb{R}^n
+    \end{tikzcd}
+\end{equation}
+\begin{equation}
+    f^{*}(\mathbb{R}^n_+) \cong \{ v \in V \mid f(v) \in \mathbb{R}^n_+ \}
+\end{equation}
+Given a cone $f^{*}(\mathbb{R}^n_+) \subseteq V$ associated with a finite set of $n$ linear expressions $f : V \to \mathbb{R}^n$, and a linear transformation $g : V \to W$,
 
 \subsection{Subset Projection}
 A prototypical example wherein an adjoint triple 
@@ -851,6 +939,8 @@ This section is temporary and reserved for recording comments toward various ref
     \item \citeauthor{fausk2003isomorphisms}~\cite{fausk2003isomorphisms}
     \item \citeauthor{hofstra2011dialectica}~\cite{hofstra2011dialectica}
     \item \citeauthor{ponto2012duality}~\cite{ponto2012duality}
+    \item \citeauthor{mac2013categories}~\cite{mac2013categories}
+    \item \citeauthor{ziegler2012lectures}~\cite{ziegler2012lectures}
     \item \href{https://en.wikipedia.org/wiki/Spectrahedron}{Spectrahedron} are interesting semi-algebaric sets. (\url{https://www.youtube.com/watch?v=AevFRN5sxOU}).
 \end{itemize}
 
