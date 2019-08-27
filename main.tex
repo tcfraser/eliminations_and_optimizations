@@ -822,7 +822,9 @@ Given any category $\catB$ with all pullbacks, the functor $P_{\catB} : \sub_{\c
         \arrow[from=L, to=R, symbol=\dashv]
     \end{tikzcd}
 \end{equation}
-Specfically, left adjoint functor $f_{!}$ acting on a subobject $[\psi] : \sub_{\catB}(a)$ (where $[\psi]$ is the equivalence class of monomorphisms into $a$ containing $\psi : a' \hookrightarrow a$) is given by post-composition $f_{!} ( [\psi] ) = [ f \psi ] \in \sub_{\catB}(b)$ in $\catB$. The right adjoint functor $f^\ast$ acting on a subobject $[\phi] \in \sub_{\catB}(b)$ is given by pullback of \begin{tikzcd}[cramped]a \ar[r, "f"]  & b & b' \ar[l, hook', "\phi"'] \end{tikzcd} in $\catB$:
+Specfically, left adjoint functor $f_{!}$ acting on a subobject $[\psi] : \sub_{\catB}(a)$ (where $[\psi]$ is the equivalence class of monomorphisms into $a$ containing $\psi : a' \hookrightarrow a$) is given by post-composition $f_{!} ( [\psi] ) = [ f \psi ] \in \sub_{\catB}(b)$ in $\catB$.
+\tob{That works for the codomain fibration, but not here, because $f \psi$ is generally not a subobject. Rather, $f_! ( [\psi] )$ should be the \emph{image} of the morphism $f \psi$, in the sense of \href{https://ncatlab.org/nlab/show/image}{image factorization} (please check whether this works). Thus one needs to assume that image factorizations exist}
+The right adjoint functor $f^\ast$ acting on a subobject $[\phi] \in \sub_{\catB}(b)$ is given by pullback of \begin{tikzcd}[cramped]a \ar[r, "f"]  & b & b' \ar[l, hook', "\phi"'] \end{tikzcd} in $\catB$:
 \begin{equation}
     \begin{tikzcd}
         f^{*}b' \ar[dr, phantom, "\lrcorner", very near start] \ar[r] \ar[d, hook, "f^\ast \phi"'] & b' \ar[d, hook, "\phi"] \\
@@ -844,7 +846,7 @@ There exists a natural isomorphism $\alpha$ between the functors $f^\ast g^\ast$
         \sub_{\catB}(c) \ar[from=r, "k"] & \sub_{\catB}(d)
     \end{tikzcd}
 \end{equation}
-The existence of components $\alpha_{[\psi]}$ for each subobject class containing the monomorphism $\psi : p \hookrightarrow d$ can be determined by examining the following diagram:
+The existence of components $\alpha_{[\psi]}$ for the subobject class containing the monomorphism $\psi : p \hookrightarrow d$ can be determined by examining the following diagram:
 \begin{equation}
     \begin{tikzcd}
         & & & f^\ast g^\ast p \ar[d] \ar[lld, hook, out=180, in=90, "f^\ast g^\ast \psi"', near start] \ar[dl, phantom, "\llcorner", very near start] \\ 
@@ -869,13 +871,15 @@ Alternatively, one can consider whether or not there exists natural transformati
         p \ar[r, "g\psi"] \ar[rrr, bend right=15, equals] & d & b \ar[l, "g"'] & p \ar[l, hook', "\psi"']
     \end{tikzcd}
 \end{equation}
-Similarly, $k^\ast g p$ and $f^\ast p$ are \textit{both} pullbacks of \begin{tikzcd}[cramped] p \ar[r, "g\psi"] & d & c \ar[l, hook', "k"'] \end{tikzcd} and therefore, we obtain an analogous statement: since $h f^\ast \psi \simeq k^\ast g \psi$, we have $[h f^\ast \psi] = [k^\ast g \psi]$ and therefore $h_! f^\ast = k^\ast g_!$. The key difference in this case is that this argument \textit{does} rely on $a$ being the pullback of a pullback square.
+Similarly, $k^\ast g p$ and $f^\ast p$ are \textit{both} pullbacks of \begin{tikzcd}[cramped] p \ar[r, "g\psi"] & d & c \ar[l, hook', "k"'] \end{tikzcd} and therefore, we obtain an analogous statement: since $h f^\ast \psi \simeq k^\ast g \psi$, we have $[h f^\ast \psi] = [k^\ast g \psi]$ and therefore $h_! f^\ast = k^\ast g_!$.
+\tob{Nice! Even though the pushforward functors are missing the image factorizations, I think that this is the correct argument in the case of the codomain fibration. For the subobject fibration, we might need some additional stability property, presumably the one stated in the alternative definition of \href{https://ncatlab.org/nlab/show/regular+category#definition}{regular categories}}
+The key difference in this case is that this argument \textit{does} rely on $a$ being the pullback of a pullback square.
 
 In summary, the subobject fibration \textit{satisfies} the Beck-Chevalley condition. Moreover, since none of the above argument relies on the fact that the objects of total category are represented by \textit{monomorphisms} in the base, just that they correspond to \textit{morpisms} in the base, it is clear that any codomain bifibration also satisfies the Beck-Chevalley condition.
 
 \subsection{The Category of Convex Cones and Linear Maps}
 
-Given any $\mathbb{R}$-vector space $V$, a \textit{(closed) cone} $C \subseteq V$ is a subset of $V$ such that for any elements $c_1, c_2 \in C$ and for any positive coefficients $\gamma_1, \gamma_2 \geq 0$, $\gamma_1 c_1 + \gamma_2 c_2 \in C$. A finite cone $C \subseteq V$ admits a halfspace representation in terms a finite number of linear constraints:
+Given any $\mathbb{R}$-vector space $V$, a \textit{(closed) cone} $C \subseteq V$ is a subset of $V$ such that for any elements $c_1, c_2 \in C$ and for any positive coefficients $\gamma_1, \gamma_2 \geq 0$, $\gamma_1 c_1 + \gamma_2 c_2 \in C$. A polyhedral cone $C \subseteq V$ is one which admits a half-space representation in terms a finite number of linear constraints:
 \begin{equation}
     C = \{ x \in V \mid \bigwedge_{i=1}^{K} (a_i \cdot x \geq 0) \}
 \end{equation}
