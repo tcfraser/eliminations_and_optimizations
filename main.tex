@@ -2,7 +2,7 @@
 
 % === [Packages] ===
 \usepackage[utf8]{inputenc} % utf8 support
-\usepackage[hmargin=1in,vmargin=1in]{geometry}
+% \usepackage[hmargin=1in,vmargin=1in]{geometry}
 \usepackage{indentfirst}
 \usepackage{lipsum}
 \usepackage{url}
@@ -24,18 +24,24 @@
 \usepackage{amsfonts}
 \usepackage{indentfirst}
 \usepackage{pgfplots}
+\pgfplotsset{compat=1.16} % https://tex.stackexchange.com/questions/81899/what-does-running-in-backwards-compatibility-mode-mean-and-what-should-i-fix-t
 \usepackage{tikz}
 
-% === [amsthm declarations] === 
+% === [amsthm declarations] ===
+% http://www.math.ucsd.edu/~jeggers/latex/amsthdoc.pdf
+%\swapnumbers
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{corollary}{Corollary}[theorem]
 \newtheorem{lemma}[theorem]{Lemma}
-\theoremstyle{definition}
+
+\theoremstyle{definition}[section]
 \newtheorem{definition}{Definition}[section]
 \theoremstyle{remark}
 \newtheorem*{remark}{Remark}
 
-% === [Misc] === 
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+% === [Misc] ===
 % Multiple footnotes https://tex.stackexchange.com/questions/40072/incompatibility-between-footmisc-option-multiple-and-hyperref/62091#62091
 \let\oldFootnote\footnote
 \newcommand\nextToken\relax
@@ -46,7 +52,7 @@
 \newcommand\isFootnote{%
     \ifx\footnote\nextToken\textsuperscript{,}\fi}
 
-% === [global tikz configurations] === 
+% === [global tikz configurations] ===
 \usetikzlibrary{
     calc,
     arrows,
@@ -100,7 +106,7 @@
             }
         }
     },
-    % style to add arrow half-way along an edge 
+    % style to add arrow half-way along an edge
     midarrow/.style={
         postaction={
             decorate,
@@ -121,10 +127,10 @@
 \newcommand{\poly}{\mathsf{Poly}} % category of polyhedra and affine maps between them
 \newcommand{\set}{\mathsf{Set}} % category of sets and functions between them
 \newcommand{\cat}{\mathsf{Cat}} % 2-category of categories and functors between them and natural transformations between the functors
-\newcommand{\sub}{\mathsf{Sub}} % the poset of subobjects and inclusions between them 
+\newcommand{\sub}{\mathsf{Sub}} % the poset of subobjects and inclusions between them
 \newcommand{\pow}{\mathsf{P}} % the powerset poset
 \newcommand{\cone}{\mathsf{Cone}} % the powerset poset
-\newcommand{\aff}{\mathsf{Aff}} % the category of affine spaces (?) and affine maps between them 
+\newcommand{\aff}{\mathsf{Aff}} % the category of affine spaces (?) and affine maps between them
 \newcommand{\vect}{\mathsf{Vect}} % the category of vector spaces and linear maps between them
 \newcommand{\mono}{\mathsf{Mono}} % the preorder of monomorphisms with shared codomain given by an argument
 
@@ -158,7 +164,7 @@
 \date{\today}
 \title{On the Fibrations Underlying Optimization and Elimination}
 
-% === [The document] === 
+% === [The document] ===
 \begin{document}
 
 \maketitle
@@ -172,7 +178,7 @@
 \section*{Notation Proposals}
 \begin{itemize}
     \item $\aff$ the category of affine spaces (?) and affine maps between them
-    \item $\vect$ the category of vector spaces and the linear maps between them 
+    \item $\vect$ the category of vector spaces and the linear maps between them
     \item $\poly$ the category of polyhedra and the affine maps between them
     \item $\cone$ the category of cones and the linear maps between them
 \end{itemize}
@@ -184,7 +190,7 @@ Below is a provisional list of various notions of ``elimination'':
 \begin{itemize} % indentation is messy here :(
     \item The \textbf{resolution rule} of propositional (and also first order) logics. Two clauses containing a complementary literals (e.g. variable $c$ in one and its negation $\neg c$ in the other) entails a clause with the complementary literals eliminated (see \textit{Ground resolvents and Ground resolution} in \cite{robinson1965machine}):\footnote{Reference \url{https://en.wikipedia.org/wiki/Resolution_(logic)}.}
         \[ \frac{a_1 \vee a_2 \vee \cdots \vee c, \quad b_1 \vee b_2 \vee \cdots \vee \neg c}{a_1 \vee a_2 \vee \cdots \vee b_1 \vee b_2 \vee \cdots} \]
-    Equivalently, 
+    Equivalently,
         \[ \frac{(\neg a_1 \wedge \neg a_2 \wedge \cdots) \to c, \quad c \to (b_1 \vee b_2 \vee \cdots)}{(\neg a_1 \wedge \neg a_2 \wedge \cdots) \to (b_1 \vee b_2 \vee \cdots)} \]
     This generalizes to arbitrary conjunctions of literals which may or may not reference $c$ or $\neg c$.
     \item The incremental step of \textbf{Fourier-Motzkin elimination} \cite{ziegler2012lectures} for systems of linear inequalities. Given
@@ -302,12 +308,12 @@ The following unordered list of categorical concepts are anticipated to be utili
     where $\catE / \beta \times_{\catB / P(\beta)} \catB / P(\phi)$ is the pullback of functors.
     \begin{equation}
         \begin{tikzcd}
-            \catE / \phi \ar[drr, bend left=20, "P/\phi"] \ar[ddr, bend right=40, "\mathrm{cod}"] \ar[dr, dashed, "\cong", leftrightarrow] & & \\ 
-            & \catE / \beta \times_{\catB / P(\beta)} \catB / P(\phi) \ar[r] \ar[d] \ar[dr, phantom, "\lrcorner", very near start, xshift=-2em] & \catB / P(\phi) \ar[d, "\mathrm{cod}"] \\ 
-            & \catE / \beta \ar[r, "P/\beta"] & \catB / P(\beta) \\ 
+            \catE / \phi \ar[drr, bend left=20, "P/\phi"] \ar[ddr, bend right=40, "\mathrm{cod}"] \ar[dr, dashed, "\cong", leftrightarrow] & & \\
+            & \catE / \beta \times_{\catB / P(\beta)} \catB / P(\phi) \ar[r] \ar[d] \ar[dr, phantom, "\lrcorner", very near start, xshift=-2em] & \catB / P(\phi) \ar[d, "\mathrm{cod}"] \\
+            & \catE / \beta \ar[r, "P/\beta"] & \catB / P(\beta) \\
         \end{tikzcd}
     \end{equation}
-\end{corollary} 
+\end{corollary}
 
 The pullback category $\catE / \beta \times_{\catB / P(\beta)} \catB / P(\phi)$ has morphisms associated with diagrams of $\catB$ with the following format:
 \begin{equation}
@@ -340,7 +346,7 @@ Intuitively, if $\phi$ is cartesian, then in order to determine the category $\c
 \end{lemma}
 
 \begin{proof}
-    Recall that if $P : \catE \to \catB$ is a faithful functor, then by definition every pair of parallel arrows $\phi, \psi : \alpha \to \beta$ in $\catE$ satisfies 
+    Recall that if $P : \catE \to \catB$ is a faithful functor, then by definition every pair of parallel arrows $\phi, \psi : \alpha \to \beta$ in $\catE$ satisfies
     \begin{equation}
         \label{eq:faithfulness}
         P(\phi) = P(\psi) : P(\alpha) \to P(\beta) \implies \phi = \psi.
@@ -369,26 +375,28 @@ Given a cleavage for a fibration, the cartesianness of morphisms within a cleava
 \begin{equation}
     \begin{tikzcd}[
             column sep=2em,
+            every matrix/.append style={name=co},
             execute at end picture={
                 \fill[blue, opacity=0.1] (-7, -0.75) rectangle (+7, -1.5)
                     node[above left, blue!50!black, opacity=1]{$\catB$};
-                \fill[red, opacity=0.1] (-7, +3.25) rectangle (+7, -0.25) 
+                \fill[red, opacity=0.1] (-7, +3.25) rectangle (+7, -0.25)
                     node[above left, red!50!black, opacity=1]{$\catE$};
-                \fill[green, opacity=0.1] (-1.9, +2.25) rectangle (+1.9, +0.25) 
+                \fill[green, opacity=0.1] (-1.9, +2.25) rectangle (+1.9, +0.25)
                     node[above left, green!50!black, opacity=1]{$\catE_b$};
-                \fill[green, opacity=0.1] (-6.9, +2.25) rectangle (-2.75, +0.25) 
+                \fill[green, opacity=0.1] (-6.9, +2.25) rectangle (-2.75, +0.25)
                     node[above left, green!50!black, opacity=1]{$\catE_a$};
-                \fill[green, opacity=0.1] (+2.75, +2.25) rectangle (+6.9, +0.25) 
+                \fill[green, opacity=0.1] (+2.75, +2.25) rectangle (+6.9, +0.25)
                     node[above left, green!50!black, opacity=1]{$\catE_c$};
+                \fill[red] (co-1-1) -- (co-1-3) -- (co-2-2) -- cycle;
             }
         ]
-        f^\ast\alpha 
-        \ar[rddd, mapsto, bend right] 
-        \ar[rr, "f^\ast(\phi\circ\psi)"', "(f^\ast\phi) \circ (f^\ast\psi)", dashed] 
-        \ar[rd, "f^\ast\psi"', dashed] 
-        & & 
-        f^\ast\beta 
-        \ar[lddd, mapsto, bend left] 
+        f^\ast\alpha
+        \ar[rddd, mapsto, bend right]
+        \ar[rr, "f^\ast(\phi\circ\psi)"', "(f^\ast\phi) \circ (f^\ast\psi)", dashed]
+        \ar[rd, "f^\ast\psi"', dashed]
+        & &
+        f^\ast\beta
+        \ar[lddd, mapsto, bend left]
         \ar[rrrr, "\kappa_f(\beta)", bend left]
         & &
         \alpha
@@ -397,44 +405,44 @@ Given a cleavage for a fibration, the cartesianness of morphisms within a cleava
         \ar[rd, "\psi"']
         \ar[from=llll, "\kappa_f(\alpha)", bend left, crossing over]
         \ar[from=rrrr, "\kappa_g(\alpha)"', bend right, crossing over]
-        & & 
-        \beta 
-        \ar[lddd, mapsto, bend left] 
+        & &
+        \beta
+        \ar[lddd, mapsto, bend left]
         \ar[from=rrrr, "\kappa_g(\beta)"', bend right, crossing over]
         & &
-        g^\ast\alpha 
-        \ar[rddd, mapsto, bend right] 
-        \ar[rr, "g^\ast(\phi\circ\psi)"', "(g^\ast\phi) \circ (g^\ast\psi)", dashed] 
-        \ar[rd, "g^\ast\psi"', dashed] 
-        & & 
-        g^\ast\beta 
+        g^\ast\alpha
+        \ar[rddd, mapsto, bend right]
+        \ar[rr, "g^\ast(\phi\circ\psi)"', "(g^\ast\phi) \circ (g^\ast\psi)", dashed]
+        \ar[rd, "g^\ast\psi"', dashed]
+        & &
+        g^\ast\beta
         \ar[lddd, mapsto, bend left]
         \\
-        & 
-        f^\ast\gamma 
-        \ar[dd, mapsto] 
-        \ar[ru, "f^\ast\phi"', dashed] 
-        \ar[rrrr, "\kappa_f(\gamma)", bend right=10, crossing over] 
-        & & & & 
-        \gamma 
-        \ar[ru, "\phi"'] 
-        \ar[dd, mapsto] 
-        & & & & 
-        g^\ast\gamma 
-        \ar[dd, mapsto] 
-        \ar[ru, "g^\ast\phi"', dashed] 
-        \ar[llll, "\kappa_g(\gamma)"', bend left=10, crossing over] 
-        & 
+        &
+        f^\ast\gamma
+        \ar[dd, mapsto]
+        \ar[ru, "f^\ast\phi"', dashed]
+        \ar[rrrr, "\kappa_f(\gamma)", bend right=10, crossing over]
+        & & & &
+        \gamma
+        \ar[ru, "\phi"']
+        \ar[dd, mapsto]
+        & & & &
+        g^\ast\gamma
+        \ar[dd, mapsto]
+        \ar[ru, "g^\ast\phi"', dashed]
+        \ar[llll, "\kappa_g(\gamma)"', bend left=10, crossing over]
+        &
         \\
-        & & & & & & & & & & 
+        & & & & & & & & & &
         \\
-        & 
-        a 
-        \ar[rrrr,"f"] 
-        & & & & b & & & & 
-        c 
-        \ar[llll, "g"'] 
-        & 
+        &
+        a
+        \ar[rrrr,"f"]
+        & & & & b & & & &
+        c
+        \ar[llll, "g"']
+        &
         \\
     \end{tikzcd}
 \end{equation}
@@ -443,7 +451,7 @@ Given a cleavage for a fibration, the cartesianness of morphisms within a cleava
 
 Pages 47-48 of \cite{vistoli2004notes} explicate the notions of pseudo-functors and their equivalence to fibrations with cleavages. Morover if the cleavage is splitting, the induced pseudo-functor is in fact a functor.
 
-\subsection{Nearby Fibrations: Opfibrations and $\ast$-fibrations}
+\subsection{Nearby Fibrations: Opfibrations and \texorpdfstring{$\ast$}{*}-fibrations}
 
 Given a functor $P : \catE \to \catB$, it can be considered as a fibration in many different ways. For example, if $P^{\opcat} : \catE^{\opcat} \to \catB^{\opcat}$ is a fibration, then $P$ is said to be an \textit{opfibration}.
 
@@ -538,7 +546,7 @@ The Beck-Chevalley Conditions are conditions that may or may not be satisfied by
         \draw[double equal sign distance, -implies] (+0.5,+0.5) to node[above left]{$\alpha$} (-0.5,-0.5);
     \end{tikzpicture}
 \]
-To define the \textit{left} Beck-Chevalley condition, one needs functors $F_L : \catB \to \catA$ and $H_L : \catD \to \catA$ which are respectively left adjoint functors to $F$ and $H$, 
+To define the \textit{left} Beck-Chevalley condition, one needs functors $F_L : \catB \to \catA$ and $H_L : \catD \to \catA$ which are respectively left adjoint functors to $F$ and $H$,
 
 \[
     \begin{tikzpicture}
@@ -550,7 +558,7 @@ To define the \textit{left} Beck-Chevalley condition, one needs functors $F_L : 
         \draw (0,+1) node[rotate=-90]{$\dashv$};
     \end{tikzpicture}
     ,
-    \qquad 
+    \qquad
     \begin{tikzpicture}
         \draw (-1,-1) node(bl){$\catC$};
         \draw (+1,-1) node(br){$\catD$};
@@ -746,7 +754,7 @@ As previously mentioned, a polyhedra is the intersection of finitely many halfsp
     \coordinate (x4) at (+140:2);
     \coordinate (x5) at (+190:2);
     % \foreach \p in {x1,x2,x3,x4,x5} {
-    %     \node at (\p)[circle,fill,inner sep=1pt]{}; 
+    %     \node at (\p)[circle,fill,inner sep=1pt]{};
     % }
     \draw [blue, thick, set region] (x1) -- (x2) -- (x3) -- (x4) -- (x5) -- cycle;
     \foreach \p/\q in {x1/x2,x2/x3,x3/x4,x4/x5,x5/x1} {
@@ -768,7 +776,7 @@ In Equation~\ref{eq:pullback_of_positive_orthant}, the morphism $j$ is simply th
 
 \subsection{The Beck-Chevalley Condition for the Polyhedral Fibration}
 
-Consider a commuting square of affine maps between vector spaces in the base category of affine maps 
+Consider a commuting square of affine maps between vector spaces in the base category of affine maps
 
 \begin{definition}
     The category $\poly$ consists of polyhedra as objects and affine maps between them.
@@ -826,7 +834,7 @@ Consider a commuting square of affine maps between vector spaces in the base cat
     \coordinate (x4) at (+140:2);
     \coordinate (x5) at (+190:2);
     \foreach \p in {x1,x2,x3,x4,x5} {
-        \node at (\p)[circle,fill,inner sep=1pt]{}; 
+        \node at (\p)[circle,fill,inner sep=1pt]{};
         \coordinate (\p A) at ($(ori)!(\p)!(A)$);
         \coordinate (\p B) at ($(ori)!(\p)!(B)$);
     }
@@ -834,7 +842,7 @@ Consider a commuting square of affine maps between vector spaces in the base cat
     \foreach \p/\q in {x1/x2,x2/x3,x3/x4,x4/x5,x5/x1} {
         \draw [extend line] (\p) -- (\q);
     }
-    
+
     \foreach \p in {x2,x5} {
         \draw [dash dot] (\p) -- (\p A);
         \draw [thick] ([yshift=-2mm]\p A) -- ([yshift=+2mm]\p A);
@@ -862,7 +870,7 @@ X$ with shared codomain $X$ are isomorphic if there exists an isomorphism $h : Y
 \begin{equation}
     \begin{tikzcd}[column sep=small]
         Y \ar[rd, hook, "f"'] \ar[rr, "k"] &   & Z \ar[ld, hook', "g"]\\
-          & X & 
+          & X &
     \end{tikzcd}
 \end{equation}
 Note that if such a $k : Y \to Z$ exists, then it is unique because it $g$ is a monomorpism; if $k' : Y \rightarrow Z$ satisfied $f = g \circ k'$ as well, then $g \circ k = g \circ k'$ which implies $k = k'$. Moreover, this preorder relation on the individual monomorphisms extends to a poset $\sub_{\catB}(X)$ between the subobjects. For example, if $\catB$ is the category $\set$, the subobjects of $X$ are subsets of $X$ and thus $\sub_{\set}(X) \cong \pow(X)$. Even more concretely, if $X$ is the set $\mathbb{R}^2$, an exemplary diagram of $\sub_{\set}(\mathbb{R}^2)$ is
@@ -880,7 +888,7 @@ Note that if such a $k : Y \to Z$ exists, then it is unique because it $g$ is a 
         ]
         \draw[thick, set region=blue, rounded corners] (-2,-1.4) rectangle (+2, +1.4) {};
 
-        \begin{scope}[shift={(-0.5,0)}] 
+        \begin{scope}[shift={(-0.5,0)}]
             \coordinate (y1) at (  +0:1.3);
             \coordinate (y2) at ( +45:1.1);
             \coordinate (y3) at ( +90:0.6);
@@ -889,7 +897,7 @@ Note that if such a $k : Y \to Z$ exists, then it is unique because it $g$ is a 
             \coordinate (y6) at (+270:1.1);
             \draw [thick, set region=red] plot [smooth cycle, tension=0.8] coordinates {(y1) (y2) (y3) (y4) (y5) (y6)};
         \end{scope}
-        \begin{scope}[shift={(+0.5,0)}] 
+        \begin{scope}[shift={(+0.5,0)}]
             \coordinate (z1) at ( +45:1.3);
             \coordinate (z2) at (+135:1.3);
             \coordinate (z3) at (+225:1.3);
@@ -922,12 +930,16 @@ To every morphism $f : Y \to X$ of $\catB$, and object $B \in \sub_{\catB}(X)$, 
 
 \ctodo{figure out the relationship between a subobject fibration and the codomain fibration via the notion of \href{https://math.stackexchange.com/questions/2171645/how-can-the-subobject-fibration-be-obtained-from-the-codomain-fibration/2173108}{subterminal objects}.}
 
+\begin{definition}
+
+\end{definition}
+
 \subsection{The Beck-Chevalley Condition for Any Subobject Fibration}
 
 Given any category $\catB$ with all pullbacks, the functor $P_{\catB} : \sub_{\catB} \to \catB$ which sends subobjects $[\psi]$ to their shared codomains, constitutes a bifibration. In particular, given a morphism $f : a \to b$ of $\catB$, there is an induced adjoint pair of functors between the subobject fibers:
 \begin{equation}
     \begin{tikzcd}
-        \sub_{\catB}(a) 
+        \sub_{\catB}(a)
         \arrow[r, bend left, "f_!", ""{name=L,inner sep=1pt,below}]
         \arrow[from=r, bend left, "f^\ast", ""{name=R,inner sep=1pt}]
         &
@@ -941,7 +953,7 @@ The right adjoint functor $f^\ast$ acting on a subobject $[\phi] \in \sub_{\catB
 \begin{equation}
     \begin{tikzcd}
         f^{*}b' \ar[dr, phantom, "\lrcorner", very near start] \ar[r] \ar[d, hook, "f^\ast \phi"'] & b' \ar[d, hook, "\phi"] \\
-        a \ar[r, "f"'] & b 
+        a \ar[r, "f"'] & b
     \end{tikzcd}
 \end{equation}
 
@@ -949,7 +961,7 @@ Generally speaking, it is important to determine how diagrams in the base catego
 \begin{equation}
     \begin{tikzcd}
         a \ar[dr, phantom, "\lrcorner", very near start] \ar[r, "f"] \ar[d, "h"'] & b \ar[d, "g"] \\
-        c \ar[r, "k"'] & d 
+        c \ar[r, "k"'] & d
     \end{tikzcd}
 \end{equation}
 There exists a natural isomorphism $\alpha$ between the functors $f^\ast g^\ast$ and $h^\ast k^\ast$:
@@ -962,17 +974,35 @@ There exists a natural isomorphism $\alpha$ between the functors $f^\ast g^\ast$
 The existence of components $\alpha_{[\psi]}$ for the subobject class containing the monomorphism $\psi : p \hookrightarrow d$ can be determined by examining the following diagram:
 \begin{equation}
     \begin{tikzcd}
-        & & & f^\ast g^\ast p \ar[d] \ar[lld, hook, out=180, in=90, "f^\ast g^\ast \psi"', near start] \ar[dl, phantom, "\llcorner", very near start] \\ 
-        & a \ar[r, "f"] \ar[d, "h"'] \ar[dr, phantom, "\lrcorner", very near start] & b \ar[d, "g"] & g^\ast p \ar[l, "g^\ast \psi"', hook] \ar[dd] \ar[dl, phantom, "\llcorner", very near start] \\ 
-        & c \ar[r, "k"'] & d & \\ 
+        & & & f^\ast g^\ast p \ar[d] \ar[lld, hook, out=180, in=90, "f^\ast g^\ast \psi"', near start] \ar[dl, phantom, "\llcorner", very near start] \\
+        & a \ar[r, "f"] \ar[d, "h"'] \ar[dr, phantom, "\lrcorner", very near start] & b \ar[d, "g"] & g^\ast p \ar[l, "g^\ast \psi"', hook] \ar[dd] \ar[dl, phantom, "\llcorner", very near start] \\
+        & c \ar[r, "k"'] & d & \\
         h^\ast k^\ast p \ar[r] \ar[uur, hook, out=90, in=180, "h^\ast k^\ast \psi", near start] \ar[ur, phantom, "\urcorner", very near start] & k^\ast p \ar[u, hook, "k^\ast \psi"] \ar[rr] \ar[ur, phantom, "\urcorner", very near start] & & p \ar[ul, hook, "\psi"']
     \end{tikzcd}
 \end{equation}
 Using the composition of pullback squares, it is clear that \textit{both} $f^\ast g^\ast p$ and $h^\ast k^\ast p$ are pullbacks of \begin{tikzcd}[cramped] a \ar[r, "gf = kh"] & d & p \ar[l, hook', "\psi"'] \end{tikzcd} and therefore, they are unique up to a unique isomorphism which will be denoted $\beta$. It is important to notice that this does not depend on $a$ being a pullback itself.
 \begin{equation}
     \begin{tikzcd}[row sep=large]
-        h^\ast k^\ast p \ar[d, hook', "h^\ast k^\ast \psi"'] \ar[rrd, bend left] \ar[rr, bend left, dashed, "\beta^{-1}"'] \ar[dr, phantom, "\lrcorner", very near start] & & f^\ast g^\ast p \ar[d] \ar[lld, bend right, hook', "f^\ast g^\ast \psi", near end] \ar[ll, bend right=40, dashed, "\beta"'] \ar[dr, phantom, "\llcorner", very near start] \\
-        a \ar[r, "gf=kh"'] & d & p  \ar[l, hook', "\psi"]
+        h^\ast k^\ast p
+        \ar[d, hook', "h^\ast k^\ast \psi"']
+        \ar[rrd, bend left]
+        \ar[rr, bend left, dashed, "\beta^{-1}"']
+        \ar[dr, phantom, "\lrcorner", very near start]
+        &
+        &
+        f^\ast g^\ast p
+        \ar[d]
+        \ar[lld, bend right, hook', "f^\ast g^\ast \psi", near end]
+        \ar[ll, bend right=40, dashed, "\beta"']
+        \ar[dl, phantom, "\llcorner", very near start]
+        \\
+        a
+        \ar[r, "gf=kh"']
+        &
+        d
+        &
+        p
+        \ar[l, hook', "\psi"]
     \end{tikzcd}
 \end{equation}
 These isomorphisms actually establish that $h^\ast k^\ast \psi \simeq f^\ast g^\ast \psi$ and therefore they belong to the same equivalence class $[h^\ast k^\ast \psi] = [ f^\ast g^\ast \psi ]$ for each $\psi$. Therefore, it becomes clear that the natural isomorphism is indeed the identity natural transformation $\id_{f^\ast g^\ast} = \id_{h^\ast k^\ast} = \alpha : f^\ast g^\ast \to h^\ast k^\ast$.\footnote{Ultimately, the reason for $\alpha = \id$ is due to considering $\sub_{\catB}(a)$, the \textit{poset} of subobjects of $a$, instead of $\mono_{\catB}(a)$ the \textit{preorder} of monomorphisms into $a$.}
@@ -985,7 +1015,7 @@ Alternatively, one can consider whether or not there exists natural transformati
     \end{tikzcd}
 \end{equation}
 Similarly, $k^\ast g p$ and $f^\ast p$ are \textit{both} pullbacks of \begin{tikzcd}[cramped] p \ar[r, "g\psi"] & d & c \ar[l, hook', "k"'] \end{tikzcd} and therefore, we obtain an analogous statement: since $h f^\ast \psi \simeq k^\ast g \psi$, we have $[h f^\ast \psi] = [k^\ast g \psi]$ and therefore $h_! f^\ast = k^\ast g_!$.
-\tob{Nice! Even though the pushforward functors are missing the image factorizations, I think that this is the correct argument in the case of the codomain fibration. For the subobject fibration, we might need some additional stability property, presumably the one stated in the alternative definition of \href{https://ncatlab.org/nlab/show/regular+category#definition}{regular categories}}
+\tob{Nice! Even though the pushforward functors are missing the image factorizations, I think that this is the correct argument in the case of the codomain fibration. For the subobject fibration, we might need some additional stability property, presumably the one stated in the alternative definition of \href{https://ncatlab.org/nlab/show/regular+category\#definition}{regular categories}}
 The key difference in this case is that this argument \textit{does} rely on $a$ being the pullback of a pullback square.
 
 In summary, the subobject fibration \textit{satisfies} the Beck-Chevalley condition. Moreover, since none of the above argument relies on the fact that the objects of total category are represented by \textit{monomorphisms} in the base, just that they correspond to \textit{morpisms} in the base, it is clear that any codomain bifibration also satisfies the Beck-Chevalley condition.
@@ -996,7 +1026,7 @@ Given any $\mathbb{R}$-vector space $V$, a \textit{(closed) cone} $C \subseteq V
 \begin{equation}
     C = \{ x \in V \mid \bigwedge_{i=1}^{K} (a_i \cdot x \geq 0) \}
 \end{equation}
-Alternatively, a $\cone$ can be expressed in terms of the pullback of the positive orthant 
+Alternatively, a $\cone$ can be expressed in terms of the pullback of the positive orthant
 \begin{equation}
     \mathbb{R}_{+}^{n} \coloneqq \{v \in \mathbb{R}^n \mid \forall i \in [n]: v_i \geq 0 \}
 \end{equation}
@@ -1013,7 +1043,7 @@ by a linear transformation $f : V \to \mathbb{R}^{n}$ into $\mathbb{R}^{n}$.
 Given a cone $f^{*}(\mathbb{R}^n_+) \subseteq V$ associated with a finite set of $n$ linear expressions $f : V \to \mathbb{R}^n$, and a linear transformation $g : V \to W$,
 
 \subsection{Subset Projection}
-A prototypical example wherein an adjoint triple 
+A prototypical example wherein an adjoint triple
 \[ f_{!}, \exists_{f} \dashv f^{\ast}, f^{-1} \dashv f^{!}, \forall_{f} \]
 arises is that of functions $f : X \to Y$ between sets $X$ and $Y$. The inverse image functor $f^{\ast} : \mathscr{P}Y \to \mathscr{P}X$ is defined on a subset $T \subseteq Y$
 \[ f^{\ast} ( T ) = \{ x \in X : f(x) \in T \}, \]
@@ -1047,7 +1077,7 @@ form an adjoint triple in the sense that $\exists_{f} \dashv f^{\ast} \dashv \fo
         \coordinate (\p B) at ($(ori)!(\p)!(B)$);
     }
     \draw [thick, set region] plot [smooth cycle] coordinates {(x1) (+1,-0.5) (x2) (x3) (x4) (x5)};
-    
+
     \path[set region] (x5A) rectangle ([yshift=-1mm]x2A);
     \path[set region] (x3B) rectangle ([xshift=-1mm]x1B);
 
