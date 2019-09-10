@@ -1,7 +1,7 @@
-\documentclass[10pt]{article}
-\usepackage[utf8]{inputenc} % utf8 support
+\documentclass[12pt]{article}
 
-% === Document Layout ===
+% === [Packages] ===
+\usepackage[utf8]{inputenc} % utf8 support
 \usepackage[hmargin=1in,vmargin=1in]{geometry}
 \usepackage{indentfirst}
 \usepackage{lipsum}
@@ -21,6 +21,21 @@
 \usepackage{tabularx}
 \usepackage{authblk} % For affiliations
 
+\usepackage{amsfonts}
+\usepackage{indentfirst}
+\usepackage{pgfplots}
+\usepackage{tikz}
+
+% === [amsthm declarations] === 
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+% === [Misc] === 
 % Multiple footnotes https://tex.stackexchange.com/questions/40072/incompatibility-between-footmisc-option-multiple-and-hyperref/62091#62091
 \let\oldFootnote\footnote
 \newcommand\nextToken\relax
@@ -31,19 +46,7 @@
 \newcommand\isFootnote{%
     \ifx\footnote\nextToken\textsuperscript{,}\fi}
 
-% amsthm
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{corollary}{Corollary}[theorem]
-\newtheorem{lemma}[theorem]{Lemma}
-\theoremstyle{definition}
-\newtheorem{definition}{Definition}[section]
-\theoremstyle{remark}
-\newtheorem*{remark}{Remark}
-
-\usepackage{amsfonts}
-\usepackage{indentfirst}
-\usepackage{pgfplots}
-\usepackage{tikz}
+% === [global tikz configurations] === 
 \usetikzlibrary{
     calc,
     arrows,
@@ -109,6 +112,7 @@
     }
 }
 
+% === [global notational macros] ===
 \DeclareMathOperator{\id}{id}
 \newcommand{\opcat}{\mathrm{op}}
 \DeclareMathOperator{\Hom}{Hom}
@@ -132,26 +136,29 @@
 
 \newcommand{\Pf}{P}
 
-% === Bibliography ===
+% === [Bibliography] ===
 \usepackage[
     backend=biber,
     style=alphabetic,
 ]{biblatex}
 \addbibresource{references.bib}
 
-%% Draft and writing tools
+% === [Draft and writing tools] ===
 \usepackage{showkeys}
 \usepackage{todonotes}
 \newcommand{\tob}[1]{\todo[color=blue!20,inline]{\textbf{Tobias:} #1}} % for comments by tobias
 \newcommand{\tcf}[1]{\todo[color=green!20,inline]{\textbf{TC:} #1}} % for comments by tc
 \newcommand{\ctodo}[1]{\todo[color=red!20,inline]{\textbf{TODO:} #1}} % generic todo
 
+% === [Title page configuration] ===
 \author[1,2]{Thomas C. Fraser}
 \author[1]{Tobias Fritz}
 \affil[1]{\textit{Perimeter Institute for Theoretical Physics, Waterloo, Ontario, Canada, N2L 2Y5}}
 \affil[2]{\textit{Dept. of Physics and Astronomy, University of Waterloo, Waterloo, Ontario, Canada, N2L 3G1}}
 \date{\today}
 \title{On the Fibrations Underlying Optimization and Elimination}
+
+% === [The document] === 
 \begin{document}
 
 \maketitle
@@ -301,6 +308,7 @@ The following unordered list of categorical concepts are anticipated to be utili
         \end{tikzcd}
     \end{equation}
 \end{corollary} 
+
 The pullback category $\catE / \beta \times_{\catB / P(\beta)} \catB / P(\phi)$ has morphisms associated with diagrams of $\catB$ with the following format:
 \begin{equation}
     \begin{tikzcd}[row sep=large, column sep=small]
@@ -322,12 +330,15 @@ Evidently, if $\phi : \alpha \to \beta$ is cartesian, then there exists unique m
 Intuitively, if $\phi$ is cartesian, then in order to determine the category $\catE/\phi$ over $\phi$, it is sufficient to specify $\catE / \beta \times_{\catB / P(\beta)} \catB / P(\phi)$.
 
 \subsection{Fibrations, Fibered Categories, and Cleavages}
+
 \begin{definition}
     A \textit{fibered category over $\catB$} is a category $\catE$ associated to the domain of a functor, referred to as the \textit{fibration}, $P : \catE \to \catB$ with the property that for every morphism $f : a \to b$ of $\catB$ and object $\beta$ such that $P(\beta) = b$, there exists a cartesian arrow $\phi : \alpha \to \beta$ with $P(\phi) = f$.
 \end{definition}
+
 \begin{lemma}
     A fibration $P : \catE \to \catB$ is a faithful functor if and only if its fibers are thin.
 \end{lemma}
+
 \begin{proof}
     Recall that if $P : \catE \to \catB$ is a faithful functor, then by definition every pair of parallel arrows $\phi, \psi : \alpha \to \beta$ in $\catE$ satisfies 
     \begin{equation}
@@ -354,15 +365,21 @@ Intuitively, if $\phi$ is cartesian, then in order to determine the category $\c
     A \textit{cleavage} for a fibration $P : \catE \to \catB$ is an assignment to each morphism $f : a \to b$ of $\catB$ and object $\beta$ in $\catE_b$ (i.e. $P(\beta) = b$), a unique cartesian morphism $\kappa_{f}(B)$ of $\catE$ such that $P(\kappa_{f}(B)) = f$.
 \end{definition}
 Given a cleavage for a fibration, the cartesianness of morphisms within a cleavage permits one to establish functors between the fibers of the fibration. This concept is visualized in the following figure:
+
 \begin{equation}
     \begin{tikzcd}[
             column sep=2em,
             execute at end picture={
-                \fill[blue, opacity=0.1] (-7, -0.75) rectangle (+7, -1.5) node[above left, blue!50!black, opacity=1]{$\catB$};
-                \fill[red, opacity=0.1] (-7, +3.25) rectangle (+7, -0.25) node[above left, red!50!black, opacity=1]{$\catE$};
-                \fill[green, opacity=0.1] (-1.9, +2.25) rectangle (+1.9, +0.25) node[above left, green!50!black, opacity=1]{$\catE_b$};
-                \fill[green, opacity=0.1] (-6.9, +2.25) rectangle (-2.75, +0.25) node[above left, green!50!black, opacity=1]{$\catE_a$};
-                \fill[green, opacity=0.1] (+2.75, +2.25) rectangle (+6.9, +0.25) node[above left, green!50!black, opacity=1]{$\catE_c$};
+                \fill[blue, opacity=0.1] (-7, -0.75) rectangle (+7, -1.5)
+                    node[above left, blue!50!black, opacity=1]{$\catB$};
+                \fill[red, opacity=0.1] (-7, +3.25) rectangle (+7, -0.25) 
+                    node[above left, red!50!black, opacity=1]{$\catE$};
+                \fill[green, opacity=0.1] (-1.9, +2.25) rectangle (+1.9, +0.25) 
+                    node[above left, green!50!black, opacity=1]{$\catE_b$};
+                \fill[green, opacity=0.1] (-6.9, +2.25) rectangle (-2.75, +0.25) 
+                    node[above left, green!50!black, opacity=1]{$\catE_a$};
+                \fill[green, opacity=0.1] (+2.75, +2.25) rectangle (+6.9, +0.25) 
+                    node[above left, green!50!black, opacity=1]{$\catE_c$};
             }
         ]
         f^\ast\alpha 
@@ -682,7 +699,6 @@ Everything about coslice categories is defined as expected analogously to that o
 
 \textcolor{red!50!black}{[TODO]}
 
-
 \section{Case Studies of Interest}
 
 \subsection{Polyhedra and Affine Maps}
@@ -758,38 +774,38 @@ Consider a commuting square of affine maps between vector spaces in the base cat
     The category $\poly$ consists of polyhedra as objects and affine maps between them.
 \end{definition}
 \begin{center}
-\newcommand{\importpolyproj}[1]{
-\begin{tikzpicture}[
-        scale=0.6,
-        line join=round,
-        poly_vertex/.style = {circle,fill,blue,inner sep=0.75pt},
-        poly_edge/.style = {thick, blue},
-        poly_face/.style = {blue, opacity=0.15}
-    ]
-    \coordinate (O) at (0,0,0);
-    \coordinate (x1) at (5,0,0);
-    \coordinate (x2) at (0,5,0);
-    \coordinate (x3) at (0,0,5);
-    \draw[thick, ->] (O) -- (x1) node[right]{$x$};
-    \draw[thick, ->] (O) -- (x2) node[above]{$y$};
-    \draw[thick, ->] (O) -- (x3) node[left]{$z$};
-    #1
-\end{tikzpicture}
-}
-\importpolyproj{\input{figures/polytope_projection/dodecahedron_projection.tex}}
-\importpolyproj{\input{figures/polytope_projection/octahedron_projection.tex}}
-\importpolyproj{\input{figures/polytope_projection/tetrahedron_projection.tex}}
-% \importpolyproj{\input{figures/polytope_projection/metabidiminishedRhombicosidodecahedron_projection.tex}}
-% \importpolyproj{\input{figures/polytope_projection/rhombicTriacontahedron_projection.tex}}
+    \newcommand{\importpolyproj}[1]{
+    \begin{tikzpicture}[
+            scale=0.6,
+            line join=round,
+            poly_vertex/.style = {circle,fill,blue,inner sep=0.75pt},
+            poly_edge/.style = {thick, blue},
+            poly_face/.style = {blue, opacity=0.15}
+        ]
+        \coordinate (O) at (0,0,0);
+        \coordinate (x1) at (5,0,0);
+        \coordinate (x2) at (0,5,0);
+        \coordinate (x3) at (0,0,5);
+        \draw[thick, ->] (O) -- (x1) node[right]{$x$};
+        \draw[thick, ->] (O) -- (x2) node[above]{$y$};
+        \draw[thick, ->] (O) -- (x3) node[left]{$z$};
+        #1
+    \end{tikzpicture}
+    }
+    \importpolyproj{\input{figures/polytope_projection/dodecahedron_projection.tex}}
+    \importpolyproj{\input{figures/polytope_projection/octahedron_projection.tex}}
+    \importpolyproj{\input{figures/polytope_projection/tetrahedron_projection.tex}}
+    % \importpolyproj{\input{figures/polytope_projection/metabidiminishedRhombicosidodecahedron_projection.tex}}
+    % \importpolyproj{\input{figures/polytope_projection/rhombicTriacontahedron_projection.tex}}
 \end{center}
 
 \begin{equation}
-\begin{tikzcd}[column sep=0.5em]
-    & \poly_{Y} \ar[dd, "\pi_{1,!}", near end] & & \poly_{X\otimes Y} \ar[dd,"\pi_{X,!}"'] \ar[ll,"\pi_{Y,!}"] \\
-    \poly_{Y\otimes Z} \ar[dd,"\pi_{Z,!}"] \ar[ur,"\pi_{Y,!}"'{sloped,auto}] & & \poly_{X\otimes Y\otimes Z} \ar[ll,"\pi_{Y\otimes Z,!}"', crossing over, near start] \ar[ur,"\pi_{X\otimes Y,!}"{sloped,auto}] & \\
-    & \poly_{1} \ar[from=rr, "\pi_{1,!}"', near end] \ar[from=dl, "\pi_{1,!}"{sloped,auto}] & & \poly_{X} \\
-    \poly_{Z} & & \poly_{X\otimes Z} \ar[ll,"\pi_{Z,!}"'] \ar[ur,"\pi_{X,!}"{sloped,auto}] \ar[from=uu,"\pi_{X\otimes Z,!}", crossing over, near start] & \\
-\end{tikzcd}
+    \begin{tikzcd}[column sep=0.5em]
+        & \poly_{Y} \ar[dd, "\pi_{1,!}", near end] & & \poly_{X\otimes Y} \ar[dd,"\pi_{X,!}"'] \ar[ll,"\pi_{Y,!}"] \\
+        \poly_{Y\otimes Z} \ar[dd,"\pi_{Z,!}"] \ar[ur,"\pi_{Y,!}"'{sloped,auto}] & & \poly_{X\otimes Y\otimes Z} \ar[ll,"\pi_{Y\otimes Z,!}"', crossing over, near start] \ar[ur,"\pi_{X\otimes Y,!}"{sloped,auto}] & \\
+        & \poly_{1} \ar[from=rr, "\pi_{1,!}"', near end] \ar[from=dl, "\pi_{1,!}"{sloped,auto}] & & \poly_{X} \\
+        \poly_{Z} & & \poly_{X\otimes Z} \ar[ll,"\pi_{Z,!}"'] \ar[ur,"\pi_{X,!}"{sloped,auto}] \ar[from=uu,"\pi_{X\otimes Z,!}", crossing over, near start] & \\
+    \end{tikzcd}
 \end{equation}
 
 \begin{center}
@@ -1012,36 +1028,6 @@ form an adjoint triple in the sense that $\exists_{f} \dashv f^{\ast} \dashv \fo
     f^{\ast} \dashv \forall_{f} : \quad f^{\ast}(T) \subseteq R &\iff T \subseteq \forall_{f}(R)
 \end{align*}
 
-
-% \begin{center}
-%     \begin{table}
-%         \begin{tabular}{|c|c|c|c|c|c|c|}
-%             \hline
-%             Context & Fibration & Total $\catE$ & Base $\catE$ & Fibers & Covariant Functor & Contravariant Functor \\
-%             \hline
-%             \hline
-%             Subset Projection & & & & & & \\
-%             \hline
-%             Linear Quantifier Elimination & & & & & & \\
-%             \hline
-%             Non-linear Quantifier Elimination & & & & & & \\
-%             \hline
-%             Real-valued Optimization & & & & & & \\
-%             \hline
-%             General Lattice Optimization & & & & & & \\
-%             \hline
-%             Convex Projection & & & & & & \\
-%             \hline
-%             Convex Optimization & & & & & & \\
-%             \hline
-%             Resolution & & & & & & \\
-%             \hline
-%             $\ldots$ and more & & & & & & \\
-%             \hline
-%         \end{tabular}
-%     \end{table}
-% \end{center}
-
 \begin{center}
 \begin{tikzpicture}[
         set region/.style={draw=blue!80, fill=blue!20},
@@ -1099,7 +1085,7 @@ Consider a pair of sets $A$ and $B$ and a subset $S \subseteq A \times B$ of the
     \includegraphics[]{figures/min_max_multivariate_function/figure.pdf}
 \end{center}
 
-\section*{Comments on selected references}
+\section*{Potentially Annotated Bibliography}
 This section is temporary and reserved for recording comments toward various references.
 \begin{itemize}
     \item \citeauthor{vistoli2004notes}~\cite{vistoli2004notes}
@@ -1119,5 +1105,7 @@ This section is temporary and reserved for recording comments toward various ref
     \item \href{https://en.wikipedia.org/wiki/Spectrahedron}{Spectrahedron} are interesting semi-algebaric sets. (\url{https://www.youtube.com/watch?v=AevFRN5sxOU}).
 \end{itemize}
 
+% === [Bibliography] ===
 \printbibliography
+
 \end{document}
