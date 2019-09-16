@@ -1140,6 +1140,7 @@ Given any category $\catB$ with all pullbacks, the functor $P_{\catB} : \sub_{\c
 \end{equation}
 Specfically, left adjoint functor $f_{!}$ acting on a subobject $[\psi] : \sub_{\catB}(a)$ (where $[\psi]$ is the equivalence class of monomorphisms into $a$ containing $\psi : a' \hookrightarrow a$) is given by post-composition $f_{!} ( [\psi] ) = [ f \psi ] \in \sub_{\catB}(b)$ in $\catB$.
 \tob{That works for the codomain fibration, but not here, because $f \psi$ is generally not a subobject. Rather, $f_! ( [\psi] )$ should be the \emph{image} of the morphism $f \psi$, in the sense of \href{https://ncatlab.org/nlab/show/image}{image factorization} (please check whether this works). Thus one needs to assume that image factorizations exist}
+\tcf{It turns out the subobject fibration also satisfies the Beck-Chevalley condition at all pullback squares in the base provided that image factorizations in the base are stable under (i.e. commute with) pullback; equivalently, the base is a regular category. I will finish the write up tomorrow.}
 The right adjoint functor $f^\ast$ acting on a subobject $[\phi] \in \sub_{\catB}(b)$ is given by pullback of \begin{tikzcd}[cramped]a \ar[r, "f"]  & b & b' \ar[l, hook', "\phi"'] \end{tikzcd} in $\catB$:
 \begin{equation}
     \begin{tikzcd}
