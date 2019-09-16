@@ -154,12 +154,11 @@
 \newcommand{\ulpb}[1]{\ar[ul, phantom, "\ulcorner", very near start, #1]}
 
 % given three coordinates, draw the pullback square between (#1) -- (#2) and (#1) -- (#3)
-\newcommand{\pullback}[3]{
-    \coordinate (tmpbeg) at ($(#1)!0.2!(#2)$);
-    \coordinate (tmpend) at ($(#1)!0.2!(#3)$);
-    \coordinate (tmpmid) at ($(tmpbeg) + (tmpend) - (#1)$);
-    \draw[line width=2mm, white] ($(tmpbeg)!0.4!(tmpmid)$) -- (tmpmid) -- ($(tmpend)!0.4!(tmpmid)$);
-    \draw ($(tmpbeg)!0.4!(tmpmid)$) -- (tmpmid) -- ($(tmpend)!0.4!(tmpmid)$);
+\newcommand{\pullback}[4][]{
+    \coordinate (tmpbeg) at ($(#2)!1em!(#3)$);
+    \coordinate (tmpend) at ($(#2)!1em!(#4)$);
+    \coordinate (tmpmid) at ($(tmpbeg) + (tmpend) - (#2)$);
+    \draw[#1] ($(tmpbeg)!0.3!(tmpmid)$) -- (tmpmid) -- ($(tmpend)!0.3!(tmpmid)$);
 }
 
 % The figure below demonstrates the usage of the pullback macros
@@ -943,14 +942,14 @@ Automatically, observe that the codomain functor $\cod : \arr(\catC) \to \catC$ 
     \right)
     =
     \begin{tikzcd}[column sep=small]
-    c \ar[dr, "f\circ g"'] \ar[rr, "t"] & & d \ar[dl, "f \circ h"] \\
+    c \ar[dr, "f g"'] \ar[rr, "t"] & & d \ar[dl, "f h"] \\
     & b &
     \end{tikzcd}
 \end{equation}
 \begin{equation}
     \begin{tikzcd}[sep=large]
-        c \ar[d, "g"'] \ar[dr, "f \circ h", near start] \ar[r, "t"] & d \ar[dl, "h", near end, crossing over] \ar[d, "f \circ h"] \\
-        a \ar[r, "f"'] & b
+        c \ar[d, "g"'] \ar[r, "t"] & d \ar[dl, "h", near end] \ar[d, "f h"] \\
+        a \ar[r, "f"'] & b \ar[from=ul, "f g", near start, crossing over]
     \end{tikzcd}.
 \end{equation}
 
@@ -977,6 +976,7 @@ For each morphism $f : a \to b$ in the base $\catB$, the associated fiber-contra
     \begin{tikzcd}[
             execute at end picture={
                 \pullback{m-2-2}{m-2-4}{m-3-1};
+                \pullback[line width=2mm, white]{m-1-1}{m-3-1}{m-1-3}; % options here allow for a "crossing under" effect
                 \pullback{m-1-1}{m-3-1}{m-1-3};
             }
         ]
@@ -987,88 +987,74 @@ For each morphism $f : a \to b$ in the base $\catB$, the associated fiber-contra
 \end{equation}
 Note that the morphism $t' : c' \to d'$ completing the resulting commuting triangle is unique by the universality of $d'$ as the pullback of \begin{tikzcd}[cramped] a \ar[r, "f"] & b & d \ar[l, "h"'] \end{tikzcd}.
 
-Given any category $\catB$ with all pullbacks, the functor $P_{\catB} : \sub_{\catB} \to \catB$ which sends subobjects $[\psi]$ to their shared codomains, constitutes a bifibration. In particular, given a morphism $f : a \to b$ of $\catB$, there is an induced adjoint pair of functors between the subobject fibers:
+Given a category $\catB$ with pullbacks, and a morphism $f : a \to b$ of $\catB$, the codomain bifibration $\cod : \arr(\catB) \to \catB$ induces a adjoint pair of functors between the fibers
 \begin{equation}
     \begin{tikzcd}
-        \sub_{\catB}(a)
+        \catB / a
         \arrow[r, bend left, "f_!", ""{name=L,inner sep=1pt,below}]
         \arrow[from=r, bend left, "f^\ast", ""{name=R,inner sep=1pt}]
         &
-        \sub_{\catB}(b)
+        \catB / b 
         \arrow[from=L, to=R, symbol=\dashv]
     \end{tikzcd}
 \end{equation}
-Specfically, left adjoint functor $f_{!}$ acting on a subobject $[\psi] : \sub_{\catB}(a)$ (where $[\psi]$ is the equivalence class of monomorphisms into $a$ containing $\psi : a' \hookrightarrow a$) is given by post-composition $f_{!} ( [\psi] ) = [ f \psi ] \in \sub_{\catB}(b)$ in $\catB$.
+such that $f_! : \catB / a \to \catB / b$ is given by post-composition and $f^\ast: \catB / b \to \catB / a$ is given by pullback.
 
-The right adjoint functor $f^\ast$ acting on a subobject $[\phi] \in \sub_{\catB}(b)$ is given by pullback of \begin{tikzcd}[cramped]a \ar[r, "f"]  & b & b' \ar[l, hook', "\phi"'] \end{tikzcd} in $\catB$:
-\begin{equation}
-    \begin{tikzcd}
-        f^{*}b' \drpb{} \ar[r] \ar[d, hook, "f^\ast \phi"'] & b' \ar[d, hook, "\phi"] \\
-        a \ar[r, "f"'] & b
-    \end{tikzcd}
-\end{equation}
+\begin{lem}
+    Given a category $\catB$ with all pullbacks, the codomain bifibration $\cod : \arr(\catB) \to \catB$ satisfies the Beck-Chevalley condition at all pullback squares in $\catB$.
+\end{lem}
 
-Generally speaking, it is important to determine how diagrams in the base category $\catB$ behave when lifted to the total category $\sub_{\catB}$ under the associated pseudo-functors. For example, given a pullback square in base category $\catB$,
-\begin{equation}
-    \begin{tikzcd}
-        a \drpb{} \ar[r, "f"] \ar[d, "h"'] & b \ar[d, "g"] \\
-        c \ar[r, "k"'] & d
-    \end{tikzcd}
-\end{equation}
-There exists a natural isomorphism $\alpha$ between the functors $f^\ast g^\ast$ and $h^\ast k^\ast$:
-\begin{equation}
-    \begin{tikzcd}
-        \sub_{\catB}(a) \ar[from=r, "f"'] \ar[from=d, "h"] & \sub_{\catB}(b) \ar[from=d, "g"'] \ar[dl, Rightarrow, "\alpha", "\sim"'] \\
-        \sub_{\catB}(c) \ar[from=r, "k"] & \sub_{\catB}(d)
-    \end{tikzcd}
-\end{equation}
-The existence of components $\alpha_{[\psi]}$ for the subobject class containing the monomorphism $\psi : p \hookrightarrow d$ can be determined by examining the following diagram:
-\begin{equation}
-    \begin{tikzcd}
-        & & & f^\ast g^\ast p \ar[d] \ar[lld, hook, out=180, in=90, "f^\ast g^\ast \psi"', near start] \dlpb{} \\
-        & a \ar[r, "f"] \ar[d, "h"'] \drpb{} & b \ar[d, "g"] & g^\ast p \ar[l, "g^\ast \psi"', hook] \ar[dd] \dlpb{} \\
-        & c \ar[r, "k"'] & d & \\
-        h^\ast k^\ast p \ar[r] \ar[uur, hook, out=90, in=180, "h^\ast k^\ast \psi", near start] \urpb{} & k^\ast p \ar[u, hook, "k^\ast \psi"] \ar[rr] \urpb{} & & p \ar[ul, hook, "\psi"']
-    \end{tikzcd}
-\end{equation}
-Using the composition of pullback squares, it is clear that \textit{both} $f^\ast g^\ast p$ and $h^\ast k^\ast p$ are pullbacks of \begin{tikzcd}[cramped] a \ar[r, "gf = kh"] & d & p \ar[l, hook', "\psi"'] \end{tikzcd} and therefore, they are unique up to a unique isomorphism which will be denoted $\beta$. It is important to notice that this does not depend on $a$ being a pullback itself.
-\begin{equation}
-    \begin{tikzcd}[row sep=large]
-        h^\ast k^\ast p
-        \ar[d, hook', "h^\ast k^\ast \psi"']
-        \ar[rrd, bend left]
-        \ar[rr, bend left, dashed, "\beta^{-1}"']
-        \drpb{}
-        &
-        &
-        f^\ast g^\ast p
-        \ar[d]
-        \ar[lld, bend right, hook', "f^\ast g^\ast \psi", near end]
-        \ar[ll, bend right=40, dashed, "\beta"']
-        \dlpb{}
-        \\
-        a
-        \ar[r, "gf=kh"']
-        &
-        d
-        &
-        p
-        \ar[l, hook', "\psi"]
-    \end{tikzcd}
-\end{equation}
-These isomorphisms actually establish that $h^\ast k^\ast \psi \simeq f^\ast g^\ast \psi$ and therefore they belong to the same equivalence class $[h^\ast k^\ast \psi] = [ f^\ast g^\ast \psi ]$ for each $\psi$. Therefore, it becomes clear that the natural isomorphism is indeed the identity natural transformation $\id_{f^\ast g^\ast} = \id_{h^\ast k^\ast} = \alpha : f^\ast g^\ast \to h^\ast k^\ast$.\footnote{Ultimately, the reason for $\alpha = \id$ is due to considering $\sub_{\catB}(a)$, the \textit{poset} of subobjects of $a$, instead of $\mono_{\catB}(a)$ the \textit{preorder} of monomorphisms into $a$.}
+\begin{proof}
+    Consider an arbitrary pullback square in base category $\catB$,
+    \begin{equation}
+        \label{eq:generic_pullback}
+        \begin{tikzcd}[execute at end picture={\pullback{m-1-1}{m-1-2}{m-2-1}}]
+            a \ar[r, "f"] \ar[d, "h"'] & b \ar[d, "g"] \\
+            c \ar[r, "k"'] & d
+        \end{tikzcd}.
+    \end{equation}
+    Automatically, there exists a natural isomorphism $\alpha : f^\ast g^\ast \to h^\ast k^\ast$:
+    \begin{equation}
+        \label{eq:right_adjoint_square}
+        \begin{tikzcd}
+            \catB / a \ar[from=r, "f^\ast"'] \ar[from=d, "h^\ast"] & \catB / b \ar[from=d, "g^\ast"'] \ar[dl, Rightarrow, "\alpha"', "\simeq", sloped] \\
+            \catB / c \ar[from=r, "k^\ast"] & \catB / d 
+        \end{tikzcd}
+    \end{equation}
+    The individual components $\alpha_{\psi}$ for each object $\psi : p \to d$ of $\catB / d$ is specified by the following diagram:
+    \begin{equation}
+        \begin{tikzcd}[
+                execute at end picture={
+                    \pullback{m-1-3}{m-2-2}{m-2-4};
+                    \pullback{m-1-1}{m-2-1}{m-1-3};
+                    \pullback{m-1-5}{m-2-5}{m-1-3};
+                    \pullback{m-2-1}{m-3-1}{m-2-2};
+                    \pullback{m-2-5}{m-3-5}{m-2-4};
+                }
+            ]
+            a' \ar[rr, "h^\ast k^\ast \psi"'] \ar[d] & & a \ar[dr, "f"'] \ar[dl, "h"] & & a'' \ar[ll, "f^\ast g^\ast \psi"] \ar[d]
+            \ar[llll, bend right=25, dashed, "\alpha_{\psi}", "\simeq"'] \\ 
+            c' \ar[r, "k^\ast \psi"] \ar[d] & c \ar[dr, "k"] & & b \ar[dl, "g"'] & b' \ar[l, "g^\ast \psi"'] \ar[d] \\ 
+            p \ar[rr, "\psi"] \ar[rrrr, bend right=20, equals] & & d & & p \ar[ll, "\psi"'] \\
+        \end{tikzcd}
+    \end{equation}
+    Using the composition of pullback squares, it is clear that \textit{both} $h^\ast k^\ast \psi$ and $f^\ast g^\ast \psi$ are projection morphisms (onto $a$) in the pullback square of \begin{tikzcd}[cramped] a \ar[r, "gf = kh"] & d & p \ar[l, "\psi"'] \end{tikzcd} and therefore, they are unique up to a unique isomorphism; the component $\alpha_{\psi}$ is precisely that isomorphism. Notice that this argument \textit{does not} make use of the fact that the original commuting square in Equation~\ref{eq:generic_pullback} was a pullback square.
 
-Alternatively, one can consider whether or not there exists natural transformations (or natural isomorphisms) of the form $\alpha : h_! f^\ast \to k^\ast g_!$. Remembering that the left adjoints $f_{!}$ are specified by post-composition $f_{!} [\psi] \to [f \psi]$, this question can be answered by considering the following diagram:
-\begin{equation}
-    \begin{tikzcd}
-        k^\ast g p \ar[r, "k^\ast g \psi"] \ar[d] \drpb{} & c \ar[d, "k"] & a \ar[l, "h"] \ar[d, "f"] \dlpb{} & f^\ast p \ar[l, "f^\ast \psi", hook'] \ar[ll, bend right, "h f^\ast \psi"'] \ar[d] \dlpb{} \\
-        p \ar[r, "g\psi"] \ar[rrr, bend right=15, equals] & d & b \ar[l, "g"'] & p \ar[l, hook', "\psi"']
-    \end{tikzcd}
-\end{equation}
-Similarly, $k^\ast g p$ and $f^\ast p$ are \textit{both} pullbacks of \begin{tikzcd}[cramped] p \ar[r, "g\psi"] & d & c \ar[l, hook', "k"'] \end{tikzcd} and therefore, we obtain an analogous statement: since $h f^\ast \psi \simeq k^\ast g \psi$, we have $[h f^\ast \psi] = [k^\ast g \psi]$ and therefore $h_! f^\ast = k^\ast g_!$.
-The key difference in this case is that this argument \textit{does} rely on $a$ being the pullback of a pullback square.
-
-In summary, the subobject fibration \textit{satisfies} the Beck-Chevalley condition. Moreover, since none of the above argument relies on the fact that the objects of total category are represented by \textit{monomorphisms} in the base, just that they correspond to \textit{morpisms} in the base, it is clear that any codomain bifibration also satisfies the Beck-Chevalley condition.
+    To prove the Beck-Chevalley condition, one must demonstrate that the natural transformation $\beta = \varepsilon_{h} \alpha \eta_{g} : h_! f^\ast \to k^\ast g_!$ is also a \textit{natural isomorphism}. Remembering that the left adjoints can be computed by post-composition, the component of $\beta$ for an object $\psi : p \to b$ of $\catB / b$, denoted $\beta_{\psi}$, and its inverse can be determined by the following diagram:
+    \begin{equation}
+        \begin{tikzcd}[
+                execute at end picture={
+                    \pullback{m-1-1}{m-2-1}{m-1-2};
+                    \pullback{m-1-4}{m-1-3}{m-2-4};
+                    \pullback{m-1-3}{m-1-2}{m-2-3};
+                }
+            ]
+            c' \ar[r, "k^\ast g_! \psi"] \ar[d]\ar[from=rrr, bend right=50, dashed, "\beta_{\psi}", "\simeq"'] & c \ar[d, "k"] & a \ar[l, "h"'] \ar[d, "f"]  & a' \ar[l, "f^\ast \psi"'] \ar[ll, bend right, "h_! f^\ast \psi"'] \ar[d] \\
+            p \ar[r, "g_! \psi"] \ar[rrr, bend right=15, equals] & d & b \ar[l, "g"'] & p \ar[l, "\psi"']
+        \end{tikzcd}
+    \end{equation}
+    Similarly, $k^\ast g_! \psi$ and $h_! f^\ast \psi$ are \textit{both} projection morphisms (onto $c$) in the pullback square of \begin{tikzcd}[cramped] p \ar[r, "g\psi"] & d & c \ar[l, "k"'] \end{tikzcd} and therefore, they are unique up to a unique isomorphism $\beta_{\psi}$. The key difference in this case is that this argument \textit{does} rely on $a$ being the pullback object in the original pullback square in the base $\catB$ (Equation~\ref{eq:generic_pullback}).
+\end{proof}
 
 \subsection{The Subobject Fibration}
 
