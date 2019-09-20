@@ -123,7 +123,8 @@
 }
 
 % === [global notational macros] ===
-\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\id}{id} % the identity
+\DeclareMathOperator{\im}{im} % image factorization
 \newcommand{\opcat}{\mathrm{op}}
 \DeclareMathOperator{\Hom}{Hom}
 \DeclareMathOperator{\cod}{cod}
@@ -155,8 +156,8 @@
 
 % given three coordinates, draw the pullback square between (#1) -- (#2) and (#1) -- (#3)
 \newcommand{\pullback}[4][]{
-    \coordinate (tmpbeg) at ($(#2)!1em!(#3)$);
-    \coordinate (tmpend) at ($(#2)!1em!(#4)$);
+    \coordinate (tmpbeg) at ($(#2)!1.4em!(#3)$);
+    \coordinate (tmpend) at ($(#2)!1.4em!(#4)$);
     \coordinate (tmpmid) at ($(tmpbeg) + (tmpend) - (#2)$);
     \draw[#1] ($(tmpbeg)!0.3!(tmpmid)$) -- (tmpmid) -- ($(tmpend)!0.3!(tmpmid)$);
 }
@@ -994,14 +995,14 @@ Given a category $\catB$ with pullbacks, and a morphism $f : a \to b$ of $\catB$
         \arrow[r, bend left, "f_!", ""{name=L,inner sep=1pt,below}]
         \arrow[from=r, bend left, "f^\ast", ""{name=R,inner sep=1pt}]
         &
-        \catB / b 
+        \catB / b
         \arrow[from=L, to=R, symbol=\dashv]
     \end{tikzcd}
 \end{equation}
 such that $f_! : \catB / a \to \catB / b$ is given by post-composition and $f^\ast: \catB / b \to \catB / a$ is given by pullback.
 
 \begin{lem}
-    Given a category $\catB$ with all pullbacks, the codomain bifibration $\cod : \arr(\catB) \to \catB$ satisfies the Beck-Chevalley condition at all pullback squares in $\catB$.
+    Given a category $\catB$ with pullbacks, the codomain bifibration $\cod : \arr(\catB) \to \catB$ satisfies the Beck-Chevalley condition at every pullback square in $\catB$.
 \end{lem}
 
 \begin{proof}
@@ -1018,11 +1019,12 @@ such that $f_! : \catB / a \to \catB / b$ is given by post-composition and $f^\a
         \label{eq:right_adjoint_square}
         \begin{tikzcd}
             \catB / a \ar[from=r, "f^\ast"'] \ar[from=d, "h^\ast"] & \catB / b \ar[from=d, "g^\ast"'] \ar[dl, Rightarrow, "\alpha"', "\simeq", sloped] \\
-            \catB / c \ar[from=r, "k^\ast"] & \catB / d 
+            \catB / c \ar[from=r, "k^\ast"] & \catB / d
         \end{tikzcd}
     \end{equation}
     The individual components $\alpha_{\psi}$ for each object $\psi : p \to d$ of $\catB / d$ is specified by the following diagram:
     \begin{equation}
+        \label{eq:right_adjoints_at_pullback}
         \begin{tikzcd}[
                 execute at end picture={
                     \pullback{m-1-3}{m-2-2}{m-2-4};
@@ -1033,8 +1035,8 @@ such that $f_! : \catB / a \to \catB / b$ is given by post-composition and $f^\a
                 }
             ]
             a' \ar[rr, "h^\ast k^\ast \psi"'] \ar[d] & & a \ar[dr, "f"'] \ar[dl, "h"] & & a'' \ar[ll, "f^\ast g^\ast \psi"] \ar[d]
-            \ar[llll, bend right=25, dashed, "\alpha_{\psi}", "\simeq"'] \\ 
-            c' \ar[r, "k^\ast \psi"] \ar[d] & c \ar[dr, "k"] & & b \ar[dl, "g"'] & b' \ar[l, "g^\ast \psi"'] \ar[d] \\ 
+            \ar[llll, bend right=25, dashed, "\alpha_{\psi}", "\simeq"'] \\
+            c' \ar[r, "k^\ast \psi"] \ar[d] & c \ar[dr, "k"] & & b \ar[dl, "g"'] & b' \ar[l, "g^\ast \psi"'] \ar[d] \\
             p \ar[rr, "\psi"] \ar[rrrr, bend right=20, equals] & & d & & p \ar[ll, "\psi"'] \\
         \end{tikzcd}
     \end{equation}
@@ -1058,22 +1060,39 @@ such that $f_! : \catB / a \to \catB / b$ is given by post-composition and $f^\a
 
 \subsection{The Subobject Fibration}
 
-\subsubsection{Definitions}
-
-Given any category $\catB$, and an object $X$ of $\catB$, a \textit{subobject} of $X$ is an isomorphism class of monomorphisms $f : Y \hookrightarrow X$; two monomorphisms $f : Y \hookrightarrow X, g : Z \hookrightarrow
-X$ with shared codomain $X$ are isomorphic if there exists an isomorphism $h : Y \xrightarrow{\sim} Z$ such that $f = g \circ h$. The individual monomorphisms of a subobject class can be equipped with a preorder relation $( f : Y \hookrightarrow X ) \leq ( g : Z \hookrightarrow X )$ if there exists $k : Y \rightarrow Z$ such that $f = g \circ k$:
+Given a category $\catB$, and any object $a$ of $\catB$, there is a preorder relation $\preceq_{a}$ among monomorphisms with shared codomain $a$; given $f : b \hookrightarrow a, g : c \hookrightarrow a$,
+\begin{equation}
+    f \preceq_{a} g \iff \exists k : b \rightarrow c, f = g k.
+\end{equation}
 \begin{equation}
     \begin{tikzcd}[column sep=small]
-        Y \ar[rd, hook, "f"'] \ar[rr, "k"] &   & Z \ar[ld, hook', "g"]\\
-          & X &
+        b \ar[rd, hook, "f"'] \ar[rr, "k"] & & c \ar[ld, hook', "g"]\\
+        & a &
     \end{tikzcd}
 \end{equation}
-Note that if such a $k : Y \to Z$ exists, then it is unique because it $g$ is a monomorpism; if $k' : Y \rightarrow Z$ satisfied $f = g \circ k'$ as well, then $g \circ k = g \circ k'$ which implies $k = k'$. Moreover, this preorder relation on the individual monomorphisms extends to a poset $\sub_{\catB}(X)$ between the subobjects. For example, if $\catB$ is the category $\set$, the subobjects of $X$ are subsets of $X$ and thus $\sub_{\set}(X) \cong \pow(X)$. Even more concretely, if $X$ is the set $\mathbb{R}^2$, an exemplary diagram of $\sub_{\set}(\mathbb{R}^2)$ is
+Note that if such a $k : b \to c$ exists, then it is unique because it $g$ is a monomorpism; if $k' : b \rightarrow c$ satisfied $f = g k'$ as well, then $g k = g k'$ which implies $k = k'$. The natural equivalence relation between monomorphisms into $a$ induced by this preorder will be denoted $\simeq_{a}$,
+\begin{equation}
+    f \simeq_{a} g \iff (f \preceq_{a} g) \wedge (g \preceq_{a} f).
+\end{equation}
+\begin{equation}
+    \begin{tikzcd}[column sep=small]
+        b \ar[rd, hook, "f"'] \ar[rr, "k", bend left=10] & & c \ar[ll, "k'", bend left=10] \ar[ld, hook', "g"]\\
+        & a &
+    \end{tikzcd}
+\end{equation}
+
+\begin{defn}
+    Given a category $\catB$, a \textbf{subobject} of $a$ is an equivalence class of monomorphisms with codomain $a$ up to isomorphism.
+\end{defn}
+The unique subobject class containing $f : b \hookrightarrow a$ will be denoted with square brackets $[f] = \{ g : c \hookrightarrow a \mid f \sim_a g \}$.
+\tcf{What happens when $[f]$ is a proper class and not a set? Is there a set-builder notation for proper classes? }
+
+The preorder relation $\preceq_{a}$ on the individual monomorphisms extends to a poset between the subobjects denoted $\sub_{a}(\set)$ between the subobjects. For example, if $\catB$ is the category $\set$, then the subobjects of any set $X$ are isomorphic to its subsets (i.e. a subset $A \subseteq X$ is isomorphic to the class $[i_{A}] \simeq A$ where $i_{A} : A \to X$ is the standard inclusion morphism), and thus $\sub_{X}(\set) \cong \pow(X)$ is the powerset poset ordered by inclusion. Even more concretely, if $X$ is the set $\mathbb{R}^2$, an exemplary diagram of $\sub_{\mathbb{R}^2}(\set)$ is
 \begin{center}
     \begin{tikzcd}[column sep=small]
-        & A & \\
-        B \ar[ur, hook', "\subseteq"] & & C \ar[ul, hook, "\subseteq"'] \\
-        & D \ar[ul, hook', "\subseteq"] \ar[ur, hook, "\subseteq"'] \ar[uu, hook, "\subseteq"] & \\
+        & \left[i_{A}\right] & \\
+        \left[i_{B}\right] \ar[ur, hook', "\subseteq"] & & \left[i_{C}\right] \ar[ul, hook, "\subseteq"'] \\
+        & \left[i_{D}\right] \ar[ul, hook', "\subseteq"] \ar[ur, hook, "\subseteq"'] \ar[uu, hook, "\subseteq"] & \\
     \end{tikzcd}
     \hspace{3em}
     \begin{tikzpicture}[
@@ -1114,103 +1133,145 @@ Note that if such a $k : Y \to Z$ exists, then it is unique because it $g$ is a 
         \node at (+1.5,-0.9) {\color{blue!30!black}$A$};
     \end{tikzpicture}
 \end{center}
-If the category $\catB$ has pullbacks, the posetal categories $\sub_{\catB}(X)$ for varying objects $X$ of $\catB$ can be ``stitched together'' to form an enveloping category denoted $\sub(\catB)$. The objects of $\sub(\catB)$ are the objects of $\sub_{\catB}(X)$ for various $X$. The morphisms of $\sub(\catB)$ are defined using the morphisms of $\catB$. Given a equivalence class of monomorphisms $B = \{b_i : Z_i \hookrightarrow X \}_{i \in \mathcal I} \in \sub_{\catB}(X)$ with with shared codomain $X$, and morphism $f : Y \to X$ (not necessarily a monomorphism) with codmain $X$, the pullbacks $f^\ast b_i$ of $b_i$ along $f$ for each $i \in \mathcal I$ constitute an equivalence class of monomorphisms $f^{\ast}B \coloneqq \{f^{\ast} b_i : Y \times_{X} Z_i \hookrightarrow Y \}_{i \in \mathcal I} \in \sub_{\catB}(Y)$:\footnote{Evidently, this relies on the fact that pullbacks perserve monomorphisms; i.e. $b : Z \hookrightarrow X$ is a monomorphism, then the pullback $f^\ast b : Y \times_{X} Z \hookrightarrow Y$ is also.}\footnote{The isomoprhisms connecting the monomorphisms of $f^\ast B$ are also given by pullback of the isomorphisms connecting the monomorphisms of $B$.}
+\begin{lem}
+    \label{lem:mono_stable}
+    Monomorphisms are stable under pullback; given a monomorphism $m : a \hookrightarrow b$, and morphism $f : c \to b$, the pullback of $m$ along $f$, denoted $f^{\ast} m : f^{\ast} a \hookrightarrow c$ is also a monomorphism.
+    \begin{equation}
+        \begin{tikzcd}[execute at end picture={\pullback{m-1-1}{m-1-2}{m-2-1}}]
+            f^\ast a \ar[r, "m^\ast f"] \ar[d, hook, "f^\ast m"'] & a \ar[d, hook, "m"] \\
+            c \ar[r, "k"] & b
+        \end{tikzcd}
+    \end{equation}
+\end{lem}
+If the category $\catB$ has pullbacks, the posetal categories $\sub_{a}(\catB)$ for varying objects $a$ of $\catB$ can be ``stitched together'' to form an enveloping category denoted $\sub(\catB)$. The objects of $\sub(\catB)$ are the objects of $\sub_{a}(\catB)$ for all objects $a$ of $\catB$. The morphisms of $\sub(\catB)$ are a little more complicated; given subobjects $[f] \in \sub_{a}(\catB)$, $[g] \in \sub_{b}(\catB)$ with possibly different codomains, a morphism $k : [g] \to [f]$ of $\sub(\catB)$ is a morphism $k : b \to a$ of $\catB$ such that the subobject $k^{\ast}[f] \coloneqq \{ k^{\ast}\tilde f \mid \tilde f \in [f] \} \in \sub_{\catB}(b)$\footnote{The fact that $k^{\ast}[f]$ constitutes a subobject relies on Lemma~\ref{lem:mono_stable}.} is above $[g]$ with respect to the poset $\sub_{b}(\catB)$. As a diagram of $\catB$, $k : [g] \to [f]$ provided that for all $\tilde g \in [g], \tilde f \in [f]$ there exists a morphism $h$ such that:
 \begin{equation}
-    \begin{tikzcd}
-        Y \times_{X} Z_i \drpb{xshift=-2mm} \ar[r, "b_i^\ast f"] \ar[d, hook, "f^\ast b_i"'] & Z_i \ar[d, hook, "b_i"] \\
-        Y \ar[r, "f"] & X
+    \begin{tikzcd}[execute at end picture={\pullback{m-1-2}{m-1-3}{m-2-2}}]
+        \cdot \ar[d, "\tilde g"', hook] \ar[r, "h"] &  \cdot \ar[r, "\tilde f^\ast k"] \ar[d, hook, "k^\ast \tilde f"'] & c \ar[d, hook, "\tilde f"] \\
+        b \ar[r, equals] & b \ar[r, "k"] & a
     \end{tikzcd}
 \end{equation}
-To every morphism $f : Y \to X$ of $\catB$, and object $B \in \sub_{\catB}(X)$, denote $\kappa_{f}(B) : f^\ast B \to B$ where $f^\ast B \in \sub_{\catB}(Y)$. Finally, a morphism of $\sub(\catB)$ between $A \in \sub_\catB(Y)$ and $B \in \sub_\catB(X)$ is the formal sequence \begin{tikzcd}[cramped] A \ar[r, "\leq"] &  f^{\ast}(B) \ar[r, "\kappa_f(B)"] & B \end{tikzcd}. The projection functor $P_{\catB} : \sub(\catB) \to \catB$ defines the \textit{subobject fibration}\footnote{Note that while the fibres $\sub_{\catB}(X)$ are thin, the total category $\sub(\catB)$ is not necessarily thin.}.
+The fact that diagrams of the above sort compose to form a formal category $\sub(\catB)$ relies on the fact that the morphisms of $\sub_{a}(\catB)$ which order the subobjects of $a$ are analogously transported by pullback along $k$ to become morphisms of $\sub_{b}(\catB)$; in fact $k^{\ast} : \sub_{a}(\catB) \to \sub_{b}(\catB)$ forms a functor between the individual subobject categories.
 
-\ctodo{figure out the relationship between a subobject fibration and the codomain fibration via the notion of \href{https://math.stackexchange.com/questions/2171645/how-can-the-subobject-fibration-be-obtained-from-the-codomain-fibration/2173108}{subterminal objects}.}
+\begin{prop}
+    For any category $\catB$ with pullbacks, the functor $S: \sub(\catB) \to \catB$ which sends $[f] \in \sub_{a}(\catB)$ to the object $a$ defines the \textbf{subobject fibration}.
+\end{prop}
+Note that while the fibers $\sub_{a}(\catB)$ are posets and thus thin, the total category $\sub(\catB)$ is not necessarily thin.
 
-\subsubsection{The Beck-Chevalley Condition}
+\begin{defn}
+    Given a category $\catB$, and a morphism $f : a \to b$, the \textbf{image factorization} of $f$, if it exists, is a pair of morphisms $e : a \to c$ and $\im(f) : c \hookrightarrow b$ such that $f = m e$ and is \textit{universal} in the following sense:
+    \begin{equation}
+        \begin{tikzcd}
+            a \ar[rr, "f"] \ar[dr, "e"] \ar[ddr, "e'"', bend right] & & b  \\
+            & c \ar[ur, "\im(f)", hook] \ar[d, dashed, "\exists !"] & \\
+            & c' \ar[uur, "m"', bend right, hook] &
+        \end{tikzcd}.
+    \end{equation}
+    The monomorphism $\im(f)$ is called the \textbf{image} of $f$.
+\end{defn}
+\tcf{It seems to me that the common notation is to let $\im(f)$ denote the \textit{object}, not the associated monomorphism. I would like to improve the notation somehow.}
+\ctodo{Clean up the discussion here, pullbacks are limits and images are some sort of colimits right?}
 
-Given any category $\catB$ with all pullbacks, the functor $P_{\catB} : \sub_{\catB} \to \catB$ which sends subobjects $[\psi]$ to their shared codomains, constitutes a bifibration. In particular, given a morphism $f : a \to b$ of $\catB$, there is an induced adjoint pair of functors between the subobject fibers:
+Given any category $\catB$ that has pullbacks and also admits image factorizations, the subobject fibration $S : \sub(\catB) \to \catB$ also constitutes an opfibration, and thus a bifibration. Given a morphism $f : a \to b$ of $\catB$, the left adjoint functor $f_{!}$ acting on a subobject $[\psi] : \sub_{a}(\catB)$ satisfies
+\[ f_! ([\psi]) = [ \im(f \psi) ] \in \sub_{b}(\catB). \]
+To summarize, given a morphism $f : a \to b$ of $\catB$, there is an induced adjoint pair of functors between the subobject fibers:
 \begin{equation}
     \begin{tikzcd}
-        \sub_{\catB}(a)
+        \sub_{a}(\catB)
         \arrow[r, bend left, "f_!", ""{name=L,inner sep=1pt,below}]
         \arrow[from=r, bend left, "f^\ast", ""{name=R,inner sep=1pt}]
         &
-        \sub_{\catB}(b)
+        \sub_{b}(\catB)
         \arrow[from=L, to=R, symbol=\dashv]
     \end{tikzcd}
 \end{equation}
-Specfically, left adjoint functor $f_{!}$ acting on a subobject $[\psi] : \sub_{\catB}(a)$ (where $[\psi]$ is the equivalence class of monomorphisms into $a$ containing $\psi : a' \hookrightarrow a$) is given by post-composition $f_{!} ( [\psi] ) = [ f \psi ] \in \sub_{\catB}(b)$ in $\catB$.
-\tob{That works for the codomain fibration, but not here, because $f \psi$ is generally not a subobject. Rather, $f_! ( [\psi] )$ should be the \emph{image} of the morphism $f \psi$, in the sense of \href{https://ncatlab.org/nlab/show/image}{image factorization} (please check whether this works). Thus one needs to assume that image factorizations exist}
-\tcf{It turns out the subobject fibration also satisfies the Beck-Chevalley condition at all pullback squares in the base provided that image factorizations in the base are stable under (i.e. commute with) pullback; equivalently, the base is a regular category. I will finish the write up tomorrow.}
-The right adjoint functor $f^\ast$ acting on a subobject $[\phi] \in \sub_{\catB}(b)$ is given by pullback of \begin{tikzcd}[cramped]a \ar[r, "f"]  & b & b' \ar[l, hook', "\phi"'] \end{tikzcd} in $\catB$:
+As previously discussed, the right adjoint functor $f^\ast$ acting on a subobject $[\psi] \in \sub_{b}(\catB)$ is given by pullback of \begin{tikzcd}[cramped]a \ar[r, "f"]  & b & b' \ar[l, hook', "\psi"'] \end{tikzcd} in $\catB$, i.e. $f^\ast([\psi]) = [f^\ast \psi]$:
 \begin{equation}
-    \begin{tikzcd}
-        f^{*}b' \drpb{} \ar[r] \ar[d, hook, "f^\ast \phi"'] & b' \ar[d, hook, "\phi"] \\
+    \begin{tikzcd}[execute at end picture = {\pullback{m-1-1}{m-1-2}{m-2-1}}]
+        f^{*}b' \ar[r] \ar[d, hook, "f^\ast \psi"'] & b' \ar[d, hook, "\psi"] \\
         a \ar[r, "f"'] & b
     \end{tikzcd}
 \end{equation}
 
-Generally speaking, it is important to determine how diagrams in the base category $\catB$ behave when lifted to the total category $\sub_{\catB}$ under the associated pseudo-functors. For example, given a pullback square in base category $\catB$,
-\begin{equation}
-    \begin{tikzcd}
-        a \drpb{} \ar[r, "f"] \ar[d, "h"'] & b \ar[d, "g"] \\
-        c \ar[r, "k"'] & d
-    \end{tikzcd}
-\end{equation}
-There exists a natural isomorphism $\alpha$ between the functors $f^\ast g^\ast$ and $h^\ast k^\ast$:
-\begin{equation}
-    \begin{tikzcd}
-        \sub_{\catB}(a) \ar[from=r, "f"'] \ar[from=d, "h"] & \sub_{\catB}(b) \ar[from=d, "g"'] \ar[dl, Rightarrow, "\alpha", "\sim"'] \\
-        \sub_{\catB}(c) \ar[from=r, "k"] & \sub_{\catB}(d)
-    \end{tikzcd}
-\end{equation}
-The existence of components $\alpha_{[\psi]}$ for the subobject class containing the monomorphism $\psi : p \hookrightarrow d$ can be determined by examining the following diagram:
-\begin{equation}
-    \begin{tikzcd}
-        & & & f^\ast g^\ast p \ar[d] \ar[lld, hook, out=180, in=90, "f^\ast g^\ast \psi"', near start] \dlpb{} \\
-        & a \ar[r, "f"] \ar[d, "h"'] \drpb{} & b \ar[d, "g"] & g^\ast p \ar[l, "g^\ast \psi"', hook] \ar[dd] \dlpb{} \\
-        & c \ar[r, "k"'] & d & \\
-        h^\ast k^\ast p \ar[r] \ar[uur, hook, out=90, in=180, "h^\ast k^\ast \psi", near start] \urpb{} & k^\ast p \ar[u, hook, "k^\ast \psi"] \ar[rr] \urpb{} & & p \ar[ul, hook, "\psi"']
-    \end{tikzcd}
-\end{equation}
-Using the composition of pullback squares, it is clear that \textit{both} $f^\ast g^\ast p$ and $h^\ast k^\ast p$ are pullbacks of \begin{tikzcd}[cramped] a \ar[r, "gf = kh"] & d & p \ar[l, hook', "\psi"'] \end{tikzcd} and therefore, they are unique up to a unique isomorphism which will be denoted $\beta$. It is important to notice that this does not depend on $a$ being a pullback itself.
-\begin{equation}
-    \begin{tikzcd}[row sep=large]
-        h^\ast k^\ast p
-        \ar[d, hook', "h^\ast k^\ast \psi"']
-        \ar[rrd, bend left]
-        \ar[rr, bend left, dashed, "\beta^{-1}"']
-        \drpb{}
-        &
-        &
-        f^\ast g^\ast p
-        \ar[d]
-        \ar[lld, bend right, hook', "f^\ast g^\ast \psi", near end]
-        \ar[ll, bend right=40, dashed, "\beta"']
-        \dlpb{}
-        \\
-        a
-        \ar[r, "gf=kh"']
-        &
-        d
-        &
-        p
-        \ar[l, hook', "\psi"]
-    \end{tikzcd}
-\end{equation}
-These isomorphisms actually establish that $h^\ast k^\ast \psi \simeq f^\ast g^\ast \psi$ and therefore they belong to the same equivalence class $[h^\ast k^\ast \psi] = [ f^\ast g^\ast \psi ]$ for each $\psi$. Therefore, it becomes clear that the natural isomorphism is indeed the identity natural transformation $\id_{f^\ast g^\ast} = \id_{h^\ast k^\ast} = \alpha : f^\ast g^\ast \to h^\ast k^\ast$.\footnote{Ultimately, the reason for $\alpha = \id$ is due to considering $\sub_{\catB}(a)$, the \textit{poset} of subobjects of $a$, instead of $\mono_{\catB}(a)$ the \textit{preorder} of monomorphisms into $a$.}
+\begin{lem}
+    Given a category $\catB$ with pullbacks and pullback-stable image factorizations (this includes regular categories), the subobject bifibration $S : \sub(\catB) \to \catB$ satisfies the Beck-Chevalley condition at every pullback square in $\catB$.
+\end{lem}
+\begin{proof}
+    Again, consider an arbitrary pullback square in base category $\catB$,
+    \begin{equation}
+        \begin{tikzcd}[execute at end picture={\pullback{m-1-1}{m-1-2}{m-2-1}}]
+            a \ar[r, "f"] \ar[d, "h"'] & b \ar[d, "g"] \\
+            c \ar[r, "k"'] & d
+        \end{tikzcd}.
+    \end{equation}
+    Automatically, there exists a natural isomorphism $\alpha : f^\ast g^\ast \to h^\ast k^\ast$:
+    \begin{equation}
+        \begin{tikzcd}
+            \sub_{a}(\catB) \ar[from=r, "f^\ast"'] \ar[from=d, "h^\ast"] & \sub_{b}(\catB) \ar[from=d, "g^\ast"'] \ar[dl, Rightarrow, "\alpha"', "\simeq", sloped] \\
+            \sub_{c}(\catB) \ar[from=r, "k^\ast"] & \sub_{d}(\catB)
+        \end{tikzcd}
+    \end{equation}
+    By Lemma~\ref{lem:mono_stable}, the argument is directly analogous to the diagram of Equation~\ref{eq:right_adjoints_at_pullback}. The key difference is that while
+    \begin{equation}
+        \begin{tikzcd}[column sep=small]
+            b \ar[rd, hook, "f^\ast g^\ast \psi"'] \ar[rr, dashed, "\alpha_{\psi}"', "\simeq"] & & c \ar[ld, hook', "h^\ast k^\ast \psi"]\\
+            & a &
+        \end{tikzcd}
+    \end{equation}
+    and thus $h^\ast k^\ast \psi \simeq f^\ast g^\ast \psi$ as before, the subobjects are precisely equal, \textit{not isomorphic}:
+    \[ [h^\ast k^\ast \psi] = [f^\ast g^\ast \psi]. \]
+    Therfore, the components of the natural isomorphism $\alpha$ are identities $\alpha_{[\psi]} = \id_{[\psi]}$.
 
-Alternatively, one can consider whether or not there exists natural transformations (or natural isomorphisms) of the form $\alpha : h_! f^\ast \to k^\ast g_!$. Remembering that the left adjoints $f_{!}$ are specified by post-composition $f_{!} [\psi] \to [f \psi]$, this question can be answered by considering the following diagram:
-\begin{equation}
-    \begin{tikzcd}
-        k^\ast g p \ar[r, "k^\ast g \psi"] \ar[d] \drpb{} & c \ar[d, "k"] & a \ar[l, "h"] \ar[d, "f"] \dlpb{} & f^\ast p \ar[l, "f^\ast \psi", hook'] \ar[ll, bend right, "h f^\ast \psi"'] \ar[d] \dlpb{} \\
-        p \ar[r, "g\psi"] \ar[rrr, bend right=15, equals] & d & b \ar[l, "g"'] & p \ar[l, hook', "\psi"']
-    \end{tikzcd}
-\end{equation}
-Similarly, $k^\ast g p$ and $f^\ast p$ are \textit{both} pullbacks of \begin{tikzcd}[cramped] p \ar[r, "g\psi"] & d & c \ar[l, hook', "k"'] \end{tikzcd} and therefore, we obtain an analogous statement: since $h f^\ast \psi \simeq k^\ast g \psi$, we have $[h f^\ast \psi] = [k^\ast g \psi]$ and therefore $h_! f^\ast = k^\ast g_!$.
-\tob{Nice! Even though the pushforward functors are missing the image factorizations, I think that this is the correct argument in the case of the codomain fibration. For the subobject fibration, we might need some additional stability property, presumably the one stated in the alternative definition of \href{https://ncatlab.org/nlab/show/regular+category\#definition}{regular categories}}
-The key difference in this case is that this argument \textit{does} rely on $a$ being the pullback of a pullback square.
-
-In summary, the subobject fibration \textit{satisfies} the Beck-Chevalley condition. Moreover, since none of the above argument relies on the fact that the objects of total category are represented by \textit{monomorphisms} in the base, just that they correspond to \textit{morpisms} in the base, it is clear that any codomain bifibration also satisfies the Beck-Chevalley condition.
+    To prove the Beck-Chevalley condition, one must demonstrate that the natural transformation $\beta = \varepsilon_{h} \alpha \eta_{g} : h_! f^\ast \to k^\ast g_!$ is also a \textit{natural isomorphism}. This will be accomplished by showing that for all monomorphisms $\psi : p \to b$ into $b$, $h_! f^\ast \psi \simeq k^\ast g_! \psi$ as monomorphisms into $c$; explicity
+    \begin{equation}
+        \im( h f^\ast \psi ) \simeq k^\ast \im (g \psi).
+    \end{equation}
+    Without relying the stability of image factorizations through pullback, the following diagram demonstrates the forward direction: $\im( h f^\ast \psi ) \preceq k^\ast \im (g \psi)$.
+    \begin{equation}
+        \begin{tikzcd}[
+                execute at end picture={
+                    \pullback[line width=0.75mm, white]{m-1-3}{m-2-2}{m-1-5};
+                    \pullback[line width=0.75mm, white]{m-3-3}{m-4-2}{m-3-5};
+                    \pullback[line width=0.75mm, white]{m-2-2}{m-4-2}{m-2-4};
+                    \pullback[line width=0.75mm, white]{m-6-2}{m-4-2}{m-6-4};
+                    \pullback{m-1-3}{m-2-2}{m-1-5};
+                    \pullback{m-3-3}{m-4-2}{m-3-5};
+                    \pullback{m-2-2}{m-4-2}{m-2-4};
+                    \pullback{m-6-2}{m-4-2}{m-6-4};
+                }
+            ]
+            & & \cdot \ar[dl, hook', "f^\ast \psi", sloped] \ar[rr] \ar[ddll, bend right, "e"'] \ar[dd, dashed, bend right=10, "u_2"', near start] \ar[from=dd, dashed, bend right=10, "u_3"', near end] & & p \ar[dd, equals] \ar[dl, hook', "\psi"] \\
+            & a \ar[rr, "f", near end, crossing over] \ar[dd, "h"] & & b  & \\
+            \cdot \ar[rd, hook, "\im(h f^\ast \psi)", sloped] \ar[rddd, dashed, out=-90, in=135, "v"'] & & \cdot \ar[dddl, dashed, out=-90, in=45, "u_4"] \ar[rr] \ar[ul, dashed, "u_1"', sloped] \ar[dl, "k^\ast g \psi", sloped] & & p \ar[dl, "g\psi", sloped] \ar[dd, equals] \\
+            & c \ar[rr, "k", near end, crossing over] & & d \ar[from=uu, "g", crossing over, near end] & \\
+            & & & & p \ar[dl] \\
+            & \cdot \ar[rr] \ar[uu, hook, "k^\ast \im(g \psi)", sloped] & & \cdot \ar[uu, hook, "\im(g\psi)", sloped] &
+        \end{tikzcd}
+    \end{equation}
+    There are four unique morphisms, $u_1, u_2, u_3$ and $u_4$, which follow from the universality of various pullback constructions. In order,
+    \begin{enumerate}
+        \item $u_1$ follows from the pullback of \begin{tikzcd}[cramped]c \ar[r, "k"] & d & b \ar[l, "g"'] \end{tikzcd},
+        \item $u_2$ by pullback of \begin{tikzcd}[cramped]c \ar[r, "k"] & d & p \ar[l, "g \psi"'] \end{tikzcd},
+        \item $u_3$ by pullback of \begin{tikzcd}[cramped]a \ar[r, "f"] & b & p \ar[l, hook', "\psi"'] \end{tikzcd} (this relies on the presence of $u_1$),
+        \item and finally, $u_4$ by pullback of \begin{tikzcd}[cramped]c \ar[r, "k"] & d & \cdot \ar[l, "\im(g\psi)"'] \end{tikzcd}.
+    \end{enumerate}
+    An additional unique morphism, $v$, is a result of an image factorization:
+    \begin{equation}
+        \begin{tikzcd}
+            \cdot \ar[rr, "hf^\ast\psi"] \ar[dr, sloped] \ar[ddr, "u_4u_2"', bend right, sloped] & & c  \\
+            & \cdot \ar[ur, "\im(hf^\ast\psi)", hook, sloped] \ar[d, dashed, "\exists !v"] & \\
+            & \cdot \ar[uur, "k^\ast \im (g \psi)"', bend right, hook, sloped] &
+        \end{tikzcd}.
+    \end{equation}
+    This final morphism, $v$, shows that $\im( h f^\ast \psi ) \preceq k^\ast \im (g \psi)$. To show $\im( h f^\ast \psi ) \succeq k^\ast \im (g \psi)$, one needs an additional condition, namely that image factorizations are stable under pullback: e.g. $\im(k^\ast g \psi) = k^\ast \im(g \psi)$:
+    \begin{equation}
+        \begin{tikzcd}
+            \cdot \ar[rr, "k^\ast g\psi"] \ar[dr, "u_4", sloped] \ar[ddr, "e u_3"', bend right, sloped] & & c  \\
+            & \cdot \ar[ur, "\im(k^\ast g \psi)", "k^\ast \im(g \psi)"', hook, sloped] \ar[d, dashed, "\exists !w"] & \\
+            & \cdot \ar[uur, "\im(hf^\ast\psi)"', bend right, hook, sloped] &
+        \end{tikzcd}.
+    \end{equation}
+    Therefore $\im( h f^\ast \psi ) \simeq k^\ast \im (g \psi)$, and thus the Beck-Chevalley condition holds with components $\beta_{[\psi]} = \id_{[\psi]}$.
+\end{proof}
 
 \subsection{The Category of Convex Cones and Linear Maps}
 
