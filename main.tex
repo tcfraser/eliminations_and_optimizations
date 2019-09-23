@@ -20,11 +20,12 @@
 \usepackage{amsthm} % The AMS theorems package
 \usepackage{tabularx}
 \usepackage{authblk} % For affiliations
+\usepackage{cleveref}
 
 \usepackage{amsfonts}
 \usepackage{indentfirst}
 \usepackage{pgfplots}
-\pgfplotsset{compat=1.16} % https://tex.stackexchange.com/questions/81899/what-does-running-in-backwards-compatibility-mode-mean-and-what-should-i-fix-t
+\pgfplotsset{compat=1.15} % https://tex.stackexchange.com/questions/81899/what-does-running-in-backwards-compatibility-mode-mean-and-what-should-i-fix-t
 \usepackage{tikz}
 
 % === [amsthm declarations] ===
@@ -739,7 +740,7 @@ Everything about coslice categories is defined as expected analogously to that o
 
 One of the primary motiviating examples for this project is the theory of \textit{(finite) convex polyhedra} and the affine maps between them. Following \citeauthor{boyd2004convex}~\cite{boyd2004convex}, a \textit{polyhedron}\footnote{The term polytope will be reserved for the context of \textit{bounded polyhedron}. Note that the opposite convention is sometimes used by other authors as pointed out by \cite{boyd2004convex}.}\footnote{Alternative and sometimes inequivalent definitions for ``polyhedra'' do exist; oftentimes, these alternative definitions accomodate more general notions of polyhedra, such as non-convex polyhedra. Understanding the relationship between these various definitions, and the proposal of new ones, is a mathematical endeavour which dates back to antiquity and continues today  \cite{grunbaum2003your, lakatos2015proofs}.} $P$ is the intersection of a finite number of \textit{halfspaces} of some ambient vector space $V \cong \mathbb{R}^n$. A \textit{halfspace} $H \subseteq \mathbb{R}^n$ is a subset of a vector space (of dimension $n$) which is the solution set of a linear inequality constraint over canonical coordinates $x = (x_1, x_2, \ldots, x_n) \in \mathbb{R}^n$:
 \begin{equation}
-    H = \{ x \in V \mid a^\intercal x = \sum_{i=1}^{n} a_i x_i \geq b \}
+    H = \left\{ x \in V \: \bigg| \: a^\intercal x = \sum_{i=1}^{n} a_i x_i \geq b \right\}
 \end{equation}
 
 \begin{center}
@@ -757,9 +758,9 @@ One of the primary motiviating examples for this project is the theory of \texti
         % \draw (+2.5, +0.5) node[]{$\mathbb{R}^2$};
     \end{tikzpicture}
 \end{center}
-As previously mentioned, a polyhedra is the intersection of finitely many halfspaces and therefore corresponds to
+As previously mentioned, a polyhedron is the intersection of finitely many halfspaces and therefore corresponds to
 \begin{equation}
-    P = \{ x \in V \mid \bigwedge_{j=1}^{k} (a_{j}^\intercal x \geq b_j) \}
+    P = \left\{ x \in V \: \bigg| \: \bigwedge_{j=1}^{k} (a_{j}^\intercal x \geq b_j) \right\}
 \end{equation}
 
 \begin{center}
@@ -798,7 +799,7 @@ As previously mentioned, a polyhedra is the intersection of finitely many halfsp
         \mathbb{R}^n \ar[r, "f"] & \mathbb{R}^k \\
     \end{tikzcd}
 \end{equation}
-In Equation~\ref{eq:pullback_of_positive_orthant}, the morphism $j$ is simply the inclusion of the polyhedra $f^\ast ( \mathbb{R}^k_+ )$ into its ambient vector space $\mathbb{R}^n$ and the morphism $f'$ is provided by the restriction of $f$ onto $f^\ast ( \mathbb{R}^k_+ )$.
+In \Cref{eq:pullback_of_positive_orthant}, the morphism $j$ is simply the inclusion of the polyhedra $f^\ast ( \mathbb{R}^k_+ )$ into its ambient vector space $\mathbb{R}^n$ and the morphism $f'$ is provided by the restriction of $f$ onto $f^\ast ( \mathbb{R}^k_+ )$.
 
 \subsection{The Beck-Chevalley Condition for the Polyhedral Fibration}
 
@@ -832,6 +833,8 @@ Consider a commuting square of affine maps between vector spaces in the base cat
     % \importpolyproj{\input{figures/polytope_projection/metabidiminishedRhombicosidodecahedron_projection.tex}}
     % \importpolyproj{\input{figures/polytope_projection/rhombicTriacontahedron_projection.tex}}
 \end{center}
+
+\tob{I think the following diagram should contain direct sums, not tensor products. If we work with linear instead of affine maps, then direct sums of vector spaces are biproducts, which implies that morphisms $X_1 \oplus \ldots \oplus X_n \longrightarrow Y_1 \oplus \ldots \oplus Y_m$ correspond to $m\times n$-\href{https://ncatlab.org/nlab/show/matrix+calculus}{matrices of morphisms}, to be composed by matrix multiplication. It's possible that a similar statement still holds with affine rather than linear maps, but I'm not sure}
 
 \begin{equation}
     \begin{tikzcd}[column sep=0.5em]
@@ -925,7 +928,7 @@ consisting of two objects and a non-identity morphism $i : 0 \to 1$ between them
     \end{equation}
 \end{defn}
 
-The fibers of the codomain functor $\cod : \arr(\catC) \to \catC$ are therefore isomorphism to the slice categories; given an object $a$ in $\catC$, the fiber over $a$ is the slice category $\arr_{a}(\catC) \simeq \catC / a$ whose morphisms are commuting triangles over $a$ in $\catC$, i.e.
+The fibers of the codomain functor $\cod : \arr(\catC) \to \catC$ are therefore precisely the slice categories; given an object $a$ in $\catC$, the fiber over $a$ is the slice category $\arr_{a}(\catC) \simeq \catC / a$ whose morphisms are commuting triangles over $a$ in $\catC$, i.e.
 \begin{equation}
     \begin{tikzcd}[column sep=small]
         c \ar[dr, "g"'] \ar[rr, "t"] & & d \ar[dl, "h"] \\
@@ -933,7 +936,7 @@ The fibers of the codomain functor $\cod : \arr(\catC) \to \catC$ are therefore 
     \end{tikzcd}.
 \end{equation}
 
-Automatically, observe that the codomain functor $\cod : \arr(\catC) \to \catC$ constitutes an opfibration; for each morphism $f : a \to b$, the associated fiber-convariant functor $f_{!} : \catC / a \simeq \arr_{a}(\catC) \to \arr_{b}(\catC) \simeq \catC / b$ is specified by post-composition with $f$:
+Automatically, observe that the codomain functor $\cod : \arr(\catC) \to \catC$ constitutes an opfibration; for each morphism $f : a \to b$, the associated fiber-covariant functor $f_{!} : \catC / a \simeq \arr_{a}(\catC) \to \arr_{b}(\catC) \simeq \catC / b$ is specified by post-composition with $f$:
 \begin{equation}
     f_! \left(
         \begin{tikzcd}[column sep=small]
@@ -954,7 +957,7 @@ Automatically, observe that the codomain functor $\cod : \arr(\catC) \to \catC$ 
     \end{tikzcd}.
 \end{equation}
 
-Under the right conditions, a codomain functor is also a \textit{fibration} and thus an \textit{bifibration}.
+Under the right conditions, a codomain functor is also a \textit{fibration} and thus a \textit{bifibration}.
 
 \begin{prop}
     If a category $\catB$ has pullbacks, the codomain functor $\cod : \arr(\catB) \to \catB$ is a fibration called the \textbf{codomain fibration}.
@@ -1006,13 +1009,13 @@ such that $f_! : \catB / a \to \catB / b$ is given by post-composition and $f^\a
 \end{lem}
 
 \begin{proof}
-    Consider an arbitrary pullback square in base category $\catB$,
+    Consider an arbitrary pullback square in the base category $\catB$,
     \begin{equation}
         \label{eq:generic_pullback}
         \begin{tikzcd}[execute at end picture={\pullback{m-1-1}{m-1-2}{m-2-1}}]
             a \ar[r, "f"] \ar[d, "h"'] & b \ar[d, "g"] \\
             c \ar[r, "k"'] & d
-        \end{tikzcd}.
+        \end{tikzcd}
     \end{equation}
     Automatically, there exists a natural isomorphism $\alpha : f^\ast g^\ast \to h^\ast k^\ast$:
     \begin{equation}
@@ -1040,7 +1043,7 @@ such that $f_! : \catB / a \to \catB / b$ is given by post-composition and $f^\a
             p \ar[rr, "\psi"] \ar[rrrr, bend right=20, equals] & & d & & p \ar[ll, "\psi"'] \\
         \end{tikzcd}
     \end{equation}
-    Using the composition of pullback squares, it is clear that \textit{both} $h^\ast k^\ast \psi$ and $f^\ast g^\ast \psi$ are projection morphisms (onto $a$) in the pullback square of \begin{tikzcd}[cramped] a \ar[r, "gf = kh"] & d & p \ar[l, "\psi"'] \end{tikzcd} and therefore, they are unique up to a unique isomorphism; the component $\alpha_{\psi}$ is precisely that isomorphism. Notice that this argument \textit{does not} make use of the fact that the original commuting square in Equation~\ref{eq:generic_pullback} was a pullback square.
+    Using the composition of pullback squares, it is clear that \textit{both} $h^\ast k^\ast \psi$ and $f^\ast g^\ast \psi$ are projection morphisms (onto $a$) in the pullback square of \begin{tikzcd}[cramped] a \ar[r, "gf = kh"] & d & p \ar[l, "\psi"'] \end{tikzcd} and therefore, they are unique up to a unique isomorphism; the component $\alpha_{\psi}$ is precisely that isomorphism. Notice that this argument \textit{does not} make use of the fact that the original commuting square in \Cref{eq:generic_pullback} was a pullback square.
 
     To prove the Beck-Chevalley condition, one must demonstrate that the natural transformation $\beta = \varepsilon_{h} \alpha \eta_{g} : h_! f^\ast \to k^\ast g_!$ is also a \textit{natural isomorphism}. Remembering that the left adjoints can be computed by post-composition, the component of $\beta$ for an object $\psi : p \to b$ of $\catB / b$, denoted $\beta_{\psi}$, and its inverse can be determined by the following diagram:
     \begin{equation}
@@ -1057,6 +1060,8 @@ such that $f_! : \catB / a \to \catB / b$ is given by post-composition and $f^\a
     \end{equation}
     Similarly, $k^\ast g_! \psi$ and $h_! f^\ast \psi$ are \textit{both} projection morphisms (onto $c$) in the pullback square of \begin{tikzcd}[cramped] p \ar[r, "g\psi"] & d & c \ar[l, "k"'] \end{tikzcd} and therefore, they are unique up to a unique isomorphism $\beta_{\psi}$. The key difference in this case is that this argument \textit{does} rely on $a$ being the pullback object in the original pullback square in the base $\catB$ (Equation~\ref{eq:generic_pullback}).
 \end{proof}
+
+\tob{Right. This is an application of the \href{https://ncatlab.org/nlab/show/pasting+law+for+pullbacks}{pullback lemma}}
 
 \subsection{The Subobject Fibration}
 
@@ -1086,6 +1091,7 @@ Note that if such a $k : b \to c$ exists, then it is unique because it $g$ is a 
 \end{defn}
 The unique subobject class containing $f : b \hookrightarrow a$ will be denoted with square brackets $[f] = \{ g : c \hookrightarrow a \mid f \sim_a g \}$.
 \tcf{What happens when $[f]$ is a proper class and not a set? Is there a set-builder notation for proper classes? }
+\tob{The standard solution is to use \href{https://en.wikipedia.org/wiki/Grothendieck_universe}{Grothendieck universes}: using suitable set-theoretic assumptions, we can take proper classes to be sets as well, replacing ordinary sets by ``small sets'' and proper classes by ``large sets''. Then we can just use set-builder notation again, while noting that the resulting set may be large. \href{https://ncatlab.org/nlab/show/well-powered+category}{Well-poweredness} is a relevant keyword}
 
 The preorder relation $\preceq_{a}$ on the individual monomorphisms extends to a poset between the subobjects denoted $\sub_{a}(\set)$ between the subobjects. For example, if $\catB$ is the category $\set$, then the subobjects of any set $X$ are isomorphic to its subsets (i.e. a subset $A \subseteq X$ is isomorphic to the class $[i_{A}] \simeq A$ where $i_{A} : A \to X$ is the standard inclusion morphism), and thus $\sub_{X}(\set) \cong \pow(X)$ is the powerset poset ordered by inclusion. Even more concretely, if $X$ is the set $\mathbb{R}^2$, an exemplary diagram of $\sub_{\mathbb{R}^2}(\set)$ is
 \begin{center}
@@ -1169,7 +1175,12 @@ Note that while the fibers $\sub_{a}(\catB)$ are posets and thus thin, the total
     The monomorphism $\im(f)$ is called the \textbf{image} of $f$.
 \end{defn}
 \tcf{It seems to me that the common notation is to let $\im(f)$ denote the \textit{object}, not the associated monomorphism. I would like to improve the notation somehow.}
+\tob{Right, I also feel that the standard notation isn't optimal. How about denoting objects by uppercase letters throughout, and then write
+	\[
+		\im(f) : \mathrm{Im}(f) \longrightarrow B \quad ?
+	\]}
 \ctodo{Clean up the discussion here, pullbacks are limits and images are some sort of colimits right?}
+\tob{Yes, images are \emph{like} colimits in the sense of having a mapping-out universal property. I'm not sure whether they're \emph{actually} colimits}
 
 Given any category $\catB$ that has pullbacks and also admits image factorizations, the subobject fibration $S : \sub(\catB) \to \catB$ also constitutes an opfibration, and thus a bifibration. Given a morphism $f : a \to b$ of $\catB$, the left adjoint functor $f_{!}$ acting on a subobject $[\psi] : \sub_{a}(\catB)$ satisfies
 \[ f_! ([\psi]) = [ \im(f \psi) ] \in \sub_{b}(\catB). \]
@@ -1210,7 +1221,7 @@ As previously discussed, the right adjoint functor $f^\ast$ acting on a subobjec
             \sub_{c}(\catB) \ar[from=r, "k^\ast"] & \sub_{d}(\catB)
         \end{tikzcd}
     \end{equation}
-    By Lemma~\ref{lem:mono_stable}, the argument is directly analogous to the diagram of Equation~\ref{eq:right_adjoints_at_pullback}. The key difference is that while
+    By Lemma~\ref{lem:mono_stable}, the argument is directly analogous to the diagram of \Cref{eq:right_adjoints_at_pullback}. The key difference is that while
     \begin{equation}
         \begin{tikzcd}[column sep=small]
             b \ar[rd, hook, "f^\ast g^\ast \psi"'] \ar[rr, dashed, "\alpha_{\psi}"', "\simeq"] & & c \ar[ld, hook', "h^\ast k^\ast \psi"]\\
@@ -1277,7 +1288,7 @@ As previously discussed, the right adjoint functor $f^\ast$ acting on a subobjec
 
 Given any $\mathbb{R}$-vector space $V$, a \textit{(closed) cone} $C \subseteq V$ is a subset of $V$ such that for any elements $c_1, c_2 \in C$ and for any positive coefficients $\gamma_1, \gamma_2 \geq 0$, $\gamma_1 c_1 + \gamma_2 c_2 \in C$. A polyhedral cone $C \subseteq V$ is one which admits a half-space representation in terms a finite number of linear constraints:
 \begin{equation}
-    C = \{ x \in V \mid \bigwedge_{i=1}^{K} (a_i \cdot x \geq 0) \}
+    C = \left\{ x \in V \: \bigg| \: \bigwedge_{i=1}^{K} (a_i \cdot x \geq 0) \right\}.
 \end{equation}
 Alternatively, a $\cone$ can be expressed in terms of the pullback of the positive orthant
 \begin{equation}
